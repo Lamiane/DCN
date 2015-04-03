@@ -5,8 +5,8 @@ import skdata
 # from theano.tensor.TensorType import dtype
 import numpy as np
 
-train_size = 50000
-# train_size = 10
+# train_size = 50000
+train_size = 1
 
 def load():
     mnist = skdata.mnist.dataset.MNIST()
@@ -16,6 +16,7 @@ def load():
         # convert an array to the proper shape and dtype
         arr = mnist.arrays[n]
         return arr.reshape((len(arr), -1)).astype(dtype)
+
 
     train_images = arr('train_images', 'f')/255.  # regularization to [0-1]
     train_labels = arr('train_labels', np.uint8)

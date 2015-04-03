@@ -3,6 +3,8 @@ from time import time
 import theanets as t
 from mnist_data import load as load_mnist
 import numpy as np
+import notificator
+import cPickle as pickle
 import matplotlib.pyplot as plt
 
 start_time = time()
@@ -26,6 +28,7 @@ exp.train(train, valid, optimize='nag', learning_rate=1e-3, momentum=0.9)
 
 train_time = time()
 
+# the code below doesn't work due to some QT weirdos
 # visualization
 #img = np.zeros((28*10, 28*10), dtype='f')
 #for i, pix in enumerate(exp.network.find(1, 0).get_value().T):
@@ -36,31 +39,43 @@ train_time = time()
 
 counter_good = 0
 counter_bad = 0
-bad_details = []
+# bad_details = []
 
 for i, element in enumerate(test[0]):
     element = np.reshape(element, (1, 784))
     predicted_class = exp.network.predict(element)
-    v = predicted_class == test[1][i]
+    predicted_tag = np.argmax(predicted_class)  # np.argmax() returns the index of a max value
+    true_tag = test[1][i]
+    v = predicted_tag == true_tag
     if v.all():
         counter_good += 1
     else:
         counter_bad += 1
         # bad_details.append([predicted_class, test[1][i]])
 
-vis_time = time()
+# print bad_details
 
 all_time = time() - start_time
+vis_time = time() - train_time
 train_time = train_time - prep_time
 prep_time = prep_time - start_time
-vis_time = all_time - train_time
 
 print "all:", all_time/60.0
 print "prep:", prep_time/60.0
 print "train:", train_time/60.0
 print "vis:", vis_time/60.0
+
 print "good:", counter_good
 print "bad:", counter_bad
 print "all:", counter_bad+counter_good
 # print "bad details:", bad_details
 
+# not needed anymore
+# with open("baddies.p", "w") as FILE_BAD:
+#     pickle.dump(bad_details, FILE_BAD)
+
+# pickling trained network for later use
+exp.save("network.p")
+
+# notifying the program is finished
+notificator.notify()

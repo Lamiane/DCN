@@ -8,10 +8,11 @@ import numpy
 N = 10  # number of Rs
 # sq_maps musza byc zawsze takie same!
 sq_map_size = []  # TODO: no wlasnie? jakie?
-SQ_MAPS = []
+SQ_MAPS = [] # wektor maps zadających odwzorowanie z wektora na macierz
 conv_matrix = []  # TODO: uzupelnic ja czyms
 # TODO: skad theanets wie, jakie parametry powinien poprawic?
 
+# arch.create_squerization_map: moja funkcja zadająca odwzorowanie z wektora na macierz
 for i in xrange(N):
     SQ_MAPS.append(arch.create_squerization_map(sq_map_size))
 
@@ -38,7 +39,9 @@ class ConvLayer(t.layers.Layer):
         fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) /
                    numpy.prod(poolsize))
         # initialize weights with random weights
+        # (fan_in + fan_out) - normalizacja
         W_bound = numpy.sqrt(6. / (fan_in + fan_out))
+        # budowanie wektora wag
         self.W = theano.shared(
             numpy.asarray(
                 rng.uniform(low=-W_bound, high=W_bound, size=filter_shape),
@@ -50,6 +53,10 @@ class ConvLayer(t.layers.Layer):
         # the bias is a 1D tensor -- one bias per output feature map
         b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
         self.b = theano.shared(value=b_values, borrow=True)
+
+        # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+        # tutaj chyba zaczyna się kod, który powininen być w transform
+        # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
         # convolve input feature maps with filters
         conv_out = TT.nnet.conv.conv2d(
@@ -76,26 +83,7 @@ class ConvLayer(t.layers.Layer):
         self.params = [self.W, self.b]
 
     def transform(self, inputs):
-        # # 1: w parametrach
-        # # 2:
-        # # CONVOLUTION STAGE (1st)
-        # R = []
-        # for i in xrange(N):
-        #     R.append(arch.squerize(inputs, SQ_MAPS[i]))
-        # # 3: no jest globalna (na razie)
-        # # 4: lacze R_i z conv_matrix
-        # O = []
-        # for i in xrange(N):
-        #     # For convolution using theano see:
-        #     # http://deeplearning.net/software/theano/library/tensor/signal/conv.html
-        #     O.append(sgnl.convolve(R[i], conv_matrix, "valid"))
-        # # 5:
-        # # DETECTOR STAGE (2nd) which I don't have
-        # # POOLING STAGE (3rd)
+        pass
 
-
-
-
-        
     def setup(self):
         pass

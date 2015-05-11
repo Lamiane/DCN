@@ -1,0 +1,181 @@
+%ANG: jak się wstawia przecinki w zdaniach, synonimy do usually
+
+\documentclass[a4paper,10pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{polski} %FIXME: może na końcu wywalić, chyba, ze ktoś z przypisów ma polskie nazwisko, o te nazwiska wcześniej zapytać
+
+% Title Page
+\title{Praca Magisterska}
+\author{Agnieszka Pocha}
+
+
+\begin{document}
+  \maketitle
+  \begin{abstract}
+    The goal of this work is to... ...drug design... This is achieved by applying (deep?) convolutional neural networks to the problem.
+  \end{abstract}
+  \tableofcontents
+  
+  %FIXME: napisac na samym początku co będzie po kolei, 
+  
+  \chapter{The Problem and the Data}
+    %FIXME {cytowania! jak to się robi? poczatek, koniec?}
+    %FIXME co z wcięciami?
+    
+    \section{Terminology} %TODO: zmienić hasła na zdania
+    what is drug design and how does it work? szybko rozwijająca się dziedzina, facing challengeing problems; it's important, new technologies are applied, big data but not complete and from different sources, very expensive and time consuming so modelling is o vita importance \\
+    
+    protein, ligand, protein-ligand docking, residues, pharmacophore, interactions, what is the difference betwen a protein and an amino acid? receptor, donor, active non/inactive protein
+    
+    \section{Fingerprints} %TODO: zmienić hasła na zdania
+    co to sa fingerprinty i jak się je robi, jakie są problemy, skąd się biorą? po co te fingerprinty, jak te problemy są rozwiązywane, że związki skomplikowane, że na grafach się nie da, 
+  
+    \section{Problem} %TODO: zmienić hasła na zdania
+    drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.
+    
+    \section{Datasets}
+    The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands. Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix describing how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. \\
+
+    LUB \\
+    
+    The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands and providing information whether (the *combination* is active or not). Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix describing how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. The labels are... \\
+    
+    \{obrazek\} \\ %TODO
+    
+    The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic. \\
+    
+    %TODO:Values: 0, 1, 2 and their meaning !!! nie ma tego w publikacji!
+    The values constituting the ... dataset are discrete, namely: 0, 1 and 2. 0 means there is no interaction of specific kind. The labels are reperesented as 0 (not active) or 1 (active).
+    
+    \section{Sparsity} %TODO: zmienić hasła na zdania
+    check if the data is sparse, it yes then state that it is and explain why
+    
+    \section{Data representation} %TODO: pewnie chcę napisać coś więcej + zmienić notatki na zdania
+    Each data sample is represented as a vector of $r*6*9$ length, where $r$ is the length of the protein. Data samples *są zebrane w* a dataset. Each dataset describes how a certain protein reacts with amino acid;.\\
+    
+    why was this particular fingerprint representation choosen
+    
+    
+  \chapter{The Model or Deep Convolutional Neural Networks}
+    
+    \section{Deep Neural Networks}
+      DNN
+
+    \section{Convolutional Neural Networks}
+      %TODO: opis w jednym zdaniu, czym to jest i do jakich danych (specyfika,nie konkrety) można je aplikować, dlaczego zwane konwolucyjnymi
+      The simplest definition of convolutional neural networks is probably: neural networks that take adventage of using the convolution operation. Usually the CNN is *conceptually* divided into two subnetworks: first subnetwork is *biult from* convolutional layers and is responsible for feature extraction, the second one is a classical neural network, e.g. multilayer perceptron. Its aim is to *poprawnie* classify the examples taking as input the features extracted by the previous subnetwork.\\
+      
+      \{obrazek\} \\ % jakiś typowy lenet
+      
+      In this section I will give motivation that stands behind using such networks, *explain/define* what is the convolution operation, and give a detailed explanation of CNNs and its properties. Finally, I will describe what problems might arise while learning a CNN model and how to prevent them. The learning algorithm for CNNs will be given.\\
+      
+      \subsection{Motivation} %TODO: zmienić poniższe notatki w tekst 
+	%TODO: why are CNNs so useful, awesome and important, w czym dokonały przełomu? (citation needed? praca hoelnderska?)
+	Convolutional neural networks are *mostly* applied to image recognition, video analysis and natural language processing problems. %FIXME: citation needed?
+	This attempts *are often succesful/often give better results than (any other) models*. %TODO: citation needed
+	
+      \subsection{Convolution} %TODO: zmienić poniższe notatki w tekst 
+	Convolution operation takes as *operands* two functions (dziedzina? zbiór wartości?) and return a new function (dziedzina? zbiór wartości?) as a result. Mathematically, convolution is defined as: \\
+	
+	$c(t) = \int\limits_{-\infty}^\infty f(x)g(t-x)dx$ \\
+	
+	In the equation above we can see $c$ - a function returned by convolution operation - that is evaluated in point $t$. $c$ is defined as an integral over two other functions. $f$ is often called an input, while $g$ is often reffered to as a kernel.%FIXME: kernel i input nie zamienione miejscami? definicja dobra? citation needed?
+	  \\
+	
+	%TODO: wprowadzenie konwolucji na macierzach, tej, która jest używana w CNNach.
+	
+	It is often useful to see kernels as feature extractors. 
+	why kernels can be seen as feature extractors?
+
+      \subsection{Properties} %TODO zmienić poniższe notatki w tekst
+	spatial invariance, napisac jak zmieniaja sie wymiary macierzy podczas konwolucji, poolingu, itd. pooling shape, pooling stride,
+      \subsection{Computation Flow} %TODO zmienić poniższe notatki w tekst
+	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection I will describe how the signal is processed within the convolutional subnetwork. I will not *dig into* the classifying subnetwork as any neural network that can be used to classify objects might be used. Many such networks exist*s* and they are well described in the literature. \\ %TODO: citation needed?
+	
+	In each layer there are three *podstawowe* operations *wykonywane*. Firstly, the input is convoluted with a kernel matrix. The result of this operation is an input to the activation function. If the input is a matrix *(and it usually/always is a matrix)* each element forms a single input to the activation function *(a może da się inaczej?)*. Finally, the pooling is applied to the result. \\
+	
+	\{obrazek\}  może też wzorek? pooling(sigmoid(convolution(input))) \\
+	
+	One might also think imagine three consecutive seperate layers: a convolutional layer, a *widely-used/classical* layer that applies activation function *(activation layer)* and finally, a pooling layer.\\
+	
+	In the following subsections I will describe in details how each of this operation exactly works. *Szczególna uwaga zostanie zwrócona na to, jak zmieniają się wymiary danych na każdym etapie*\\
+	
+	\{obrazek\} chyba ten u góry tylko
+	
+	\subsubsection{Convolution for neural networks}%TODO: zmienić poniższe notatki w tekst 
+	  naming: input, kernel, output,  powiedziec o tym, co sie dzieje na brzegach (kernel nie lazi),  i jak sobie z tym mozna radzic (walce, torusy, dopisywanie zerami (zero-pad), lustrzane odbicie, godzenie się na mniejszą macierz. Valid, same and full convolution (MATLAB terminology) Opisać jakie rozwiązanie zostało użyte przez nas. on ekernel $=$ one feature, therefore typically many kernels are used. Also: kernels in consecutive layers work on the outputs of the previous layers $\rightarrow$ in each layer more complicated, i.e. constructed from simpler ones, features are used
+	
+	\subsubsection{Activation function} %TODO: zmienić poniższe notatki w tekst 
+	  różne możliwe typy
+	
+	\subsubsection{Pooling} %TODO: zmienić poniższe notatki w tekst 
+	  Pooling is an operation that takes as input multiple values and returns *the statistic(s) of these values*. It is usually applied on a matrix taking as input the submatrices and returning a single value as a result. 3 most common *(citation needed?)* types of pooling are:
+	  \begin{itemize}
+	   \item max pooling - the max value is returned
+	   \item average pooling - the average value is returned
+	   \item weighted average pooling - the weighted average is returned. Weights are usually *(citation needed?)* defined by the distance from *what?*
+	  \end{itemize}
+	  
+	  types: Bengio, 181, pierwszy pełny akapit, pooling shape and stride $\rightarrow$ boost computational efficiency. \\
+
+	  \{obrazek\} jak wygląda max pooling \\
+	  
+	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines how many values will be taken as an input - the bigger the size of pooling, the more information is *lost*. The pooling stride defines how the submatrices are *rozmieszczone względem siebie*. Fig *???* shows how *does it work*. \\
+	  
+	  \{obrazek\} pooling size and stride \\
+	  
+	  how does pooling give us some invariance? \\ 
+	  
+	  \{obrazek\} dlaczego daje nam invariance\\
+	  
+	  is pooling subsampling and if yes then why is polling subsampling? \\ 
+	
+	\subsubsection{Summary} %TODO: zmienić poniższe notatki w tekst 
+	  input goes through three stages, downchanging its size
+	  
+      \subsection{implementationally awesome things} %FIXME: change this stupid title
+	
+	\subsubsection{sparse interactions} %TODO: zmienić poniższe notatki w tekst 
+	  because kernel is smaller then data so it not kazdy z kazdym but some with some (sparse) $\rightarrow$ computational boost, kernel is small and moved around input - less parameters, instead of a big matrix we store a small one that runs over the data\\
+	  
+	  \{obrazek\} %TODO
+	  
+	\subsubsection{parameter sharing} %TODO: zmienić poniższe notatki w tekst 
+	  Connected to the fact thet we move the convolution kernel around \\
+	  
+	  \{obrazek\} a moze nie?
+	  
+	\subsubsection{equivariant representations} %TODO: zmienić poniższe notatki w tekst
+	  equivariance - property of *what?* meaning that if the input changes that output changes the same way. $f(g(x)) = g(f(x))$ Intuition about it: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t?
+      
+      \subsection{Learning Algorithm} %TODO: backpropagation, state that this one is best (citation needed!)
+	A *zmieniona wersja* of backpropagation algorithm has been provided to *include the changes that must be applied because of* the convolution operation and avoid the diminishing gradient flow. In this subsection the *zmienona wersja* of backpropagation is given and the problem of diminishing gradient flow is *addressed*.
+	
+	\subsubsection{The problems with a classical backpropagation} %TODO: notatki w tekst
+	  diminishing gradien flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.
+	
+	\subsubsection{Diminishing gradient flow} %TODO: zmienić poniższe notatki w tekst, sprawdzić czy w CNNach tez przypatkiem nie ma tego probloemu, bo w głębokich na pewno jest
+	  co to jest, skąd się bierze, można się wesprzeć wykładami Larochelle, on poleca dużo paperów zawsze.
+	  
+	\subsubsection{Backpropagation} %TODO: zmienić poniższe notatki w tekst
+	  See (Goodfellow, 2010) from Bengio
+	
+      \subsection{Extensions} %FIXME this title shall not last! %TODO: zmienić poniższe notatki w tekst
+	dropout/dropconnect method, activation functions for dropout, other things from the Dutch paper
+	
+	
+    \section{Why was this model chosen}
+	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...
+  \begin{thebibliography}{99}
+    \bibitem{DEEP}
+      Yoshua Bengio, Ian J. Goodfellow, Aaron Courville - \emph{Deep Learning}
+    \bibitem{2DSIFT} %FIXME jak się robi przypisy? w sensie formalnym, nie latexowym
+      Stefan Mordalski, Igor Podolak, Andrzej J. Bojarski - \emph{2D SIFt - a matrix of ligand-receptor interactions}
+    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, cool staff from Ph.D
+  \end{thebibliography}
+    
+\end{document}          
+
+
+

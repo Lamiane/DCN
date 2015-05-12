@@ -1,5 +1,6 @@
 %ANG: jak się wstawia przecinki w zdaniach, synonimy do usually
 %ANG: kiedy przed ed podwaja się spółgłoskę?
+%TODO: liczba enterów wszędzie.
 
 \documentclass[a4paper,10pt]{report}
 \usepackage[utf8]{inputenc}
@@ -25,12 +26,18 @@
     %FIXME co z wcięciami?
     
     \section{Terminology} %TODO: zmienić hasła na zdania
-    what is drug design and how does it work? szybko rozwijająca się dziedzina, facing challengeing problems; it's important, new technologies are applied, big data but not complete and from different sources, very expensive and time consuming so modelling is o vita importance \\
+     \textbf{big data} but not complete and from different sources\\
+     
+    One of *cośtam* - \textbf{drug design}. szybko rozwijająca się dziedzina, facing challengeing problems; expensive and time consuming therefore computer modelling (is of vital importance) and artificial intellingence/machine learning are applied. (citation needed). one problem in drug design is to tell whether the \textbf{protein} and \textbf{ligand} will be \textbf{active} or \textbf{inactive}.\\
     
-    protein, ligand, protein-ligand docking, residues, pharmacophore, interactions, what is the difference betwen a protein and an amino acid? receptor, donor, active non/inactive protein
+    \textbf{Proteins} are molecules built from a \textbf{chain} of \textbf{amino acid residues}. The number of residues defines the length of the protein. Proteins are the most elementary (łeż) things building bodies of living creatures, crucial for many major things going on in our bodies.\\
     
-    \section{Fingerprints} %TODO: zmienić hasła na zdania
-    co to sa fingerprinty i jak się je robi, jakie są problemy, skąd się biorą? po co te fingerprinty, jak te problemy są rozwiązywane, że związki skomplikowane, że na grafach się nie da, 
+     ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\
+    
+    \section{Fingerprints} %TODO: zmienić hasła na zdania, citations!
+    Proteins are big, the problem is: how to represent them to work on them efficiently? Might think of graphs but this would be extremly time consuming as the molecules are extemly huge/enormous. Opearions on graphs are slow. We need a simpler representation - such on which we can quickly apply many function, such that is well designed for computers, for modern algorithms even if such a representation woul mean loosing some information. are cool! The \textbf{fingerprints} spełniają te oczekiwania. Fingerprints are vectors that contain information about the molecule. Conventionally (citation needed) fingerprints have zeros and ones stating that specific structures are present in the molecule or not. There are many different fingerprints - some are better for some problems, some for other. They might have diverse lengths - commonly from ??? even up to ???.\\
+    
+    In this work 2D-SIFt will be used.\\ 
   
     \section{Problem} %TODO: zmienić hasła na zdania
     drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.
@@ -130,7 +137,6 @@
 	  %FIXME: cytaty do Bengia, sprawdzić nazwy i szczegóły, cytaty do matlaba?
 	  
 	  Opisać jakie rozwiązanie zostało użyte przez nas. one kernel $=$ one feature, therefore typically many kernels are used. Also: kernels in consecutive layers work on the outputs of the previous layers $\rightarrow$ in each layer more complicated, i.e. constructed from simpler ones, features are used, kernels in the previous layer are not the same as kernels in the lext layer \\
-
 	
 	\subsubsection{Activation function} %TODO: zmienić poniższe notatki w tekst 
 	  różne możliwe typy
@@ -151,6 +157,8 @@
 	  
 	  \{obrazek\} pooling size and stride \\
 	  
+	  The same problems might be encountered with pooling on the edges as with the convolutions. \\ %TODO: napisać ten akapit
+	  
 	  how does pooling give us some invariance? \\ 
 	  
 	  \{obrazek\} dlaczego daje nam invariance\\
@@ -158,7 +166,11 @@
 	  is pooling subsampling and if yes then why is polling subsampling? \\ 
 	
 	\subsubsection{Summary} %TODO: zmienić poniższe notatki w tekst 
-	  input goes through three stages, downchanging its size
+	  During the convolutional subnetwork flow the features are extracted from the data. These features are later used by the *classifying* subnetwork. *Convolution/pooling* provide us *with* spatial invariance and *this other awesome thing*. In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, activation function and pooling. \\ %FIXME: JĘZYK!
+	  
+	  $output = pooling(activation\_function(convolution(input, kernel)))$\\ %FIXME: notacja (ten sam wzorek jest w computation flow)
+	  
+	  Convolution and pooling might decrease the size of the input. This might be avoided by zero-pad or other methods. Several types of pooling and activation functions have been provided.\\ %FIXME: JĘZYK!
 	  
       \subsection{implementationally awesome things} %FIXME: change this stupid title
 	

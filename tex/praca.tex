@@ -1,5 +1,6 @@
 %ANG: jak się wstawia przecinki w zdaniach, synonimy do usually
 %ANG: kiedy przed ed podwaja się spółgłoskę?
+%ANG: synonyms do ``as stated above'' ?
 %TODO: liczba enterów wszędzie.
 
 \documentclass[a4paper,10pt]{report}
@@ -26,18 +27,20 @@
     %FIXME co z wcięciami?
     
     \section{Terminology} %TODO: zmienić hasła na zdania
-     \textbf{big data} but not complete and from different sources\\
-     
-    One of *cośtam* - \textbf{drug design}. szybko rozwijająca się dziedzina, facing challengeing problems; expensive and time consuming therefore computer modelling (is of vital importance) and artificial intellingence/machine learning are applied. (citation needed). one problem in drug design is to tell whether the \textbf{protein} and \textbf{ligand} will be \textbf{active} or \textbf{inactive}.\\
+    One of major areas of study nowadays is \textbf{drug design}. It is a quickly developing field, facing challenging problems, such as conducting experiments which are very expensive and extremely time consuming. Therefore, computer modelling is of vital importance. Artificial intellingence and machine learning have been successfuly incorporated to this field. (citation needed?). One of the most common problems in drug design is telling whether \textbf{protein} and \textbf{ligand} will together produce an \textbf{active} or \textbf{inactive} compund.\\
     
-    \textbf{Proteins} are molecules built from a \textbf{chain} of \textbf{amino acid residues}. The number of residues defines the length of the protein. Proteins are the most elementary (łeż) things building bodies of living creatures, crucial for many major things going on in our bodies.\\
+    \textbf{Proteins} are molecules built from \textbf{amino acid residues} forming a single \textbf{chain}. The number of residues defines the length of the chain. Proteins are the most elementary (łeż) things building bodies of living creatures, crucial for many major things going on in our bodies.\\
     
-     ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\
+    ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\
     
-    \section{Fingerprints} %TODO: zmienić hasła na zdania, citations!
-    Proteins are big, the problem is: how to represent them to work on them efficiently? Might think of graphs but this would be extremly time consuming as the molecules are extemly huge/enormous. Opearions on graphs are slow. We need a simpler representation - such on which we can quickly apply many function, such that is well designed for computers, for modern algorithms even if such a representation woul mean loosing some information. are cool! The \textbf{fingerprints} spełniają te oczekiwania. Fingerprints are vectors that contain information about the molecule. Conventionally (citation needed) fingerprints have zeros and ones stating that specific structures are present in the molecule or not. There are many different fingerprints - some are better for some problems, some for other. They might have diverse lengths - commonly from ??? even up to ???.\\
+    \textbf{big data} but not complete and from different sources\\
+         
+    \section{Fingerprints} %TODO: zmienić hasła na zdania, citations! czy to co ja używam to w ogóle fingerprinty są?
+    One of the first questions that have to be answered before *any modelling task can be started* is: how will I represent my data? Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. It might seem that a natural representation of a protein will be a graph containing extra information about how the nodes are arranged in space. Unfortunately, graph algorithms are computationally expensive and it is nowadays not possible to use them (na czym się opieram?). Therefore, *we* need another representation, that will carry as much information as possible and *be computationally effective*. *For this reason* many types of fingerprints have been designed and they meet the criterions metioned.\\
     
-    In this work 2D-SIFt will be used.\\ 
+    Conventionally, fingerprints represent a *protein/molecule* as a binary(?) vector. Each element of this vector *tells* whether a specific structure is present in the *protein/molecule* or not, e.g. whether the *protein/molecule* has a .......... (oprzeć się na jakiejś publikacji). Vectors are widely used in machine learning as data representation as they can be *compilled* into matrices which allows to *easy computation, easy proofs, happy algebra* <<We need a simpler representation - such on which we can quickly apply many function, such that is well designed for computers, for modern algorithms>> Even though representing a protein as a vector means loosing a lot of information about it, it enables effective computation and still provides us with reasonable results.\\
+    
+    As already said, there are many different fingerprints designed. They vary in length and the features included. Some of them are designed for specific tasks. (citation needed). In this work 2D-SIFt will be used.\\
   
     \section{Problem} %TODO: zmienić hasła na zdania
     drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.
@@ -50,7 +53,7 @@
     The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic. \\
     
     %TODO:Values: 0, 1, 2 and their meaning !!! nie ma tego w publikacji!
-    The values constituting the dataset are discrete, namely: 0, 1 and 2. 0 means there is no interaction of specific kind. As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).
+    The values constituting the dataset are discrete, namely: 0, 1 and 2. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).
     
     \section{Sparsity} %TODO: zmienić hasła na zdania
     check if the data is sparse, it yes then state that it is and explain why

@@ -6,7 +6,10 @@
 \documentclass[a4paper,10pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools}
-\usepackage{polski} %FIXME: może na końcu wywalić, chyba, ze ktoś z przypisów ma polskie nazwisko, o te nazwiska wcześniej zapytać
+%\usepackage{polski} %FIXME: może na końcu wywalić, chyba, ze ktoś z przypisów ma polskie nazwisko, o te nazwiska wcześniej zapytać
+\usepackage[T1]{fontenc}
+%\usepackage[sorting=nyt,style=apa]{biblatex}
+
 
 % Title Page
 \title{Praca Magisterska}
@@ -22,25 +25,28 @@
   
   %FIXME: napisac na samym początku co będzie po kolei, 
   
+  \chapter{Introduction} %TODO: napisać ten rozdział
+    \section{related work, że to ma oparcie w czymś i o czym jest praca}
+  
   \chapter{The Problem and the Data}
     %FIXME {cytowania! jak to się robi? poczatek, koniec?}
     %FIXME co z wcięciami?
     
-    \section{Terminology} %TODO: zmienić hasła na zdania
+    \section{Terminology} %TODO: zmienić hasła na zdania   
     One of major areas of study nowadays is \textbf{drug design}. It is a quickly developing field, facing challenging problems, such as conducting experiments which are very expensive and extremely time consuming. Therefore, computer modelling is of vital importance. Artificial intellingence and machine learning have been successfuly incorporated to this field. (citation needed?). One of the most common problems in drug design is telling whether \textbf{protein} and \textbf{ligand} will together produce an \textbf{active} or \textbf{inactive} compund.\\
     
     \textbf{Proteins} are molecules built from \textbf{amino acid residues} forming a single \textbf{chain}. The number of residues defines the length of the chain. Proteins are the most elementary (łeż) things building bodies of living creatures, crucial for many major things going on in our bodies.\\
     
-    ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\
+    ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\ %TODO: dokończyć
     
-    \textbf{big data} but not complete and from different sources\\
+    \textbf{big data} but not complete and from different sources%TODO: dokończyć
          
     \section{Fingerprints} %TODO: zmienić hasła na zdania, citations! czy to co ja używam to w ogóle fingerprinty są?
     One of the first questions that have to be answered before *any modelling task can be started* is: how will I represent my data? Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. It might seem that a natural representation of a protein will be a graph containing extra information about how the nodes are arranged in space. Unfortunately, graph algorithms are computationally expensive and it is nowadays not possible to use them (na czym się opieram?). Therefore, *we* need another representation, that will carry as much information as possible and *be computationally effective*. *For this reason* many types of fingerprints have been designed and they meet the criterions metioned.\\
     
     Conventionally, fingerprints represent a *protein/molecule* as a binary(?) vector. Each element of this vector *tells* whether a specific structure is present in the *protein/molecule* or not, e.g. whether the *protein/molecule* has a .......... (oprzeć się na jakiejś publikacji). Vectors are widely used in machine learning as data representation as they can be *compilled* into matrices which allows to *easy computation, easy proofs, happy algebra* <<We need a simpler representation - such on which we can quickly apply many function, such that is well designed for computers, for modern algorithms>> Even though representing a protein as a vector means loosing a lot of information about it, it enables effective computation and still provides us with reasonable results.\\
     
-    As already said, there are many different fingerprints designed. They vary in length and the features included. Some of them are designed for specific tasks. (citation needed). In this work 2D-SIFt will be used.\\
+    As already said, there are many different fingerprints designed. They vary in length and the features included. Some of them are designed for specific tasks. (citation needed). In this work 2D-SIFt will be used.
   
     \section{Problem} %TODO: zmienić hasła na zdania
     drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.
@@ -59,9 +65,9 @@
     check if the data is sparse, it yes then state that it is and explain why
     
     \section{Data representation} %TODO: pewnie chcę napisać coś więcej + zmienić notatki na zdania
-    Each data sample is represented as a vector of $r*6*9$ length, where $r$ is the length of the protein. Data samples constitute a dataset. Each dataset describes how a certain protein reacts with amino acid.\\
+    Each data sample is represented as a vector of $r*6*9$ length, where $r$ is the length of the protein. Data samples constitute a dataset. Each dataset describes a reaction/bonding between a certain protein and the ligand.\\
     
-    why was this particular fingerprint representation chosen
+    why was this particular fingerprint representation chosen %TODO: napisać
     
     
   \chapter{The Model or Deep Convolutional Neural Networks}
@@ -75,7 +81,7 @@
       
       \{obrazek\} \\ % jakiś typowy lenet
       
-      In this section I will give motivation that stands behind using convolutional neural networks, *explain/define* what is the convolution operation, and give a detailed explanation of CNNs and its properties. Finally, I will describe what problems might arise while learning a CNN model and how to prevent them. The learning algorithm for CNNs will be given.\\
+      In this section I will give motivation that stands behind using convolutional neural networks, *explain/define* what is the convolution operation, and give a detailed explanation of CNNs and its properties. Finally, I will describe what problems might arise while learning a CNN model and how to prevent them. The learning algorithm for CNNs will be given.
       
       \subsection{Motivation} %TODO: zmienić poniższe notatki w tekst 
 	%TODO: why are CNNs so useful, awesome and important, w czym dokonały przełomu? (citation needed? praca hoelnderska?)
@@ -90,13 +96,9 @@
 	In the equation above we can see $c$ - a function returned by convolution operation, that is evaluated in point $t$. $c$ is defined as an integral over two other functions. $f$ is often called an input, while $g$ is often reffered to as a kernel.%FIXME: kernel i input nie zamienione miejscami? definicja dobra? citation needed?
 	  \\
 	
-	%TODO: wprowadzenie konwolucji na macierzach, tej, która jest używana w CNNach.
-	
-	It is often useful to see kernels as feature extractors. 
+	It is often useful to see kernels as feature extractors. %TODO
 	why kernels can be seen as feature extractors?
-
-      \subsection{Properties} %TODO zmienić poniższe notatki w tekst
-	spatial invariance, napisac jak zmieniaja sie wymiary macierzy podczas konwolucji, poolingu, itd. pooling shape, pooling stride,
+	
       \subsection{Computation Flow} %TODO zmienić poniższe notatki w tekst
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection I will describe how the signal is processed within the convolutional subnetwork. I will not *dig into* the classifying subnetwork as any neural network that can be used to classify objects might be used. Many such networks exist*s* and they are well described in the literature. \\ %TODO: citation needed?
 	
@@ -123,23 +125,17 @@
 	  
 	  Usually, the kernel that is used is much smaller then the input and convolution is appplied multiple times. Each time kernel is convoluted with a submatrix of input. The result of this operation is a scalar, and a result of a whole process is a matrix.\\
 	  
+	  As stated above, each kernel might be seen as a filter extracting a single feature. Usually, *we* need to extract multiple features from the image. As a result, in each layer many convolutional kernels are used. It is worth noting, that kernels are different in each layer. Kernels in the next layer work on the features extracted from the previous layer. *It might be shown* (citation needed), that the features from the next layer are constructed of features from the previous layer. Therefore, in each layer features are more and more complicated.\\
+	  
 	  *Let's* assume that the input is a $I1$x$I2$ matrix and the kernel is $K1$x$K2$ matrix *with* $1$x$1$ stride. Therefore the first submatrix to convolute with a kernel will be *[1:$K1$]$x$[1:$K2$]* and it will return a *single value/scalar*. The last sub,atrix will be *[$I1-K1+1$:$I1$]x[$I2_k2+1$:$I2$]* and it will produce a  *single value/scalar* as well. As a result the output will be a ($I1-K1+1$)x($I2-K2+1$) matrix.\\
 	  
 	  \{obrazek\} ilustrujący problem z kernelem i brzegami. Niech na nim będzie, first, second, (może third) i last submatrix\\
 	  
-	  It is *easy* to observe that the values laying close to the edge of the input matrix will be underrepresented and consequently the output matrix will be of smaller size than the input matrix. There is a variety of ways to address this problem.\\
-	  
-	  The easiest way is to let these values stay underrepresented (in MATLAB *citation?* this methodology is called valid), another one is to enlarge the input matrix by adding zeros *at the edges* - this is called zero-pad. One can either add enough zeros for each element of the original matrix to be convolutet exactly the same number of times (in MATLAB *citation?* this methodology is called full) or take only enough zeros for the output matrix to have the same size as the input matrix (in MATLAB *citation?* this methodology is called same).\\
-	  
-	  \{obrazek\} ilustrujący te przykłady \\
-	  
-	  One can question *legitimacy* of such approach. Adding zeros invites new information into the matrix and might cause additional noise. Instead of adding zeros one might try to change a matrix into torus or instead of zeros use the values that already are present in the original matrix. The added values might be symmetrical *lustrzane odbicie.*
-	  
-	  \{obrazek\} ilustrujący te przykłady \\
+	  It is *easy* to observe that the values laying close to the edge of the input matrix will be underrepresented and consequently the output matrix will be of smaller size than the input matrix. There is a variety of ways to address this problem, e.g. zero-pad.\\
 	  
 	  %FIXME: cytaty do Bengia, sprawdzić nazwy i szczegóły, cytaty do matlaba?
 	  
-	  Opisać jakie rozwiązanie zostało użyte przez nas. one kernel $=$ one feature, therefore typically many kernels are used. Also: kernels in consecutive layers work on the outputs of the previous layers $\rightarrow$ in each layer more complicated, i.e. constructed from simpler ones, features are used, kernels in the previous layer are not the same as kernels in the lext layer \\
+	  Opisać jakie rozwiązanie zostało użyte przez nas. %TODO:
 	
 	\subsubsection{Activation function} %TODO: zmienić poniższe notatki w tekst 
 	  różne możliwe typy
@@ -160,22 +156,23 @@
 	  
 	  \{obrazek\} pooling size and stride \\
 	  
-	  The same problems might be encountered with pooling on the edges as with the convolutions. \\ %TODO: napisać ten akapit
+	  The same problems might be encountered with pooling on the edges as with the convolutions, namely the output of the layer will be off smaller size than the input unless some techniques avoiding it will *are/will be* applied.
 	  
-	  how does pooling give us some invariance? \\ 
+	   The kernel is smaller than the input. It is moved around the picture. It will find feature everywhere - we need this własność spatial invariance. %FIXME: ogarnąć ten akapit
 	  
-	  \{obrazek\} dlaczego daje nam invariance\\
-	  
-	  is pooling subsampling and if yes then why is polling subsampling? \\ 
+	  \{obrazek\} dlaczego daje nam invariance
 	
 	\subsubsection{Summary} %TODO: zmienić poniższe notatki w tekst 
 	  During the convolutional subnetwork flow the features are extracted from the data. These features are later used by the *classifying* subnetwork. *Convolution/pooling* provide us *with* spatial invariance and *this other awesome thing*. In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, activation function and pooling. \\ %FIXME: JĘZYK!
 	  
 	  $output = pooling(activation\_function(convolution(input, kernel)))$\\ %FIXME: notacja (ten sam wzorek jest w computation flow)
 	  
-	  Convolution and pooling might decrease the size of the input. This might be avoided by zero-pad or other methods. Several types of pooling and activation functions have been provided.\\ %FIXME: JĘZYK!
+	  Convolution and pooling might decrease the size of the input. This might be avoided by zero-pad or other methods. Several types of pooling and activation functions have been provided. %FIXME: JĘZYK!
 	  
       \subsection{implementationally awesome things} %FIXME: change this stupid title
+      
+	\subsubsection{Fast computation}
+	  (spatial invariance) $\rightarrow$ temu nie musimy też mieć osobnych macierzy na feature w każdym miejscu - oszczędzamy pamięć na parametry (i efektywnośc, bo im więcej paramterów, tym wolniej się uczymy). Small kernel $=$ litlle parameters.
 	
 	\subsubsection{sparse interactions} %TODO: zmienić poniższe notatki w tekst 
 	  because kernel is smaller then data so it not kazdy z kazdym but some with some (sparse) $\rightarrow$ computational boost, kernel is small and moved around input - less parameters, instead of a big matrix we store a small one that runs over the data\\
@@ -208,13 +205,33 @@
 	
     \section{Why was this model chosen}
 	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...
+	
+  \chapter{What can be improved} %TODO: napisać ten rozdział
+    \section{Everything...}
+      ...can be improved.\\
+
   \begin{thebibliography}{99}
     \bibitem{DEEP}
       Yoshua Bengio, Ian J. Goodfellow, Aaron Courville - \emph{Deep Learning}
     \bibitem{2DSIFT} %FIXME jak się robi przypisy? w sensie formalnym, nie latexowym
       Stefan Mordalski, Igor Podolak, Andrzej J. Bojarski - \emph{2D SIFt - a matrix of ligand-receptor interactions}
     %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, cool staff from Ph.D
+    
   \end{thebibliography}
+  
+  \chapter{Irrelevant} %TODO: wywalić na końcu
+    \section{zero-pad methods in detail}
+      The easiest way is to let these values stay underrepresented (in MATLAB *citation?* this methodology is called valid), another one is to enlarge the input matrix by adding zeros *at the edges* - this is called zero-pad. One can either add enough zeros for each element of the original matrix to be convolutet exactly the same number of times (in MATLAB *citation?* this methodology is called full) or take only enough zeros for the output matrix to have the same size as the input matrix (in MATLAB *citation?* this methodology is called same).\\
+	  
+      \{obrazek\} ilustrujący te przykłady \\
+	  
+      One can question *legitimacy* of such approach. Adding zeros invites new information into the matrix and might cause additional noise. Instead of adding zeros one might try to change a matrix into torus or instead of zeros use the values that already are present in the original matrix. The added values might be symmetrical *lustrzane odbicie.*
+	  
+      \{obrazek\} ilustrujący te przykłady 
+      
+    \section{pooling}	  
+      is pooling subsampling and if yes then why is polling subsampling? 
+
     
 \end{document}          
 

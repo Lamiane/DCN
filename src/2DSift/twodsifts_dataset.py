@@ -31,8 +31,8 @@ class TwoDSiftData(DenseDesignMatrix):
         # get the protein name
         with open(self.filenames[0]) as f:
             line = f.readline()
-
         self.protein = line.split(":")[0]
+        # TODO:@pocha nie powinnysmy sie upewniac, ze wszystkie pliki sa od tego samego bialka?
 
         self.name = ""
         self.__residue_width = 9
@@ -56,6 +56,7 @@ class TwoDSiftData(DenseDesignMatrix):
 
         if nogap_type:
             # TODO add a skipped attribute to be returned
+            # TODO @pocha: isn't it done already?
             topo_view, y, skipped = self.read_nogaps(filenames, y_val)
         else:
             # topo_view = self.read()
@@ -65,12 +66,14 @@ class TwoDSiftData(DenseDesignMatrix):
         # TODO check the assert together with number of skipped records
 
         # TODO labels are null for the time being
+        # TODO @pocha: are they?
         self.n_classes = len(set(y))
 
         if y is not None:
             y = np.array(y).reshape((self.examples, 1))
         else:
             # TODO tu liczba generowanych etykiet jest ustalona na 2, a powinna byc taka jak w parametrach
+            # TODO @pocha ja bym to wywalila, no bo no serio...
             y = np.random.randint(0, 2, (self.examples, 1))
 
         if shuffle:
@@ -104,7 +107,7 @@ class TwoDSiftData(DenseDesignMatrix):
                     self.examples = add_ans[1]
                 else:
                     raise ValueError("self.remove_examples / self.add_examples not set")
-
+            # cutting into cross validation sets
             if len(cv[1]) == 1:
                 if cv[1][0] == cv[0] - 1:
                     from_example = self.splits[-1]
@@ -174,11 +177,6 @@ class TwoDSiftData(DenseDesignMatrix):
                 "\n\t" + "residues:  " + str(self.residues) + \
                 "\n\t"
         descr += "ligands:   " + str(len(self.ligands)) + " : \n"
-        # width = 8
-        # for i in range(len(self.ligands) / width + 1):
-        # if i > 0:
-        # descr += "\t\t\t\t\t"
-        # descr += str(self.ligands[i*width:(i+1)*width]) + "\n"
         descr += "\t" + "examples:        " + str(self.get_num_examples()) + \
                  "\n\t" + "topo axis:       " + str(self.get_topo_batch_axis()) + \
                  "\n\t" + "X.shape:         " + str(self.X.shape) + \
@@ -191,14 +189,10 @@ class TwoDSiftData(DenseDesignMatrix):
 
     def read_nogaps(self, filenames, y_val):
         """
-
         :rtype : ndarray
         """
         # first count number of lines in all the files
-        # now = time.time()
         file_line_counts = utils.bufcount(filenames)
-        # print "bufcount took", "%.2f" % (time.time() - now), "seconds,", file_line_counts, "lines, ", sum(file_line_counts), "altogether"
-        # exit()
         topo_view = None
         y = []
         examples = 0
@@ -206,25 +200,18 @@ class TwoDSiftData(DenseDesignMatrix):
         start_residues = []
         receptors = []
         skipped = []
-        # loop_timings = []
-        loop_interval = 298
-        # loop = 0
-        now = time.time()
         this_example_index = 0
         # TODO add reading from, and saving to, a pkl file
-        for filename, this_y in zip(filenames, y_val):
+        for filename, current_y in zip(filenames, y_val):
             line_read = 0
             this_file_examples = 0
             this_file_skipped = []
             with open(filename) as f:
                 for line in f:
-                    # loop += 1
                     line_read += 1
-                    # if loop % loop_interval == 0:
-                    # loop_timings.append(time.time() - now)
-                    # now = time.time()
                     line = line.strip()
                     residues = line.split("(")
+
                     if topo_view is None:
                         first_residue = copy(residues[1]).strip()
                         first_residue = list(first_residue)[:-3]
@@ -242,53 +229,45 @@ class TwoDSiftData(DenseDesignMatrix):
                         topo_view = np.zeros(((self.__residue_height * sum(file_line_counts) * (self.replicate + 1)),
                                               len(first_residue)), dtype='float32')
                         this_example_view = topo_view[this_example_index:, :]
-                        # this_example_view = np.zeros((self.__residue_height, topo_view.shape[1]), dtype='float32')
                         self.residues = this_example_view.shape[1] / self.__residue_width
                     else:
                         this_example_view = topo_view[
                                             this_example_index * self.__residue_height * (self.replicate + 1):, :]
-                        # this_example_view = np.zeros((self.__residue_height, topo_view.shape[1]), dtype='float32')
+
                     for k, res in enumerate(residues[1:]):
                         res = list(res.strip())[:-3]
                         if len(res) % self.__residue_width != 0 or len(res) != residue_width:
-                            # print "{0}:{1}:{2}: {3} ... {4}\t{5}".format(os.path.basename(filename), str(line_read),
-                            # str(k), str(res[:6]), str(res[-6:]),
-                            # str(len(res)))
                             this_example_view = None
                             break
-                            # raise ValueError(self.__class__.__name__ + ": 2DSiFT width of example, row = [" +
-                            # str(examples + 1) + ":" + str(k) + "] (" + str(len(res)) +
-                            # ") is not a multiple of residue representation width (" +
-                            # str(self.__residue_width) + ")")
-
                         this_example_view[k, :] = np.array(res, dtype='float32')
+
                     if this_example_view is None:
-                        # print os.path.basename(filename) + ":" + str(line_read) + ": example skipped"
                         this_file_skipped.append(line_read)
                         continue
-                    # elif topo_view is None:
-                    # topo_view = this_example_view
-                    # else:
-                    # topo_view = np.vstack((topo_view, this_example_view))
                     start = this_example_index * self.__residue_height * (self.replicate + 1)
+
                     for repl_ind in range(self.replicate):
                         this_example_start = start + (repl_ind + 1) * self.__residue_height
                         topo_view[this_example_start:this_example_start + self.__residue_height, :] = \
                             topo_view[start:start + self.__residue_height, :]
-                        # topo_view = np.vstack((topo_view, this_example_view))
-                    # examples += 1
+
                     this_file_examples += 1
                     this_example_index += 1
                     receptors.append(residues[0].split(":")[0])
                     ligands.append(residues[0].split(":")[1])
                     start_residues.append(residues[0].split(":")[2])
+
                 # add labelings for this set
-                if len(this_y) == 1:
-                    y.extend([this_y[0] for _ in range(this_file_examples)])
+                if len(current_y) == 1:
+                    y.extend([current_y[0] for _ in range(this_file_examples)])
                 else:
                     print "unimplemented multi labels"
+
                 examples += this_file_examples
                 skipped.append(this_file_skipped)
+            # </open filename>
+        # </for>
+
         # restrict the memory allocated to topo_view only to examples actually read
         topo_view = topo_view[:(self.__residue_height * examples * (self.replicate + 1)), :]
         self.receptors = tuple(receptors)
@@ -301,7 +280,6 @@ class TwoDSiftData(DenseDesignMatrix):
                                       self.residues * self.__residue_width,  # columns
                                       1  # channels
                                       )
-        # print "loop timings:", ["%.1f" % i for i in loop_timings]
         y = np.array(y)
         return topo_view, y, skipped
 
@@ -323,62 +301,6 @@ class TwoDSiftData(DenseDesignMatrix):
     def get_window(self, residue, x_off, y_off):
         stwin = residue * self.__residue_width
         return self.data[stwin + x_off:stwin + x_off + self.__win_width, y_off:y_off + self.__win_height]
-
-    def read(self):
-        """
-
-        :rtype : ndarray
-        """
-        # TODO add reading from a pkl file
-        with open(self.filename) as f:
-            offsett = 0
-            topo_view = None
-            examples = 0
-            ligands = []
-            for line in f:
-                line.strip()
-                resid = line.split("(")
-                # TODO self.ligands is a dictionary, but what shall we really store in it? Some address
-                # TODO (offsett) to the place where it is stored in the numpy structure perhaps?
-                ligands.append(resid[0].split(":")[1])
-                if topo_view is None:
-                    first_residue = copy(resid[1][0:-2])
-                    # TODO change the assert into raise exception?
-                    if len(first_residue.split()) % self.__residue_width != 0:
-                        raise ValueError("2DSiFT width (" + \
-                                         str(len(first_residue.split())) + ") is not a multiple of " + \
-                                         "residue representation width (" + str(self.__residue_width) + ")"
-                                         )
-                    assert len(first_residue.split()) % self.__residue_width == 0, "2DSiFT width (" + \
-                                                                                   str(len(
-                                                                                       first_residue.split())) + ") is not a multiple of " + \
-                                                                                   "residue representation width (" + str(
-                        self.__residue_width) + ")"
-                    topo_view = np.zeros((self.__residue_height, len(first_residue.split())), dtype='float32')
-                    self.residues = topo_view.shape[1] / self.__residue_width
-                    if topo_view.shape[1] != self.__residue_width * self.residues:
-                        print "topo_view.shape =", topo_view.shape, "\n", \
-                            "__residue.width =", self.__residue_width, "\n", \
-                            "residues =       ", self.residues
-                    assert topo_view.shape[1] == self.__residue_width * self.residues, "incorrect representation width"
-                else:
-                    topo_view = np.vstack(
-                        (topo_view, np.zeros((self.__residue_height, topo_view.shape[1]), dtype='float32')))
-                for k, res in enumerate(resid[1:]):
-                    # print "res: |" + res[0:10] + "| ... |" + res[-10:] + "|   " + str(len(res))
-                    res.strip()
-                    # print "res: |" + res[0:10] + "| ... |" + res[-10:] + "|   " + str(len(res.split()))
-                    topo_view[offsett + k, :] = np.array(res.split()[:-1], dtype='float32')
-                offsett += 6
-                examples += 1
-        # reshape into DenseDesignMatrix
-        self.ligands = tuple(ligands)
-        topo_view = topo_view.reshape(examples,  # examples
-                                      self.__residue_height,  # rows
-                                      self.residues * self.__residue_width,  # columns
-                                      1  # channels
-                                      )
-        return examples, topo_view
 
     def is_cv_valid(self, cv):
         if len(cv) != 2:
@@ -413,5 +335,3 @@ class TwoDSiftData(DenseDesignMatrix):
             tmp = y[i:i + 1].copy()
             y[i] = y[j]
             y[j] = tmp
-
-    # TODO: czy shuffle_data i is_cv_valid dzialaja w miejscu, czy trzeba cos zwracac? grzeczniej byloby zwracac...

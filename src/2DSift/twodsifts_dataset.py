@@ -144,7 +144,7 @@ class TwoDSiftData(DenseDesignMatrix):
             stop = topo_view.shape[0]
             self.examples = stop - start
         # /end cv part
-        
+
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))
 

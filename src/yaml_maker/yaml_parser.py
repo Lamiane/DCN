@@ -18,13 +18,15 @@ def parse_to_yaml(obj, tabulators=0):
         output += "["
         for element in obj:
             output += parse_to_yaml(element, tabulators+1)
-        output += "],\n"
+        output += "],"
     elif type(obj) is type({}):
         output += "{"
         for keys, vals in obj.iteritems():
             output += (tabulators+1)*tabs + keys + ": " + parse_to_yaml(vals, 0)
         output += tabulators*tabs + "},\n"
-    elif type(obj) in [type(0), type(0.0), type(""), type(True)]:
+    elif isinstance(obj, str):
+        output = obj.__str__() + ", 
+    elif type(obj) in [type(0), type(0.0), type(True)]:
         output = obj.__repr__() + ", "
     else:
         list_of_parameters = filter(is_valid_attribute, dir(obj))

@@ -148,6 +148,9 @@ class TwoDSiftData(DenseDesignMatrix):
             self.examples = stop - start
         # /end cv part
 
+        # extending data
+        topo_view = self.preprocess_data(topo_view)
+
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))
 
@@ -335,3 +338,18 @@ class TwoDSiftData(DenseDesignMatrix):
             tmp = y[i:i + 1].copy()
             y[i] = y[j]
             y[j] = tmp
+
+    def preprocess_data(self, data):
+        data_shape = list(data.shape)
+        data_shape[1] *= 3      # extending size of new data
+        data_shape[2] += 2*9    # should be parametrized? magic numbers! use self.window.width
+        data_shape = tuple(data_shape)
+
+        preprocessed_data = np.zeros(data_shape)
+
+        for idx, sample in enumerate(data):
+            preprocessed_data[idx, 0:6, 18:, :] = sample
+            preprocessed_data[idx, 6:12, 9:-9, :] = sample
+            preprocessed_data[idx, 12:, :-2*9, :] = sample  # magic numbers everywhere
+
+        return preprocessed_data

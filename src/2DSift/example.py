@@ -20,3 +20,23 @@ def save_data(path, data_to_save):
 def check_files_identity(path1, path2):
     import filecmp
     filecmp.cmp(path1, path2)
+
+
+def sample_data_to_check_preprocessing():
+    shape = (1, 6, 9, 1)
+    sample_data = zeros(shape)
+    s00 = [i for i in xrange(9)]
+    s01 = [i+10 for i in s00]
+    s10 = [i+50 for i in s00]
+    s11 = [i+10 for i in s10]
+    s20 = [i+100 for i in s00]
+    s21 = [number+10 for number in s20]
+
+    sample_data[0, 0, :, 0] = s00
+    sample_data[0, 1, :, 0] = s01
+    sample_data[0, 2, :, 0] = s10
+    sample_data[0, 3, :, 0] = s11
+    sample_data[0, 4, :, 0] = s20
+    sample_data[0, 5, :, 0] = s21
+
+    return sample_data

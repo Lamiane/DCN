@@ -40,7 +40,7 @@
             criteria: [ # A sequence of callables representing termination criteria, with a return value of True
                         # indicating that training should continue.
                 !obj:pylearn2.termination_criteria.MonitorBased {
-                    channel_name: "valid_y_misclass"    # Name of the channel to examine. If None and the monitor has
+                    channel_name: "valid_softmax_layer_misclass"    # Name of the channel to examine. If None and the monitor has
                                                         # only one channel, this channel will be used; otherwise,
                                                         # an error will be raised. For more info on monitors
                                                         # check the pylearn2 documentation
@@ -59,7 +59,7 @@
                                                                             # model every time it achieves a new
                                                                             # minimal value of a monitoring channel.
                                                                             # Also stores the best model in memory.
-             channel_name: 'valid_y_misclass', # monitoring channel name
+             channel_name: 'valid_softmax_layer_misclass', # monitoring channel name
              save_path: "mlp_best.pkl" # here the learned model will be stored
         },
     ]

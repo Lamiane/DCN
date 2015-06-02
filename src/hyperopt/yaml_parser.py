@@ -25,7 +25,7 @@ def parse_to_yaml(obj, tabulators=0):
             output += (tabulators+1)*tabs + keys + ": " + parse_to_yaml(vals, 0)
         output += tabulators*tabs + "},\n"
     elif isinstance(obj, str):
-        output = obj.__str__() + ","
+        output = obj.__str__() + ", 
     elif type(obj) in [type(0), type(0.0), type(True)]:
         output = obj.__repr__() + ", "
     else:
@@ -59,7 +59,6 @@ class YamlParser(object):
 
         # extensions
         self.dropout = False    # default: false
-
 
 # Models
 class MLP(object):

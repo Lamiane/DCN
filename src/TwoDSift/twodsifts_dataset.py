@@ -12,7 +12,7 @@ import utils
 
 class TwoDSiftData(DenseDesignMatrix):
     def __init__(self, filenames=[], y_val=[], nogap_type=True, replicate=0, labels=False, shuffle=True,
-                 start=None, stop=None, cv=None):
+                 start=None, stop=None, cv=None, not_debug=True):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
         :type filenames: list of data files to read
@@ -25,14 +25,24 @@ class TwoDSiftData(DenseDesignMatrix):
         :type stop: last example
         :type cv: list of CV parts [how many parts, [list of parts to use]]; default None
         """
+
         self.filenames = filenames
+
         if not os.path.isfile(self.filenames[0]):
             raise ValueError("Non-existent 2DSIFt file " + self.filenames[0])
         # get the protein name
         with open(self.filenames[0]) as f:
             line = f.readline()
+
+        # checking if all the files are describing the same protein
+        protein_names = []
+        for file_name in filenames:
+            with open(file_name) as opened_file:
+                protein_names.append(opened_file.readline().split(":")[0])
+        assert 1 == len(set(protein_names))
+        del protein_names
+
         self.protein = line.split(":")[0]
-        # TODO:@pocha nie powinnysmy sie upewniac, ze wszystkie pliki sa od tego samego bialka?
 
         self.name = ""
         self.__residue_width = 9
@@ -55,26 +65,20 @@ class TwoDSiftData(DenseDesignMatrix):
         self.add_examples = not self.remove_examples
 
         if nogap_type:
-            # TODO add a skipped attribute to be returned
-            # TODO @pocha: isn't it done already?
             topo_view, y, skipped = self.read_nogaps(filenames, y_val)
         else:
-            # topo_view = self.read()
-            print 'read() function for gap_type files is deprecated, please write a new one to use this file' \
-                  'or use a file with no gaps'
-            return
-        # TODO check the assert together with number of skipped records
+            raise NotImplementedError('read() function not implemented')
 
+        # TODO check the assert together with number of skipped records
         # TODO labels are null for the time being
-        # TODO @pocha: are they?
+
         self.n_classes = len(set(y))
 
-        if y is not None:
-            y = np.array(y).reshape((self.examples, 1))
-        else:
-            # TODO tu liczba generowanych etykiet jest ustalona na 2, a powinna byc taka jak w parametrach
-            # TODO @pocha ja bym to wywalila, no bo no serio...
-            y = np.random.randint(0, 2, (self.examples, 1))
+        if y is None:
+            raise ValueError('y_val must be provided')
+
+        y = np.array(y).reshape((self.examples, 1))
+
 
         if shuffle:
             self.shuffle_data(topo_view, y)
@@ -149,7 +153,12 @@ class TwoDSiftData(DenseDesignMatrix):
         # /end cv part
 
         # extending data
-        topo_view = self.preprocess_data(topo_view)
+
+        print topo_view.shape
+
+        if not_debug:
+            topo_view = self.preprocess_data(topo_view)
+
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))

@@ -163,6 +163,7 @@ class ConvElemwise(object):
         self.detector_normalization = None
         self.output_normalization = None
         self.monitor_style = 'classification'
+        self.kernel_stride = (1, 1)
 
 
 class Softmax(object):

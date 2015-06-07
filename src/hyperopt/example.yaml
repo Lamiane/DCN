@@ -1,0 +1,66 @@
+# almost fotostaza yaml, finally it shall be exactly like fotostaza yamls
+
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
+        filenames: %(path)s
+        y_val: [[2], [1], [0]],
+        cv: [5, [0, 1, 2, 3]],
+        replicate: 0,    # albo 0 POCHA
+        not_debug: False    # POCHA
+    },
+
+    model: %(model)s
+
+    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD { # trainig algorithm: Batch Gradient Descent
+        batch_size: 1,  # why 1? POCHA
+        learning_rate: 0.01,
+        learning_rule: !obj:pylearn2.training_algorithms.learning_rule.Momentum {
+            init_momentum: 0.5,
+            nesterov_momentum: 0.2
+        },
+        monitoring_dataset: {
+            'valid':  !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
+                        filenames: %(path)s
+                        replicate: 0,    # should be same as in dataset
+                        y_val: [[2], [1], [0]],
+                        cv: [5, [0, 1, 2, 3]],
+                        not_debug: False    # POCHA
+                      }
+        },
+        cost: !obj:pylearn2.costs.cost.SumOfCosts {
+            costs: [
+                !obj:pylearn2.costs.cost.MethodCost {
+                    method: 'cost_from_X'
+                },
+                !obj:pylearn2.costs.mlp.WeightDecay {
+                    coeffs: {
+                        'h0': 0.00005,
+                        'softmax': 0.00005
+                    }
+                }
+            ]
+        },
+        termination_criterion: !obj:pylearn2.termination_criteria.And {
+            criteria: [
+                !obj:pylearn2.termination_criteria.MonitorBased {
+                    channel_name: "valid_softmax_misclass",
+                    prop_decrease: 0.50,
+                    N: 10,
+                },
+                !obj:pylearn2.termination_criteria.EpochCounter {
+                    max_epochs: 1 ,  # POCHA might be changed to sth that makes more sense
+                },
+            ]
+        },
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_softmax_misclass', # monitoring channel name
+             save_path: "mlp_best.pkl" # here the learned model will be stored
+        }, !obj:pylearn2.training_algorithms.learning_rule.MomentumAdjustor {
+            start: 1,
+            saturate: 10,
+            final_momentum: 0.99
+        }
+    ]
+}

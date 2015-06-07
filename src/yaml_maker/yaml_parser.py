@@ -81,7 +81,9 @@ class MLP(object):
         self.kwargs = None
 
     def __str__(self):
-        pass
+        return "layers:" + str(self.layers) + \
+               "\nbatch size:" + str(self.batch_size) + \
+               "\ninput space:" + str(self.input_space)
 
     def __repr__(self):
         return self.__str__()

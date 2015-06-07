@@ -79,7 +79,6 @@ class TwoDSiftData(DenseDesignMatrix):
 
         y = np.array(y).reshape((self.examples, 1))
 
-
         if shuffle:
             self.shuffle_data(topo_view, y)
 

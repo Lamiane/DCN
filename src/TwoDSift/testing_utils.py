@@ -3,6 +3,7 @@ __author__ = 'agnieszka'
 from twodsifts_dataset import *
 from os.path import join
 from pylearn2.utils.serial import save
+from numpy import zeros
 
 
 def build_dataset():
@@ -40,3 +41,14 @@ def sample_data_to_check_preprocessing():
     sample_data[0, 5, :, 0] = s21
 
     return sample_data
+
+
+def file_list():
+    dirpath = '../../data'
+    return [join(dirpath, '2RH1_actives_2dfp.dat'),
+            join(dirpath, '2RH1_inactives_2dfp.dat'),
+            join(dirpath, '2RH1_middle_2dfp.dat')]
+
+
+def os_test():
+    print os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

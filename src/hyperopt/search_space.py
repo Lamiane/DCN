@@ -115,7 +115,7 @@ def get_search_space():
             'irange': hp.normal('irange', irange_mean, irange_dev),
 
         },
-        {'fajanse:': 'momentum adjustor and so on ...'}     # TODO: implement
+        {'fajanse:': 'momentum adjustor and so on ...'}     # TODO: not implement
         ]
 
     return space

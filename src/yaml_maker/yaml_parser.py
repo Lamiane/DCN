@@ -13,7 +13,7 @@ def parse_to_yaml(obj, tabulators=0):
     tabs = 4*' '
     output = tabulators*tabs
     if type(obj) is type(None):
-        return 'None' #this shall never happen, how to deal with it? raise an exception?
+        return 'None' # this shall never happen, how to deal with it? raise an exception?
     elif type(obj) in (type([]), type(())):
         output += "["
         for element in obj:

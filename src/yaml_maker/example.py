@@ -1,3 +1,5 @@
+__author__ = 'agnieszka'
+
 import yaml_parser as yp
 from pylearn2.config import yaml_parse
 import sys
@@ -42,7 +44,6 @@ with open("example.yaml") as f:
 
 # filling the yaml skelton with hyperparameters
 yaml_string = default_string % hyper_params
-
 
 with open('generated_yaml.yaml', 'w') as g:
     g.write(yaml_string)

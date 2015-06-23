@@ -15,7 +15,6 @@ t = Terminal()
 
 spa = get_search_space()    # define search space
 
-
 # creating a dictionary with hyperparameters
 dirpath = '../../data'
 path = [join(dirpath, '2RH1_actives_2dfp.dat'),
@@ -26,11 +25,12 @@ path = [join(dirpath, '2RH1_actives_2dfp.dat'),
 with open("example.yaml") as f:
     default_string = f.read()
 
-for i in xrange(20):
+for i in xrange(2):
+    print t.bold_red('ITERATION:'), t.bold_red(str(i))
+
     samp = sample(spa)  # generate sample
     print t.bold_cyan('SAMP'), samp
 
-    print t.bold_red('ITERATION:'), t.bold_red(str(i))
     mod = build(samp)   # build object that will fit into yaml_paser
     print t.bold_blue('MODEL'), mod
 
@@ -54,7 +54,6 @@ for i in xrange(20):
             YAML_FILE.write(yaml_string)
         with open('0000'+str(i)+'_error', 'w') as ERROR_FILE:
             ERROR_FILE.write(traceback.format_exc())
-
 
 
 notify()

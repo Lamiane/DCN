@@ -6,7 +6,7 @@
         y_val: [[2], [1], [0]],
         cv: [5, [0, 1, 2, 3]],
         replicate: 0,    # albo 0 POCHA
-        not_debug: False    # POCHA
+        not_debug: True    # POCHA
     },
 
     model: %(model)s

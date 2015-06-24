@@ -25,7 +25,7 @@ path = [join(dirpath, '2RH1_actives_2dfp.dat'),
 with open("example.yaml") as f:
     default_string = f.read()
 
-for i in xrange(2):
+for i in xrange(20):
     print t.bold_red('ITERATION:'), t.bold_red(str(i))
 
     samp = sample(spa)  # generate sample

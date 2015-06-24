@@ -70,18 +70,18 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
     # convolution matrix shape and stride
     kernel_shape_height = min(data_height, dictionary['kernel shape height'])
     kernel_shape_width = min(data_width, dictionary['kernel shape width'])
-    CRL.kernel_shape = (kernel_shape_width, kernel_shape_height)
+    CRL.kernel_shape = (kernel_shape_height, kernel_shape_width)
 
     # min must be kernel_shape_height as it might have been reduced because the size of the data
     kernel_stride_height = min(kernel_shape_height, dictionary['kernel stride height'])
     kernel_stride_width = min(kernel_shape_width, dictionary['kernel stride width'])
-    CRL.kernel_stride = (kernel_stride_width, kernel_stride_height)
+    CRL.kernel_stride = (kernel_stride_height, kernel_stride_width)
 
     # pooling matrix shape and stride
     pool_shape_width, pool_shape_height = dictionary['pool shape']
     # data_shape - 1 as pylearn does not allow to have pooling shape equal to data shape
-    CRL.pool_shape = (min(data_width-1, pool_shape_width), min(data_height-1, pool_shape_height))
-    pool_shape_width, pool_shape_height = CRL.pool_shape
+    CRL.pool_shape = (min(data_height-1, pool_shape_height), min(data_width-1, pool_shape_width))
+    pool_shape_height, pool_shape_width = CRL.pool_shape
 
     pool_stride_height_multiplier = dictionary['pool stride height']  # this will be 0.5 or 1
     pool_stride_height = max(1, int(pool_shape_height*pool_stride_height_multiplier))
@@ -89,7 +89,7 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
 
     pool_stride_width_multiplier = dictionary['pool stride width']  # this will be 0.5 or 1
     pool_stride_width = max(1, int(pool_shape_width*pool_stride_width_multiplier))
-    CRL.pool_stride = (pool_stride_width, pool_stride_height)
+    CRL.pool_stride = (pool_stride_height, pool_stride_width)
 
     CRL.layer_name = layer_name
     CRL.irange = 0.05

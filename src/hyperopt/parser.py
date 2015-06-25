@@ -51,9 +51,9 @@ def build(hyperopt_sample):
 
     # TODO: add num channels and batch size to search space maybe?
     space = yp.Conv2DSpace()
-    space.shape = [6, 3474]
+    space.shape = [initial_data_height, initial_data_width]
     space.num_channels = 1
-    space.axes = ['c', 0, 1, 'b']
+    space.axes = 'b', 0, 1, 'c'     # there was: ['c', 0, 1, 'b'] I am not sure if this correction is correct
 
     mlp = yp.MLP()
     mlp.batch_size = 1

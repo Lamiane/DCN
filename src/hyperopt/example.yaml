@@ -6,7 +6,7 @@
         y_val: [[2], [1], [0]],
         cv: [5, [0, 1, 2, 3]],
         replicate: 0,    # albo 0 POCHA
-        not_debug: True    # POCHA
+        normal_run: True    # POCHA
     },
 
     model: %(model)s
@@ -24,7 +24,7 @@
                         replicate: 0,    # should be same as in dataset
                         y_val: [[2], [1], [0]],
                         cv: [5, [0, 1, 2, 3]],
-                        not_debug: False    # POCHA
+                        normal_run: True    # POCHA
                       }
         },
         cost: !obj:pylearn2.costs.cost.SumOfCosts {

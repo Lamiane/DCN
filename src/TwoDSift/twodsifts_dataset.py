@@ -12,7 +12,7 @@ import utils
 
 class TwoDSiftData(DenseDesignMatrix):
     def __init__(self, filenames=[], y_val=[], nogap_type=True, replicate=0, labels=False, shuffle=True,
-                 start=None, stop=None, cv=None, not_debug=True):
+                 start=None, stop=None, cv=None, normal_run=True):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
         :type filenames: list of data files to read
@@ -25,6 +25,7 @@ class TwoDSiftData(DenseDesignMatrix):
         :type stop: last example
         :type cv: list of CV parts [how many parts, [list of parts to use]]; default None
         """
+        print "linijka 28 ", str(normal_run)
 
         self.filenames = filenames
 
@@ -155,9 +156,12 @@ class TwoDSiftData(DenseDesignMatrix):
 
         print topo_view.shape
 
-        if not_debug:
-            topo_view = self.preprocess_data(topo_view)
+        print "linijika 158", str(normal_run)
 
+        if normal_run:
+            print "wszedlem do normal_run"
+            topo_view = self.preprocess_data(topo_view)
+        print "WYSZEDLEM Z DEBUGU"
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))

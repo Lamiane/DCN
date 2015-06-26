@@ -12,7 +12,7 @@ t = Terminal()
 # returns object that can be parsed to yaml
 def build(hyperopt_sample):
     initial_data_height = 18   # TODO: it cannot be so!
-    initial_data_width = 3474
+    initial_data_width = 3492
 
     h0_dict = hyperopt_sample[0]['h0']
     if h0_dict['layer type'] == 'ConvRectifiedLinear':
@@ -53,7 +53,7 @@ def build(hyperopt_sample):
     space = yp.Conv2DSpace()
     space.shape = [initial_data_height, initial_data_width]
     space.num_channels = 1
-    space.axes = 'b', 0, 1, 'c'     # there was: ['c', 0, 1, 'b'] I am not sure if this correction is correct
+    space.axes = 'c', 0, 1, 'b'     # there was: ['c', 0, 1, 'b'] I am not sure if this correction is correct
 
     mlp = yp.MLP()
     mlp.batch_size = 1
@@ -68,8 +68,8 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
     CRL.output_channels = 1 + int(dictionary['output channels'])    # hp.randint returns numpy array, we need an int here
 
     # convolution matrix shape and stride
-    kernel_shape_height = min(data_height, dictionary['kernel shape height'])
-    kernel_shape_width = min(data_width, dictionary['kernel shape width'])
+    kernel_shape_height = min(data_height-1, dictionary['kernel shape height'])
+    kernel_shape_width = min(data_width-1, dictionary['kernel shape width'])
     CRL.kernel_shape = (kernel_shape_height, kernel_shape_width)
 
     # min must be kernel_shape_height as it might have been reduced because the size of the data

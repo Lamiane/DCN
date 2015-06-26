@@ -11,8 +11,10 @@ t = Terminal()
 
 # returns object that can be parsed to yaml
 def build(hyperopt_sample):
+
     initial_data_height = 18    # TODO: it cannot be so!
-    initial_data_width = 3492   # instead of 3474
+    initial_data_width = 3492   # 3474 + 2*9
+
 
     h0_dict = hyperopt_sample[0]['h0']
     if h0_dict['layer type'] == 'ConvRectifiedLinear':

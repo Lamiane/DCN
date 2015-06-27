@@ -76,8 +76,8 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
     CRL.kernel_shape = (kernel_shape_height, kernel_shape_width)
 
     # min must be kernel_shape_height as it might have been reduced because the size of the data
-    kernel_stride_height = min(kernel_shape_height, dictionary['kernel stride height'])
-    kernel_stride_width = min(kernel_shape_width, dictionary['kernel stride width'])
+    kernel_stride_height = min(data_height-kernel_shape_height, kernel_shape_height, dictionary['kernel stride height'])
+    kernel_stride_width = min(data_width-kernel_shape_width, kernel_shape_width, dictionary['kernel stride width'])
     CRL.kernel_stride = (kernel_stride_height, kernel_stride_width)
 
     # pooling matrix shape and stride

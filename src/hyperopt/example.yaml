@@ -48,7 +48,7 @@
                     N: 10,
                 },
                 !obj:pylearn2.termination_criteria.EpochCounter {
-                    max_epochs: 1 ,  # POCHA might be changed to sth that makes more sense
+                    max_epochs: 2 ,  # POCHA might be changed to sth that makes more sense
                 },
             ]
         },

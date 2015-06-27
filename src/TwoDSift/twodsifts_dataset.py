@@ -75,10 +75,10 @@ class TwoDSiftData(DenseDesignMatrix):
 
         self.n_classes = len(set(y))
 
-        if y is None:
+        if y is None:       # Pocha TODO: this makes no sense, y is defined in above if or error is raised
             raise ValueError('y_val must be provided')
 
-        y = np.array(y).reshape((self.examples, 1))
+        y = np.array(y).reshape((self.examples, 1))     # Pocha TODO: czy to na pewno robi to co chcemy?
 
         if shuffle:
             self.shuffle_data(topo_view, y)
@@ -341,7 +341,7 @@ class TwoDSiftData(DenseDesignMatrix):
         return True
 
     def shuffle_data(self, topo_view, y):
-        self.shuffle_rng = make_np_rng(None, [1, 2, 3], which_method="shuffle")
+        self.shuffle_rng = make_np_rng(None, [1, 2, 3], which_method="shuffle")     # POCHA TODO: why self.shuffle_rng? why self?
         for i in xrange(topo_view.shape[0]):
             j = self.shuffle_rng.randint(self.examples)
             # Copy ensures that memory is not aliased.

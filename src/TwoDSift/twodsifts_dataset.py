@@ -187,7 +187,6 @@ class TwoDSiftData(DenseDesignMatrix):
 
         print "data size is:", topo_view.size
 
-
     def __str__(self):
         descr = "2D SiFT file:  " + self.name + \
                 "\n\t" + "filename:  " + ", ".join(self.filenames) + \

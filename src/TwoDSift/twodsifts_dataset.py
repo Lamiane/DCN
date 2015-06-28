@@ -11,21 +11,19 @@ import utils
 
 
 class TwoDSiftData(DenseDesignMatrix):
-    def __init__(self, filenames=[], y_val=[], nogap_type=True, replicate=0, labels=False, shuffle=True,
+    def __init__(self, filenames=[], y_val=[], nogap_type=True, labels=False, shuffle=True,
                  start=None, stop=None, cv=None, normal_run=True):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
         :type filenames: list of data files to read
         :type y_val: list of output values associated with each of the files
         :type nogap_type: True if data written with no spaces between numbers
-        :type replicate: number of extra replications of each example; default 0
         :type labels: object
         :type shuffle: True if data is to be shuffled
         :type start: starting example
         :type stop: last example
         :type cv: list of CV parts [how many parts, [list of parts to use]]; default None
         """
-        print "linijka 28 ", str(normal_run)
 
         self.filenames = filenames
 
@@ -52,7 +50,6 @@ class TwoDSiftData(DenseDesignMatrix):
         self.receptors = []
         self.ligands = []
         self.start_residues = []
-        self.replicate = replicate
         self.name = self.protein
         # TODO perhaps window width and height should be parameters?
         self.__win_width = 0
@@ -65,6 +62,9 @@ class TwoDSiftData(DenseDesignMatrix):
         self.remove_examples = False
         self.add_examples = not self.remove_examples
 
+        if y_val is None:
+            raise ValueError('y_val must be provided')
+
         if nogap_type:
             topo_view, y, skipped = self.read_nogaps(filenames, y_val)
         else:
@@ -74,9 +74,6 @@ class TwoDSiftData(DenseDesignMatrix):
         # TODO labels are null for the time being
 
         self.n_classes = len(set(y))
-
-        if y is None:       # Pocha TODO: this makes no sense, y is defined in above if or error is raised
-            raise ValueError('y_val must be provided')
 
         y = np.array(y).reshape((self.examples, 1))     # Pocha TODO: czy to na pewno robi to co chcemy?
 
@@ -157,9 +154,9 @@ class TwoDSiftData(DenseDesignMatrix):
         print topo_view.shape
 
         if normal_run:
-            print "wszedlem do normal_run"
+            print "wszedlem do normal_run"  # POCHA
             topo_view = self.preprocess_data(topo_view)
-        print "WYSZEDLEM Z DEBUGU"
+        print "WYSZEDLEM Z DEBUGU"  # POCHA
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))
@@ -240,13 +237,12 @@ class TwoDSiftData(DenseDesignMatrix):
                             self.__class__.__name__ + ": 2DSiFT width (" + str(len(first_residue)) + \
                             ") is not a multiple of residue representation width (" + str(self.__residue_width) + ")"
                         residue_width = len(first_residue)
-                        topo_view = np.zeros(((self.__residue_height * sum(file_line_counts) * (self.replicate + 1)),
+                        topo_view = np.zeros(((self.__residue_height * sum(file_line_counts)),
                                               len(first_residue)), dtype='float32')
                         this_example_view = topo_view[this_example_index:, :]
                         self.residues = this_example_view.shape[1] / self.__residue_width
                     else:
-                        this_example_view = topo_view[
-                                            this_example_index * self.__residue_height * (self.replicate + 1):, :]
+                        this_example_view = topo_view[this_example_index * self.__residue_height:, :]
 
                     for k, res in enumerate(residues[1:]):
                         res = list(res.strip())[:-3]
@@ -258,12 +254,7 @@ class TwoDSiftData(DenseDesignMatrix):
                     if this_example_view is None:
                         this_file_skipped.append(line_read)
                         continue
-                    start = this_example_index * self.__residue_height * (self.replicate + 1)
-
-                    for repl_ind in range(self.replicate):
-                        this_example_start = start + (repl_ind + 1) * self.__residue_height
-                        topo_view[this_example_start:this_example_start + self.__residue_height, :] = \
-                            topo_view[start:start + self.__residue_height, :]
+                    start = this_example_index * self.__residue_height
 
                     this_file_examples += 1
                     this_example_index += 1
@@ -283,11 +274,11 @@ class TwoDSiftData(DenseDesignMatrix):
         # </for>
 
         # restrict the memory allocated to topo_view only to examples actually read
-        topo_view = topo_view[:(self.__residue_height * examples * (self.replicate + 1)), :]
+        topo_view = topo_view[:(self.__residue_height * examples), :]
         self.receptors = tuple(receptors)
         self.ligands = tuple(ligands)
         self.start_residues = tuple(start_residues)
-        self.__residue_height += self.replicate * self.__residue_height
+        self.__residue_height += self.__residue_height
         self.examples += examples
         topo_view = topo_view.reshape(examples,  # examples
                                       self.__residue_height,  # rows

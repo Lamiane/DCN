@@ -278,9 +278,8 @@ class TwoDSiftData(DenseDesignMatrix):
         self.receptors = tuple(receptors)
         self.ligands = tuple(ligands)
         self.start_residues = tuple(start_residues)
-        self.__residue_height += self.__residue_height
         self.examples += examples
-        topo_view = topo_view.reshape(examples,  # examples
+	topo_view = topo_view.reshape(examples,  # examples
                                       self.__residue_height,  # rows
                                       self.residues * self.__residue_width,  # columns
                                       1  # channels

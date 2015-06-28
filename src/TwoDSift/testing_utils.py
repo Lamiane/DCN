@@ -6,11 +6,12 @@ from pylearn2.utils.serial import save
 from numpy import zeros
 
 
-def build_dataset():
+def build_dataset(shuffle=True, extending=True):
     dirpath = '../../data'
     data = TwoDSiftData([join(dirpath, '2RH1_actives_2dfp.dat'),
                          join(dirpath, '2RH1_inactives_2dfp.dat'),
-                         join(dirpath, '2RH1_middle_2dfp.dat')], [[2], [1], [0]], cv=[5, [0, 1, 2, 3]])
+                         join(dirpath, '2RH1_middle_2dfp.dat')], [[2], [1], [0]],
+                        cv=[5, [0, 1, 2, 3]], shuffle=shuffle, normal_run=extending)
     return data
 
 

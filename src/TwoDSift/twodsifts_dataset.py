@@ -156,8 +156,6 @@ class TwoDSiftData(DenseDesignMatrix):
 
         print topo_view.shape
 
-        print "linijika 158", str(normal_run)
-
         if normal_run:
             print "wszedlem do normal_run"
             topo_view = self.preprocess_data(topo_view)

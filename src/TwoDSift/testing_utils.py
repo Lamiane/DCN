@@ -21,7 +21,7 @@ def save_data(path, data_to_save):
 
 def check_files_identity(path1, path2):
     import filecmp
-    filecmp.cmp(path1, path2)
+    print filecmp.cmp(path1, path2)
 
 
 def sample_data_to_check_preprocessing():

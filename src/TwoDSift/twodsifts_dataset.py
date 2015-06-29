@@ -328,9 +328,9 @@ class TwoDSiftData(DenseDesignMatrix):
         return True
 
     def shuffle_data(self, topo_view, y):
-        self.shuffle_rng = make_np_rng(None, [1, 2, 3], which_method="shuffle")     # POCHA TODO: why self.shuffle_rng? why self?
+        shuffle_rng = make_np_rng(None, [1, 2, 3], which_method="shuffle")
         for i in xrange(topo_view.shape[0]):
-            j = self.shuffle_rng.randint(self.examples)
+            j = shuffle_rng.randint(self.examples)
             # Copy ensures that memory is not aliased.
             tmp = topo_view[i, :, :, :].copy()
             topo_view[i, :, :, :] = topo_view[j, :, :, :]

@@ -40,7 +40,8 @@ def build(hyperopt_sample):
 
 
     softmax = yp.Softmax()
-    softmax.n_classes = 3   # set as 3 because we won't be changing this
+    # softmax.n_classes = 3   # set as 3 because we won't be changing this
+    softmax.n_classes = 2
     softmax.layer_name = 'softmax'
     softmax.irange = 0.05
 

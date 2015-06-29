@@ -3,7 +3,7 @@
 !obj:pylearn2.train.Train {
     dataset: &train !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
         filenames: %(path)s
-        y_val: [[2], [1], [0]],
+        y_val: [[1], [0]],
         cv: [5, [0, 1, 2, 3]],
         normal_run: True    # POCHA
     },
@@ -20,7 +20,7 @@
         monitoring_dataset: {
             'valid':  !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
                         filenames: %(path)s
-                        y_val: [[2], [1], [0]],
+                        y_val: [[1], [0]],
                         cv: [5, [0, 1, 2, 3]],
                         normal_run: True    # POCHA
                       }
@@ -46,7 +46,7 @@
                     N: 10,
                 },
                 !obj:pylearn2.termination_criteria.EpochCounter {
-                    max_epochs: 2 ,  # POCHA might be changed to sth that makes more sense
+                    max_epochs: 25 ,  # POCHA might be changed to sth that makes more sense
                 },
             ]
         },

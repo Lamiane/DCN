@@ -17,8 +17,11 @@ spa = get_search_space()    # define search space over possible models
 # define data paths
 dirpath = '../../data'
 path = [join(dirpath, '2RH1_actives_2dfp.dat'),
-        join(dirpath, '2RH1_inactives_2dfp.dat'),
-        join(dirpath, '2RH1_middle_2dfp.dat')]
+        join(dirpath, '2RH1_inactives_2dfp.dat')]
+
+# path = [join(dirpath, '2RH1_actives_2dfp.dat'),
+#         join(dirpath, '2RH1_inactives_2dfp.dat'),
+#         join(dirpath, '2RH1_middle_2dfp.dat')]
 
 # obtain the yaml skelton
 with open("example.yaml") as f:

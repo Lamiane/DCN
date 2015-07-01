@@ -33,7 +33,9 @@ for current_idx, experiment in enumerate(results):
     # if it has seen at least 3 epochs
     if len(experiment) > 2:
         # save plot of the misclass error w.r.t number of epochs seen
-        plt.plot(range(1, len(experiment)+1), experiment, 'ro')
+        plt.plot(range(1, len(experiment)+1), experiment, 'r-')
+        plt.xlabel("number of epochs seen")
+        plt.ylabel("misclass error")
         # plt.show()
         plt.savefig('epochs_missclass_model'+str(current_idx)+".png", bbox_inches='tight')
         plt.clf()

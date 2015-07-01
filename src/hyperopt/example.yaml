@@ -21,7 +21,7 @@
             'valid':  !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
                         filenames: %(path)s
                         y_val: [[1], [0]],
-                        cv: [5, [0, 1, 2, 3]],
+                        cv: [5, [4]],
                         normal_run: True    # POCHA
                       }
         },

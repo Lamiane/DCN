@@ -29,14 +29,18 @@ for line in raw_data:
 
 minimums = []
 # for each experiment that has been run
-for experiment in results:
+for current_idx, experiment in enumerate(results):
     # if it has seen at least 3 epochs
     if len(experiment) > 2:
-        # plot the misclass error w.r.t number of epochs seem
+        # save plot of the misclass error w.r.t number of epochs seen
         plt.plot(range(1, len(experiment)+1), experiment, 'ro')
-        plt.show()
+        # plt.show()
+        plt.savefig('epochs_missclass_model'+str(current_idx)+".png", bbox_inches='tight')
+        plt.clf()
         # find minimal misclass error for this experiment
         minimums.append(min(experiment))
 
 print "minimums:", minimums
+print "maximal minimum:", max(minimums)
+print "minimal minimum:", min(minimums)
 print "mean", mean(minimums)

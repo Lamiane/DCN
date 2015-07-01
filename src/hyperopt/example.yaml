@@ -32,8 +32,7 @@
                 },
                 !obj:pylearn2.costs.mlp.WeightDecay {
                     coeffs: {
-                        'h0': 0.00005,
-                        'softmax': 0.00005
+                        %(weight_decay_coeffs)s
                     }
                 }
             ]
@@ -54,7 +53,7 @@
     extensions: [
         !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
              channel_name: 'valid_softmax_misclass', # monitoring channel name
-             save_path: "mlp_best.pkl" # here the learned model will be stored
+             save_path: %(pkl_filename)s # here the learned model will be stored
         }, !obj:pylearn2.training_algorithms.learning_rule.MomentumAdjustor {
             start: 1,
             saturate: 10,

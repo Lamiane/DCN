@@ -37,8 +37,18 @@ for i in xrange(20):
     mod = build(samp)   # based on description generated build an object that will fit into yaml_paser
     print t.bold_blue('MODEL'), mod
 
+    # define weight decay parameters. They depend on the number of layers (there is one parameter fo each layer)
+    weight_decay_coeffs = "'h0': 0.00005,"
+    if len(mod.layers) == 3:
+        weight_decay_coeffs += "'h1': 0.00005,"
+    weight_decay_coeffs += "\n" + "'softmax': 0.00005"
+
+    # generate a filename to store the best model
+    pkl_filename = "best_"+str(i)+".pkl"
+
     # create dictionary with hyper parameters
-    hyper_params = {'model': yp.parse_to_yaml(mod), 'path': yp.parse_to_yaml(path)}
+    hyper_params = {'model': yp.parse_to_yaml(mod), 'path': yp.parse_to_yaml(path),
+                    'weight_decay_coeffs': weight_decay_coeffs, 'pkl_filename': pkl_filename}
 
     # fill the yaml skelton with hyperparameters
     yaml_string = default_string % hyper_params

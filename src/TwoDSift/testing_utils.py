@@ -65,6 +65,7 @@ def get_sample_experiment():
     from yaml_maker import yaml_parser as yp
     from hyperopt_api.search_space import get_search_space
 
+
     # prepare all variables that don't need to be updated with each iteration
     spa = get_search_space()    # define search space over possible models
 

@@ -57,13 +57,13 @@ def os_test():
 
 def get_sample_experiment():
     from hyperopt.pyll.stochastic import sample
-    from parser import build
     from pylearn2.config import yaml_parse
     from os.path import join
     import sys
     sys.path.append('..')
+    from hyperopt_api.parser import build
     from yaml_maker import yaml_parser as yp
-    from search_space import get_search_space
+    from hyperopt_api.search_space import get_search_space
 
     # prepare all variables that don't need to be updated with each iteration
     spa = get_search_space()    # define search space over possible models
@@ -76,7 +76,7 @@ def get_sample_experiment():
             join(dirpath_data, '2RH1_middle_2dfp.dat')]
 
     # obtain the yaml skelton
-    dirpath_yaml = '../hyperopt'
+    dirpath_yaml = '../hyperopt_api'
     with open(join(dirpath_yaml, "example.yaml")) as f:
         default_string = f.read()
 
@@ -88,7 +88,7 @@ def get_sample_experiment():
     if len(mod.layers) == 3:
         weight_decay_coeffs += "'h1': 0.00005,"
     weight_decay_coeffs += "\n" + "'softmax': 0.00005"
-    # generate a filename to store the best model 
+    # generate a filename to store the best model
     pkl_filename = "best_.pkl"
 
     # create dictionary with hyper parameters

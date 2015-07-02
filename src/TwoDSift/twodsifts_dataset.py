@@ -93,7 +93,7 @@ class TwoDSiftData(DenseDesignMatrix):
             else:
                 # addition/removal of examples is needed to have a good batch size
                 if self.remove_examples:
-                    # cut out the last examples, provided they were shuffle earlier
+                    # cut out the last examples, provided they were shuffled earlier
                     # TODO add some option if examples are not shuffled
                     topo_view = topo_view[:remove_ans[1], :, :, :]
                     y = y[:remove_ans[1]]

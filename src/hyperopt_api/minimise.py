@@ -6,13 +6,22 @@ import traceback
 import sys
 sys.path.append('..')
 from yaml_maker import yaml_parser as yp
-from tmp import notify
-from search_space import get_search_space
 from blessings import Terminal
 t = Terminal()
 
 
+def run():
+    from hyperopt import fmin, tpe
+    from hyperopt_api.search_space import get_search_space
+    best = fmin(objective_function, get_search_space(), algo=tpe.suggest)
+    return best
+
+
 def objective_function(samp):
+    from utilss.common import get_timestamp
+
+    current_time = get_timestamp()
+
     print t.bold_cyan('SAMP'), samp
 
     mod = build(samp)   # based on description generated build an object that will fit into yaml_paser
@@ -29,8 +38,7 @@ def objective_function(samp):
     weight_decay_coeffs += "\n" + "'softmax': 0.00005"
 
     # generate a filename to store the best model
-    pkl_filename = "best.pkl"   # TODO: or maybe we want to have a best model of each model tested by hyperopt?
-                                # ... TODO: we might get timestamp when entering this function and use it in filename...
+    pkl_filename = current_time+"_best.pkl"
 
     # create dictionary with hyper parameters
     hyper_params = {'model': yp.parse_to_yaml(mod), 'path': yp.parse_to_yaml(path),
@@ -47,13 +55,26 @@ def objective_function(samp):
 
         # train the model
         network.main_loop()
-        misclass_error = 0  # TODO: jak to wyluskac z modelu?!
+        misclass_error = lowest_misclass_error(network)
     except BaseException as e:
         # if exception was thrown save yaml of a model that generated that exception
-        with open('0000.yaml', 'w') as YAML_FILE:   # TODO: this filename is just wrong! Use timestamp
+        with open(current_time+'.yaml', 'w') as YAML_FILE:
             YAML_FILE.write(yaml_string)
         #  write down errors description to a file
-        with open('0000_error', 'w') as ERROR_FILE:     # TODO: this filename is just wrong! Use timestamp
+        with open(current_time+'.error', 'w') as ERROR_FILE:
             ERROR_FILE.write(traceback.format_exc())
     finally:
         return misclass_error
+
+
+# based on pylearn2's scripts/plot_monitor.py
+def lowest_misclass_error(model):
+    this_model_channels = model.monitor.channels
+    my_channel = this_model_channels['valid_softmax_misclass'] # TODO: wywalic do konfiguracji
+    return my_channel.val_record[-1]    # AFAIK, last ist best.
+
+
+def pkl2model(filepath):
+    from pylearn2.utils import serial
+    model = serial.load(filepath)
+    return model

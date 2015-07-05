@@ -6,7 +6,7 @@ from pylearn2.utils.serial import save
 from numpy import zeros
 
 
-def build_dataset(shuffle=True, extending=True, cv=[5, [0, 1, 2, 3]]):
+def build_dataset(shuffle=True, extending=True, cv=None):
     dirpath = '../../data'
     data = TwoDSiftData([join(dirpath, '2RH1_actives_2dfp.dat'),
                          join(dirpath, '2RH1_inactives_2dfp.dat'),
@@ -88,8 +88,7 @@ def get_sample_experiment():
     weight_decay_coeffs = "'h0': 0.00005,"
     if len(mod.layers) == 3:
         weight_decay_coeffs += "'h1': 0.00005,"
-    weight_decay_coeffs += "\n" + "'softmax': 0.00005"
-    # generate a filename to store the best model
+    weight_decay_coeffs += "\n" + "'softmax': 0.00005"   # generate a filename to store the best model
     pkl_filename = "best_.pkl"
 
     # create dictionary with hyper parameters

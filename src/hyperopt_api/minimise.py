@@ -10,10 +10,10 @@ from blessings import Terminal
 t = Terminal()
 
 
-def run():
+def run(max_evals=10):
     from hyperopt import fmin, tpe
     from hyperopt_api.search_space import get_search_space
-    best = fmin(objective_function, get_search_space(), algo=tpe.suggest)
+    best = fmin(objective_function, get_search_space(), algo=tpe.suggest, max_evals=max_evals)
     return best
 
 
@@ -64,6 +64,7 @@ def objective_function(samp):
         with open(current_time+'.error', 'w') as ERROR_FILE:
             ERROR_FILE.write(traceback.format_exc())
     finally:
+        print t.bold_red("misclass_error for this model #01: "+str(misclass_error))
         return misclass_error
 
 

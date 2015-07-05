@@ -56,18 +56,23 @@ def objective_function(samp):
         # create the model based on a yaml
         network = yaml_parse.load(yaml_string)
         print t.bold_magenta('NETWORK'), type(network)
-
         # train the model
         network.main_loop()
-        misclass_error = lowest_misclass_error(network)
-    except BaseException as e:
+
+    except BaseException as e:  # TODO: this exception is to broad
         # if exception was thrown save yaml of a model that generated that exception
         with open(current_time+'.yaml', 'w') as YAML_FILE:
             YAML_FILE.write(yaml_string)
         #  write down errors description to a file
         with open(current_time+'.error', 'w') as ERROR_FILE:
             ERROR_FILE.write(traceback.format_exc())
+
     finally:
+        if network is not None:
+            try:
+                misclass_error = lowest_misclass_error(network)
+            except BaseException as be:     # TODO: this exception is to broad
+                print traceback.format_exc()
         print t.bold_red("misclass_error for this model #01: "+str(misclass_error))
         return misclass_error
 

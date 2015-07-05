@@ -40,7 +40,6 @@ def build(hyperopt_sample):
 
 
     softmax = yp.Softmax()
-    # softmax.n_classes = 3   # set as 3 because we won't be changing this
     softmax.n_classes = 2
     softmax.layer_name = 'softmax'
     softmax.irange = 0.05
@@ -68,30 +67,30 @@ def build(hyperopt_sample):
 
 def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width):
     CRL = yp.ConvRectifiedLinear()
-    CRL.output_channels = 1 + int(dictionary['output channels'])    # hp.randint returns numpy array, we need an int here
+    CRL.output_channels = 1 + int(dictionary[layer_name + ' output channels'])    # hp.randint returns numpy array, we need an int here
 
     # convolution matrix shape and stride
     # data_shape -1 as pylearn requires convolution matrix size smaller than data size
-    kernel_shape_height = min(data_height-1, dictionary['kernel shape height'])
-    kernel_shape_width = min(data_width-1, dictionary['kernel shape width'])
+    kernel_shape_height = min(data_height-1, dictionary[layer_name + ' kernel shape height'])
+    kernel_shape_width = min(data_width-1, dictionary[layer_name + ' kernel shape width'])
     CRL.kernel_shape = (kernel_shape_height, kernel_shape_width)
 
     # min must be kernel_shape_height as it might have been reduced because the size of the data
-    kernel_stride_height = min(data_height-kernel_shape_height, kernel_shape_height, dictionary['kernel stride height'])
-    kernel_stride_width = min(data_width-kernel_shape_width, kernel_shape_width, dictionary['kernel stride width'])
+    kernel_stride_height = min(data_height-kernel_shape_height, kernel_shape_height, dictionary[layer_name + ' kernel stride height'])
+    kernel_stride_width = min(data_width-kernel_shape_width, kernel_shape_width, dictionary[layer_name + ' kernel stride width'])
     CRL.kernel_stride = (kernel_stride_height, kernel_stride_width)
 
     # pooling matrix shape and stride
-    pool_shape_width, pool_shape_height = dictionary['pool shape']
+    pool_shape_width, pool_shape_height = dictionary[layer_name + ' pool shape']
     # data_shape - 1 as pylearn does not allow to have pooling shape equal to data shape
     CRL.pool_shape = (min(data_height-1, pool_shape_height), min(data_width-1, pool_shape_width))
     pool_shape_height, pool_shape_width = CRL.pool_shape
 
-    pool_stride_height_multiplier = dictionary['pool stride height']  # this will be 0.5 or 1
+    pool_stride_height_multiplier = dictionary[layer_name + ' pool stride height']  # this will be 0.5 or 1
     pool_stride_height = max(1, int(pool_shape_height*pool_stride_height_multiplier))
     # nie musi byc normalizowane do data bo i tak jest normalizowane do pool shape
 
-    pool_stride_width_multiplier = dictionary['pool stride width']  # this will be 0.5 or 1
+    pool_stride_width_multiplier = dictionary[layer_name + ' pool stride width']  # this will be 0.5 or 1
     pool_stride_width = max(1, int(pool_shape_width*pool_stride_width_multiplier))
     CRL.pool_stride = (pool_stride_height, pool_stride_width)
 

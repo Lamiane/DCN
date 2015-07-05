@@ -17,17 +17,17 @@ def get_search_space():
         {
             'h0': hp.choice('first layer', [
                 {
-                    'layer type': 'ConvRectifiedLinear',
-                    'output channels': hp.choice('output channels', [16, 32]),
-                    'kernel shape width': hp.choice('kernel shape width', [6, 8, 10, 12]),
-                    'kernel shape height': hp.choice('kernel shape height', [4, 5, 6, 7, 8]),   # TODO: moze jednak dorzucic 9 i 10
-                    'kernel stride width': hp.choice('kernel stride width', [2, 4, 6]),
-                    'kernel stride height': hp.choice('kernel stride height', [2, 3]),
-                    'pool shape': hp.choice('pool shape', [(1, 1), (2, 1), (2, 2)]),
+                    'h0 layer type': 'ConvRectifiedLinear',
+                    'h0 output channels': hp.choice('h0 output channels', [16, 32]),
+                    'h0 kernel shape width': hp.choice('h0 kernel shape width', [6, 8, 10, 12]),
+                    'h0 kernel shape height': hp.choice('h0 kernel shape height', [4, 5, 6, 7, 8]),   # TODO: moze jednak dorzucic 9 i 10
+                    'h0 kernel stride width': hp.choice('h0 kernel stride width', [2, 4, 6]),
+                    'h0 kernel stride height': hp.choice('h0 kernel stride height', [2, 3]),
+                    'h0 pool shape': hp.choice('h0 pool shape', [(1, 1), (2, 1), (2, 2)]),
                     # choosing pool stride height equal or smaller than in pool shape
-                    'pool stride height': hp.choice('pool stride height', [0.5, 1]),
+                    'h0 pool stride height': hp.choice('h0 pool stride height', [0.5, 1]),
                     # choosing pool stride width equal or bigger than the height
-                    'pool stride width': hp.choice('pool stride width', [0.5, 1]),
+                    'h0 pool stride width': hp.choice('h0 pool stride width', [0.5, 1]),
 
                 },
             ]),
@@ -35,17 +35,17 @@ def get_search_space():
         {
             'h1': hp.choice('second layer', [
                 {
-                    'layer type': 'ConvRectifiedLinear',
-                    'output channels': hp.choice('output channels', [16, 32]),
-                    'kernel shape width': hp.choice('kernel shape width', [6, 8, 10, 12]),
-                    'kernel shape height': hp.choice('kernel shape height', [4, 5, 6, 7, 8]),   # TODO: moze jednak dorzucic 9 i 10
-                    'kernel stride width': hp.choice('kernel stride width', [2, 4, 6]),
-                    'kernel stride height': hp.choice('kernel stride height', [2, 3]),
-                    'pool shape': hp.choice('pool shape', [(1, 1), (2, 1), (2, 2)]),
+                    'h1 layer type': 'ConvRectifiedLinear',
+                    'h1 output channels': hp.choice('h1 output channels', [16, 32]),
+                    'h1 kernel shape width': hp.choice('h1 kernel shape width', [6, 8, 10, 12]),
+                    'h1 kernel shape height': hp.choice('h1 kernel shape height', [4, 5, 6, 7, 8]),   # TODO: moze jednak dorzucic 9 i 10
+                    'h1 kernel stride width': hp.choice('h1 kernel stride width', [2, 4, 6]),
+                    'h1 kernel stride height': hp.choice('h1 kernel stride height', [2, 3]),
+                    'h1 pool shape': hp.choice('h1 pool shape', [(1, 1), (2, 1), (2, 2)]),
                     # choosing height equal or smaller than in pool shape
-                    'pool stride height': hp.choice('pool stride height', [0.5, 1]),
+                    'h1 pool stride height': hp.choice('h1 pool stride height', [0.5, 1]),
                     # choosing width equal or bigger than the height
-                    'pool stride width': hp.choice('pool stride width', [0.5, 1]),
+                    'h1 pool stride width': hp.choice('h1 pool stride width', [0.5, 1]),
 
                 },
                 None

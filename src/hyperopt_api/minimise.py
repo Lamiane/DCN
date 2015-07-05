@@ -8,6 +8,7 @@ sys.path.append('..')
 from yaml_maker import yaml_parser as yp
 from blessings import Terminal
 t = Terminal()
+from utilss.common import get_timestamp
 
 
 def run(max_evals=10):
@@ -18,8 +19,6 @@ def run(max_evals=10):
 
 
 def objective_function(samp):
-    from utilss.common import get_timestamp
-
     current_time = get_timestamp()
 
     print t.bold_cyan('SAMP'), samp
@@ -30,6 +29,11 @@ def objective_function(samp):
     # obtain the yaml skelton
     with open("example.yaml") as f:
         default_string = f.read()
+
+    # define data paths
+    dirpath = '../../data'
+    path = [join(dirpath, '2RH1_actives_2dfp.dat'),
+            join(dirpath, '2RH1_inactives_2dfp.dat')]
 
     # define weight decay parameters. They depend on the number of layers (there is one parameter fo each layer)
     weight_decay_coeffs = "'h0': 0.00005,"

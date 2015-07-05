@@ -17,24 +17,24 @@ def build(hyperopt_sample):
 
 
     h0_dict = hyperopt_sample[0]['h0']
-    if h0_dict['layer type'] == 'ConvRectifiedLinear':
+    if h0_dict['h0 layer type'] == 'ConvRectifiedLinear':
         h0, new_data_height, new_data_width = build_conv_rectified_linear(h0_dict, layer_name='h0',
                                                                           data_width=initial_data_width,
                                                                           data_height=initial_data_height)
     else:
-        raise ValueError('received layer type:', h0_dict['layer type'], 'is not implemented')
+        raise ValueError('received layer type:', h0_dict['h0 layer type'], 'is not implemented')
 
     print t.bold_cyan('\nafter h0:'), '\nheight:', new_data_height, 'width:', new_data_width
 
     h1_dict = hyperopt_sample[1]['h1']
     if h1_dict is None:
         h1 = None
-    elif h1_dict['layer type'] == 'ConvRectifiedLinear':
+    elif h1_dict['h1 layer type'] == 'ConvRectifiedLinear':
         h1, new_data_height, new_data_width = build_conv_rectified_linear(h1_dict, layer_name='h1',
                                                                           data_height=new_data_height,
                                                                           data_width=new_data_width)
     else:
-        raise ValueError('received layer type:', h1_dict['layer type'], 'is not implemented')
+        raise ValueError('received layer type:', h1_dict['h1 layer type'], 'is not implemented')
 
     print t.bold_cyan('\nafter h1:'), '\nheight:', new_data_height, 'width:', new_data_width
 

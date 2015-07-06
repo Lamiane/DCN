@@ -70,10 +70,10 @@ def objective_function(samp):
     finally:
         if network is not None:
             try:
-                misclass_error = lowest_misclass_error(network)
+                misclass_error = lowest_misclass_error(network.model)
             except BaseException as be:     # TODO: this exception is to broad
                 print traceback.format_exc()
-        print t.bold_red("misclass_error for this model #01: "+str(misclass_error))
+        print t.bold_red("M_01: misclass_error for this model: "+str(misclass_error))
         return misclass_error
 
 
@@ -81,7 +81,8 @@ def objective_function(samp):
 def lowest_misclass_error(model):
     this_model_channels = model.monitor.channels
     my_channel = this_model_channels['valid_softmax_misclass'] # TODO: wywalic do konfiguracji
-    return my_channel.val_record[-1]    # AFAIK, last ist best.
+    import numpy as np
+    return np.min(my_channel.val_record)
 
 
 def pkl2model(filepath):

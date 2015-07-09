@@ -6,7 +6,7 @@ def build_dataset(shuffle=True, extending=True, cv=None):
     sys.path.append('..')
     from twodsifts_dataset import TwoDSiftData
     import configuration.model as config
-    data = TwoDSiftData(config.data_path, [[2], [1], [0]],
+    data = TwoDSiftData(config.data_path, [[1], [0]],
                         cv=cv, shuffle=shuffle, normal_run=extending)
     return data
 
@@ -82,7 +82,7 @@ def get_sample_experiment():
     weight_decay_coeffs = yp.parse_weight_decay(mod)
 
     # generate a filename to store the best model
-    pkl_filename = join(config.path_for_storing, get_timestamp + "_best.pkl")
+    pkl_filename = join(config.path_for_storing, get_timestamp() + "_best.pkl")
 
     # create dictionary with hyper parameters
     hyper_params = {'model': yp.parse_to_yaml(mod), 'path': yp.parse_to_yaml(path),

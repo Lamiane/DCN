@@ -4,7 +4,7 @@ from os.path import join
 from pylearn2.config import yaml_parse
 import sys
 sys.path.append('..')
-from tmp import notify
+from utils.common import notify
 import configuration.model as config
 from utils.common import get_timestamp
 from yaml_parser import models

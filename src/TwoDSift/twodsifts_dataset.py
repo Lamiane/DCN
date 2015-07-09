@@ -8,6 +8,7 @@ from pylearn2.utils.rng import make_np_rng
 
 
 class TwoDSiftData(DenseDesignMatrix):
+
     def __init__(self, filenames=[], y_val=[], nogap_type=True, labels=False, shuffle=True,
                  start=None, stop=None, cv=None, normal_run=True):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
@@ -83,7 +84,7 @@ class TwoDSiftData(DenseDesignMatrix):
         # TODO self.ligands should also be somehow restricted according to cv parameters
         if cv is not None and isinstance(cv, list) and self.is_cv_valid(self.cv):
             # compute the possible splits
-            self.splits, remove_ans, add_ans = self.splits(self.examples, cv[0])
+            self.splits, remove_ans, add_ans = self.get_splits(self.examples, cv[0])
             # check the splits returned and perform some additional example removal / addition needed
             if remove_ans[1] == self.examples:
                 self.batch_size = remove_ans[0]
@@ -371,7 +372,7 @@ class TwoDSiftData(DenseDesignMatrix):
         return lines
 
     @staticmethod
-    def splits(examples, cv):
+    def get_splits(examples, cv):
         """
 
         :rtype : object

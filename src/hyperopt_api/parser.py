@@ -5,7 +5,6 @@ from blessings import Terminal
 import sys
 sys.path.append('..')
 from yaml_parser import models
-from yaml_parser import yaml_parser as yp
 import configuration.model as config
 t = Terminal()
 
@@ -37,7 +36,6 @@ def build(hyperopt_sample):
         raise ValueError('received layer type:', h1_dict['h1 layer type'], 'is not implemented')
 
     print t.bold_cyan('\nafter h1:'), '\nheight:', new_data_height, 'width:', new_data_width
-
 
     softmax = models.Softmax()
     softmax.n_classes = 2

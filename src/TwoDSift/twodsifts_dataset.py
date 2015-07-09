@@ -1,13 +1,10 @@
 __author__ = 'igor'
 
-# todo: zoptymalizowac improty
 import os
-import time
 from copy import copy
 import numpy as np
 from pylearn2.datasets import DenseDesignMatrix
 from pylearn2.utils.rng import make_np_rng
-import utils
 
 
 class TwoDSiftData(DenseDesignMatrix):
@@ -75,7 +72,7 @@ class TwoDSiftData(DenseDesignMatrix):
 
         self.n_classes = len(set(y))
 
-        y = np.array(y).reshape((self.examples, 1))     # Pocha TODO: czy to na pewno robi to co chcemy?
+        y = np.array(y).reshape((self.examples, 1))     # POCHA TODO: czy to na pewno robi to co chcemy?
 
         if shuffle:
             self.shuffle_data(topo_view, y)
@@ -86,7 +83,7 @@ class TwoDSiftData(DenseDesignMatrix):
         # TODO self.ligands should also be somehow restricted according to cv parameters
         if cv is not None and isinstance(cv, list) and self.is_cv_valid(self.cv):
             # compute the possible splits
-            self.splits, remove_ans, add_ans = utils.splits(self.examples, cv[0])
+            self.splits, remove_ans, add_ans = self.splits(self.examples, cv[0])
             # check the splits returned and perform some additional example removal / addition needed
             if remove_ans[1] == self.examples:
                 self.batch_size = remove_ans[0]
@@ -156,7 +153,7 @@ class TwoDSiftData(DenseDesignMatrix):
         if normal_run:
             print "wszedlem do normal_run"  # POCHA
             topo_view = self.preprocess_data(topo_view)
-        print "WYSZEDLEM Z DEBUGU"  # POCHA
+        print "WYSZEDLEM Z normal run"  # POCHA
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))
@@ -203,7 +200,7 @@ class TwoDSiftData(DenseDesignMatrix):
         :rtype : ndarray
         """
         # first count number of lines in all the files
-        file_line_counts = utils.bufcount(filenames)
+        file_line_counts = self.bufcount(filenames)
         topo_view = None
         y = []
         examples = 0
@@ -228,8 +225,8 @@ class TwoDSiftData(DenseDesignMatrix):
                         first_residue = list(first_residue)[:-3]
                         if len(first_residue) % self.__residue_width != 0:
                             print self.__class__.__name__ + ": 2DSiFT width (" + str(len(first_residue)) + \
-                                  ") is not a multiple of " + "residue representation width (" + \
-                                  str(self.__residue_width) + "), line " + line_read
+                                ") is not a multiple of " + "residue representation width (" + \
+                                str(self.__residue_width) + "), line " + line_read
                             print os.path.basename(filename) + ":" + str(line_read) + " skip example"
                             this_file_skipped.append(line_read)
                             continue
@@ -306,7 +303,8 @@ class TwoDSiftData(DenseDesignMatrix):
         stwin = residue * self.__residue_width
         return self.data[stwin + x_off:stwin + x_off + self.__win_width, y_off:y_off + self.__win_height]
 
-    def is_cv_valid(self, cv):
+    @staticmethod
+    def is_cv_valid(cv):
         if len(cv) != 2:
                 print "cv split: incorrect cv parameter list:", cv
                 return False
@@ -340,7 +338,8 @@ class TwoDSiftData(DenseDesignMatrix):
             y[i] = y[j]
             y[j] = tmp
 
-    def preprocess_data(self, data):
+    @staticmethod
+    def preprocess_data(data):
         data_shape = list(data.shape)
         data_shape[1] *= 3      # extending size of new data
         data_shape[2] += 2*9    # should be parametrized? magic numbers! use self.window.width
@@ -354,3 +353,116 @@ class TwoDSiftData(DenseDesignMatrix):
             preprocessed_data[idx, 12:, :-2*9, :] = sample  # magic numbers everywhere
 
         return preprocessed_data
+
+    @staticmethod
+    def bufcount(filenames=[]):
+        lines = []
+        for filename in filenames:
+            f = open(filename)
+            buf_size = 1024 * 1024
+            read_f = f.read  # loop optimization
+            this_file_lines = 0
+            buf = read_f(buf_size)
+            while buf:
+                this_file_lines += buf.count('\n')
+                buf = read_f(buf_size)
+            lines.append(this_file_lines)
+
+        return lines
+
+    @staticmethod
+    def splits(examples, cv):
+        """
+
+        :rtype : object
+        """
+
+        def compute_split(exmpls, cvno):
+            local_split = [int(np.ceil((exmpls / float(cvno)) * i)) for i in range(cvno)]
+            spl = list(local_split)
+            spl.append(exmpls)
+            lns = [spl[i + 1] - spl[i] for i in range(len(spl) - 1)]
+            if max(lns) > min(lns):
+                lns.sort(reverse=True)
+                local_split = [0]
+                for i in lns:
+                    local_split.append(local_split[-1] + i)
+                local_split = local_split[:-1]
+            return local_split
+
+        def is_power_of_2(n):
+            if (n > 0 and (n & (n - 1))) == 0:
+                return True
+            else:
+                return False
+
+        split = compute_split(exmpls=examples, cvno=cv)
+        # compute the best batch size and if some examples should be removed/added
+        # first column (== row index): batch size, second: how many examples to remove, third: how many to add
+        min_bs, max_bs = 8, 16
+        rtab = np.zeros((max_bs - min_bs + 1, 3), dtype=int)
+        for k, bs in enumerate(range(min_bs, max_bs + 1)):
+            rtab[k, :] = bs, examples % (cv * bs), ((cv * bs) - (examples % (cv * bs))) % (cv * bs)
+        # choose the best solution
+        # sort the array by the last column (number of elements to add)
+        # rtab = rtab[min_bs:max_bs + 1]
+        rtab = rtab[rtab[:, 2].argsort()]
+        # TODO select a best method to choose best
+        # prefer even numbers, prefer powers of 2, prefer one that nothing is to be changed
+        # first choose parameters for the REMOVE option
+        rtab = rtab[rtab[:, 1].argsort()]
+        indx = np.where(rtab[:, 1] == rtab[0, 1])
+        if len(indx[0]) == 1:
+            # only one row with smallest number of items to add
+            new_examples = examples - rtab[0, 1]
+            remove_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
+        else:
+            # if more answers with smallest number of items to remove are available, choose the best
+            # limit rtab to rows with minimal number of examples to remove
+            rem_rt = rtab[indx[0], :]
+            # first check for a power of 2 in the batch_size column (rtab[indx, 1])
+            l = [i for i in range(rem_rt.shape[0]) if is_power_of_2(n=rem_rt[i, 0])]
+            if len(l) > 0:
+                # at least one power of 2 found, select the first
+                p2_ind = l[0]
+                new_examples = examples - rem_rt[l[0], 1]
+                remove_ans = [rem_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
+            else:
+                # check if any of solutions is a multiple of 2
+                l = [i for i in range(rem_rt.shape[0]) if rem_rt[i, 0] % 2 == 0]
+                if len(l) > 0:
+                    # at least one multiple of 2 found
+                    new_examples = examples - rem_rt[l[0], 1]
+                    remove_ans = [rem_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
+                else:
+                    # all solutions are odd, choose the first one
+                    new_examples = examples - rtab[0, 1]
+                    remove_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
+        # perform the same computations for the ADD EXAMPLES option
+        rtab = rtab[rtab[:, 2].argsort()]
+        indx = np.where(rtab[:, 2] == rtab[0, 2])
+        if len(indx[0]) == 1:
+            new_examples = examples + rtab[0, 2]
+            add_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
+        else:
+            add_rt = rtab[indx[0], :]
+            l = [i for i in range(add_rt.shape[0]) if is_power_of_2(n=add_rt[i, 0])]
+            if len(l) > 0:
+                # at least one power of 2 found, select the first
+                p2_ind = l[0]
+                new_examples = examples + add_rt[l[0], 2]
+                add_ans = [add_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
+            else:
+                l = [i for i in range(add_rt.shape[0]) if add_rt[i, 0] % 2 == 0]
+                if len(l) > 0:
+                    # at least one multiple of 2 found
+                    new_examples = examples + add_rt[l[0], 2]
+                    add_ans = [add_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
+                else:
+                    # all solutions are odd, choose the first one
+                    new_examples = examples + rtab[0, 2]
+                    add_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
+        # draw a list of examples to be added in case they are not shuffled, otherwise take those from the end
+        # TODO rewrite so that drawing is always identical (constant seed? constant seed depending on original set?)
+        add_ans.append(list(np.random.randint(examples, size=add_ans[1]-examples)))
+        return split, remove_ans, add_ans

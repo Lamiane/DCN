@@ -1,21 +1,18 @@
 __author__ = 'agnieszka'
 
-from twodsifts_dataset import *
-from os.path import join
-from pylearn2.utils.serial import save
-from numpy import zeros
-
 
 def build_dataset(shuffle=True, extending=True, cv=None):
-    dirpath = '../../data'
-    data = TwoDSiftData([join(dirpath, '2RH1_actives_2dfp.dat'),
-                         join(dirpath, '2RH1_inactives_2dfp.dat'),
-                         join(dirpath, '2RH1_middle_2dfp.dat')], [[2], [1], [0]],
+    import sys
+    sys.path.append('..')
+    from twodsifts_dataset import TwoDSiftData
+    import configuration.model as config
+    data = TwoDSiftData(config.data_path, [[2], [1], [0]],
                         cv=cv, shuffle=shuffle, normal_run=extending)
     return data
 
 
 def save_data(path, data_to_save):
+    from pylearn2.utils.serial import save
     save(path, data_to_save)
 
 
@@ -25,6 +22,7 @@ def check_files_identity(path1, path2):
 
 
 def sample_data_to_check_preprocessing():
+    from numpy import zeros
     shape = (1, 6, 9, 1)
     sample_data = zeros(shape)
     s00 = [i for i in xrange(9)]
@@ -45,13 +43,14 @@ def sample_data_to_check_preprocessing():
 
 
 def file_list():
-    dirpath = '../../data'
-    return [join(dirpath, '2RH1_actives_2dfp.dat'),
-            join(dirpath, '2RH1_inactives_2dfp.dat'),
-            join(dirpath, '2RH1_middle_2dfp.dat')]
+    import sys
+    sys.path.append('..')
+    import configuration.model as config
+    return config.data_path
 
 
 def os_test():
+    import os
     print os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
@@ -62,34 +61,28 @@ def get_sample_experiment():
     import sys
     sys.path.append('..')
     from hyperopt_api.parser import build
-    from yaml_maker import yaml_parser as yp
+    from yaml_parser import yaml_parser as yp
     from hyperopt_api.search_space import get_search_space
-
+    import configuration.model as config
+    from utils.common import get_timestamp
 
     # prepare all variables that don't need to be updated with each iteration
     spa = get_search_space()    # define search space over possible models
 
-    # define data paths
-    dirpath_data = '../../data'
-
-    path = [join(dirpath_data, '2RH1_actives_2dfp.dat'),
-            join(dirpath_data, '2RH1_inactives_2dfp.dat'),
-            join(dirpath_data, '2RH1_middle_2dfp.dat')]
+    path = config.data_path
 
     # obtain the yaml skelton
-    dirpath_yaml = '../hyperopt_api'
-    with open(join(dirpath_yaml, "example.yaml")) as f:
+    with open(config.yaml_skelton_path) as f:
         default_string = f.read()
 
     samp = sample(spa)  # generate sample (will give a description of a model)
     mod = build(samp)   # based on description generated build an object that will fit into yaml_paser
 
     # define weight decay parameters. They depend on the number of layers (there is one parameter fo each layer)
-    weight_decay_coeffs = "'h0': 0.00005,"
-    if len(mod.layers) == 3:
-        weight_decay_coeffs += "'h1': 0.00005,"
-    weight_decay_coeffs += "\n" + "'softmax': 0.00005"   # generate a filename to store the best model
-    pkl_filename = "best_.pkl"
+    weight_decay_coeffs = yp.parse_weight_decay(mod)
+
+    # generate a filename to store the best model
+    pkl_filename = join(config.path_for_storing, get_timestamp + "_best.pkl")
 
     # create dictionary with hyper parameters
     hyper_params = {'model': yp.parse_to_yaml(mod), 'path': yp.parse_to_yaml(path),

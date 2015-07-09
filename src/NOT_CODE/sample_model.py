@@ -1,3 +1,4 @@
+__author__ = 'agnieszka'
 import sys
 sys.path.append('..')
 

@@ -72,7 +72,7 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
     # data_shape -1 as pylearn requires convolution_matrix size smaller than data size
     convolution_matrix_shape_height = min(data_height-1, dictionary[layer_name + ' convolution_matrix shape height'])
     convolution_matrix_shape_width = min(data_width-1, dictionary[layer_name + ' convolution_matrix shape width'])
-    crl.convolution_matrix_shape = (convolution_matrix_shape_height, convolution_matrix_shape_width)
+    crl.kernel_shape = (convolution_matrix_shape_height, convolution_matrix_shape_width)
 
     # min must be convolution_matrix_shape_height as it might have been reduced because the size of the data
     convolution_matrix_stride_height = min(data_height-convolution_matrix_shape_height,
@@ -81,7 +81,7 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
     convolution_matrix_stride_width = min(data_width-convolution_matrix_shape_width,
                                           convolution_matrix_shape_width,
                                           dictionary[layer_name + ' convolution_matrix stride width'])
-    crl.convolution_matrix_stride = (convolution_matrix_stride_height, convolution_matrix_stride_width)
+    crl.kernel_stride = (convolution_matrix_stride_height, convolution_matrix_stride_width)
 
     # pooling matrix shape and stride
     pool_shape_width, pool_shape_height = dictionary[layer_name + ' pool shape']
@@ -113,8 +113,8 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
     crl.monitor_style = 'classification'
 
     print t.bold_magenta("layer name: "+str(layer_name)
-                         + "\nconvolution_matrix shape: " + str(crl.convolution_matrix_shape)
-                         + "\t\tconvolution_matrix stride: " + str(crl.convolution_matrix_stride)
+                         + "\nconvolution_matrix shape: " + str(crl.kernel_shape)
+                         + "\t\tconvolution_matrix stride: " + str(crl.kernel_stride)
                          + "\npool shape: " + str(crl.pool_shape) + "\t\tpool_stride: " + str(crl.pool_stride))
 
     new_data_height, new_data_width = \

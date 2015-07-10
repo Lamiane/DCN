@@ -7,7 +7,7 @@ sys.path.append('..')
 from utils.common import notify
 import configuration.model as config
 from utils.common import get_timestamp
-from yaml_parser import models
+import models
 import yaml_parser as yp
 
 

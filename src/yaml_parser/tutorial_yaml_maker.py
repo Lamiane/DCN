@@ -24,7 +24,7 @@ con.pool_shape = [2, 3]
 
 # setting parameters of softmax layer
 sof = models.Softmax()
-sof.n_classes = 10
+sof.n_classes = 2
 sof.layer_name = "softmax"
 sof.irange = 0.1
 

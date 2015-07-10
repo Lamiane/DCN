@@ -1,6 +1,6 @@
 __author__ = 'agnieszka'
-import yaml_parser.models as models
-from yaml_parser.yaml_parser import parse_to_yaml
+import models
+from yaml_parser import parse_to_yaml
 
 
 def t1():

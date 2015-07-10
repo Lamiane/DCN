@@ -3,14 +3,21 @@ __author__ = 'agnieszka'
 
 def process_raw_data(pathname):
     import subprocess
-    command = "cat " + pathname + " | grep -E '(misclass|ITERATION)' "
-    s = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-    processed_data = s.communicate()[0]
+    command1 = "cat " + pathname
+    s1 = subprocess.Popen(command1.split(), stdout=subprocess.PIPE)
+    ppp = s1.communicate()[0].split('\n')
+
+    # not as I planned but it works well
+    processed_data = ""
+    for line in ppp:
+        if "misclass" in line or "ITERATION" in line:
+            processed_data = processed_data + "\n" + line
     return processed_data
 
 
 def prepare_data_for_plotting(processed_data):
     from re import compile
+    processed_data = processed_data.split('\n')
 
     results = []
     idx = -1
@@ -78,8 +85,8 @@ def process(raw_data=None, preprocessed_data=None, plots=True, additional_output
         raise ValueError("Pathname to either raw data either preprocessed data should be provided")
 
     if raw_data is not None:
-        processed_data = process_raw_data(raw_data)
-    y = prepare_data_for_plotting(processed_data)
+        preprocessed_data = process_raw_data(raw_data)
+    y = prepare_data_for_plotting(preprocessed_data)
 
     if plots:
         make_plots(y, min_n_of_epochs=min_n_of_epochs)

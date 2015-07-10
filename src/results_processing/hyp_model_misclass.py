@@ -3,9 +3,11 @@ __author__ = 'agnieszka'
 
 def process_raw_data(pathname):
     import subprocess
-    command = "cat " + pathname + " | grep M_01"
-    s = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-    processed_data = s.communicate()[0]
+    command1 = "cat " + pathname
+    command2 = "grep M_01 "
+    s1 = subprocess.Popen(command1.split(), stdout=subprocess.PIPE)
+    s2 = subprocess.Popen(command2.split(), stdin=s1.stdout, stdout=subprocess.PIPE)
+    processed_data = s2.communicate()[0]
     return processed_data
 
 
@@ -18,7 +20,10 @@ def prepare_data_for_plotting(processed_data):
     for line in processed_data:
         matched = digit_finder.search(line)
         if matched is not None:
-            results.append(float(matched.group()))
+            try:
+                results.append(float(matched.group()))
+            except ValueError:
+                print line
     return results
 
 
@@ -51,9 +56,10 @@ def process(raw_data=None, preprocessed_data=None, plots=True, additional_output
         raise ValueError("Pathname to either raw data either preprocessed data should be provided")
 
     if raw_data is not None:
-        processed_data = process_raw_data(raw_data)
+        print "in in "
+        preprocessed_data = process_raw_data(raw_data)
 
-    y = prepare_data_for_plotting(processed_data)
+    y = prepare_data_for_plotting(preprocessed_data)
 
     if plots:
         make_plots(y)

@@ -1,11 +1,15 @@
 __author__ = 'agnieszka'
-from os.path import join
+from os.path import join, dirname, realpath
 
 
 def get_example_yaml_path():
-    import os
-    path = os.path.dirname(os.path.realpath(__file__))
-    return os.path.join(path, "example.yaml")
+    path_d = dirname(realpath(__file__))
+    return join(path_d, "example.yaml")
+
+
+def get_data_path():
+    path_d = dirname(realpath(__file__))
+    return join(path_d, "../../data")
 
 # # # STATIC VALUES # # #
 #########################
@@ -15,7 +19,7 @@ def get_example_yaml_path():
 data_height = 18
 data_width = 3492   # 3474 + 2*9
 
-data_dir_path = '../../data'
+data_dir_path = get_data_path()
 data_path = [join(data_dir_path, '2RH1_actives_2dfp.dat'),
              join(data_dir_path, '2RH1_inactives_2dfp.dat')]
 
@@ -24,4 +28,4 @@ data_path = [join(data_dir_path, '2RH1_actives_2dfp.dat'),
 #              join(data_dir_path, '2RH1_middle_2dfp.dat')]
 
 yaml_skelton_path = get_example_yaml_path()
-path_for_storing = '../../data/generated'
+path_for_storing = join(get_data_path(), "generated")

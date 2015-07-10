@@ -18,6 +18,8 @@ def yaml2train(yaml_path):
     try:
         # create the model based on a yaml
         network = yaml_parse.load(yaml_string)
+        return network
     except BaseException as e:
         print traceback.format_exc()
-    return network
+    print "Returning None."
+    return None

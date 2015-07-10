@@ -32,9 +32,12 @@ sof.irange = 0.1
 layers = [con, sof]
 
 # creating space
+initial_data_height = config.data_height
+initial_data_width = config.data_width
+
 some_space = models.Conv2DSpace()
 some_space.axes = ['c', 0, 1, 'b']
-some_space.shape = [28, 28]
+some_space.shape = [initial_data_height, initial_data_width]
 some_space.num_channels = 1
 
 # setting parameters of MLP model

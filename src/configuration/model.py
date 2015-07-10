@@ -1,5 +1,5 @@
 __author__ = 'agnieszka'
-from os.path import join, dirname, realpath
+from os.path import join, dirname, realpath, abspath
 
 
 def get_example_yaml_path():
@@ -9,7 +9,7 @@ def get_example_yaml_path():
 
 def get_data_path():
     path_d = dirname(realpath(__file__))
-    return join(path_d, "../../data")
+    return abspath(join(path_d, "../../data"))
 
 # # # STATIC VALUES # # #
 #########################

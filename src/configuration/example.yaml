@@ -58,6 +58,6 @@
             start: 1,
             saturate: 10,
             final_momentum: 0.99
-        }
+        }, !obj:algorithm_extensions.f1_score.F1Score {}
     ]
 }

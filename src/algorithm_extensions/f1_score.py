@@ -24,9 +24,11 @@ class F1Score(TrainExtension):
         valid_x = algorithm.monitoring_dataset['valid'].X
         valid_y = algorithm.monitoring_dataset['valid'].y
 
+        # TODO: this FOR should be in get_predictions.Predictor.get_prediction function
         y_pred = []
         for i in xrange(len(valid_x)):
             # TODO: perhaps config.data_height and config.data_width are obtainable from parameters?
+            # TODO: perhaps input space is obtainale from model?
             sample = np.reshape(valid_x[i], (1, config.data_height, config.data_width, 1))
             y_pred.append(np.argmax(self.predictor.get_prediction(sample)))
 

@@ -42,8 +42,9 @@ def objective_function(samp):
     # fill the yaml skelton with hyperparameters
     yaml_string = default_string % hyper_params
 
+    network = None
     # misclass_error = 1
-    f1_score_error = 1
+    f1_score_error = 0
     try:
         # create the model based on a yaml
         network = yaml_parse.load(yaml_string)
@@ -65,7 +66,9 @@ def objective_function(samp):
                 # misclass_error = lowest_misclass_error(network.model)
                 f1_score_error = 1 - f1_score(network)
             except BaseException:  # TODO: this exception is to broad
-                print traceback.format_exc()
+                with open(current_time + '_f1_error', 'w') as ERROR_FILE:
+                    ERROR_FILE.write(traceback.format_exc())
+
         # print t.bold_red("M_01: misclass_error for this model: "+str(misclass_error))
         # return misclass_error
         print t.bold_red("M_02: f1 score error for this model: " + str(f1_score_error))
@@ -92,11 +95,12 @@ def f1_score(train):
         for element in train.extensions:
             if isinstance(element, F1Score):
                 f1_score_ext = element
+                print 'D_HO_98: found extension F1Score'
                 break
 
         minimal_f1_score = min(f1_score_ext.score_list)
 
-        return 1 - minimal_f1_score
+        return minimal_f1_score
     except AttributeError as ae:
         # return if F1Score extension hasn't been found
         print "This pylearn.train.Train object doesn't use extensions.f1_score.F1Score extension. " \

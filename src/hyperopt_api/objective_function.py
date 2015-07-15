@@ -44,7 +44,7 @@ def objective_function(samp):
 
     network = None
     # misclass_error = 1
-    f1_score_error = 0
+    f1_score_error = 1
     try:
         # create the model based on a yaml
         network = yaml_parse.load(yaml_string)
@@ -95,12 +95,11 @@ def f1_score(train):
         for element in train.extensions:
             if isinstance(element, F1Score):
                 f1_score_ext = element
-                print 'D_HO_98: found extension F1Score'
                 break
 
-        minimal_f1_score = min(f1_score_ext.score_list)
+        best_f1_score = max(f1_score_ext.score_list)
 
-        return minimal_f1_score
+        return best_f1_score
     except AttributeError as ae:
         # return if F1Score extension hasn't been found
         print "This pylearn.train.Train object doesn't use extensions.f1_score.F1Score extension. " \

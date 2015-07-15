@@ -84,7 +84,7 @@ def lowest_misclass_error(model):
 def f1_score(train):
     import sys
     sys.path.append('..')
-    from extensions.f1_score import F1Score
+    from algorithm_extensions.f1_score import F1Score
 
     try:
         # finding F1Score extension in train.extensions

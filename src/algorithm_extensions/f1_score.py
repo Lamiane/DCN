@@ -37,8 +37,6 @@ class F1Score(TrainExtension):
 class F1Score1Threshold(F1Score):
     def __init__(self):
         super(F1Score1Threshold, self).__init__()
-        # self.predictor = None   # TODO: wywalic
-        # self.score_list = []    # TODO: wywalic
         self.threshold_list = []
 
     def setup(self, model, dataset, algorithm):
@@ -58,6 +56,8 @@ class F1Score1Threshold(F1Score):
 
         self.threshold_list.append(threshold)
         self.score_list.append(score)
+
+        print "F1Score1Threshold score_list:", self.score_list
 
     @staticmethod
     def compute_optimal_threshold_and_score(true_y, predictions):
@@ -82,7 +82,8 @@ class F1Score1Threshold(F1Score):
         FP_FN = len(dic)-TP
         skipped = 0
         scores = []
-        for key in sorted(dic):
+        sorted_dic_keys = sorted(dic)   # don't want to sort dic over and over again
+        for key in sorted_dic_keys:
             skipped += 1
             if dic[key] == 'FN_FP':   # it was FN or FP
                 FP_FN -= 1
@@ -90,8 +91,11 @@ class F1Score1Threshold(F1Score):
                 TP -= 1         # it was TP
             scores.append(2*TP/(2*TP + FP_FN + 0.5 * skipped))
 
-        max_score = max(scores)
-        best_threshold = mean(sorted(dic)[argmax(scores)], sorted(dic)[argmax(scores)-1])
+        best_score_index = argmax(scores)
+        max_score = scores[best_score_index]
+        t1_key = sorted_dic_keys[best_score_index]
+        t2_key = sorted_dic_keys[best_score_index-1]
+        best_threshold = mean(dic[t1_key], dic[t2_key])
 
         return best_threshold, max_score
 

@@ -74,6 +74,7 @@ def objective_function(samp):
         # print t.bold_red("M_01: misclass_error for this model: "+str(misclass_error))
         # return misclass_error
         print t.bold_red("M_02: f1 score error for this model: " + str(f1_score_error))
+        print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
         return f1_score_error
 
 
@@ -117,7 +118,7 @@ def f1_score_1threshold(train):
     from algorithm_extensions.f1_score import F1Score1Threshold
 
     try:
-        # finding F1Score extension in train.extensions
+        # finding F1Score1Threshold extension in train.extensions
         f1_score_ext = None
         for element in train.extensions:
             if isinstance(element, F1Score1Threshold):
@@ -133,8 +134,8 @@ def f1_score_1threshold(train):
         return best_f1_score, threshold
     except AttributeError as ae:
         # return if F1Score extension hasn't been found
-        print "This pylearn.train.Train object doesn't use extensions.f1_score.F1Score extension. " \
-              "F1 score hasn't been calculated. Please provide include F1Score extension in yaml " \
+        print "This pylearn.train.Train object doesn't use extensions.f1_score.F1Score1Threshold extension. " \
+              "F1 score hasn't been calculated. Please include F1Score extension in yaml " \
               "if you need F1 score calculated"
         raise ae
 

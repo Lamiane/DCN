@@ -36,21 +36,13 @@ class F1Score(TrainExtension):
 
 class F1Score1Threshold(F1Score):
     def __init__(self):
-        print "F1Score1Threshold init"
         super(F1Score1Threshold, self).__init__()
         self.threshold_list = []
 
     def setup(self, model, dataset, algorithm):
-        print "F1Score1Threshold setup"
         self.predictor = Predictor(model)
 
     def on_monitor(self, model, dataset, algorithm):
-        print "I'm in on monitor in F1Score1Threshold!"
-        print "I'm in on monitor in F1Score1Threshold!"
-        print "I'm in on monitor in F1Score1Threshold!"
-        print "I'm in on monitor in F1Score1Threshold!"
-        print "I'm in on monitor in F1Score1Threshold!"
-
         # this shall never happen but better safe than sorry
         if self.predictor is None:
             self.setup(model, dataset, algorithm)
@@ -82,12 +74,13 @@ class F1Score1Threshold(F1Score):
         for index in xrange(len(true_y)):
             if argmax(predictions[index]) != true_y[index]:     # FALSE NEGATIVE OR FALSE POSITIVE
                 # floating to get a hashable float instead of unhashable numpy array
-                dic[float(abs(0.5 - max(predictions[index])))] = 'FN_FP'
+                # we also need max max because numpy...
+                dic[float(abs(0.5 - max(max(predictions[index]))))] = 'FN_FP'
             elif argmax(predictions[index]) == 1:   # TRUE POSITIVE
-                dic[float(abs(0.5 - max(predictions[index])))] = 'TP'
+                dic[float(abs(0.5 - max(max(predictions[index]))))] = 'TP'
             # else TRUE NEGATIVE, we have no interest in this one
 
-        TP = sum(dic.values())
+        TP = sum(1 for x in dic.values() if x == 'TP')
         FP_FN = len(dic)-TP
         skipped = 0
         scores = []
@@ -102,9 +95,9 @@ class F1Score1Threshold(F1Score):
 
         best_score_index = argmax(scores)
         max_score = scores[best_score_index]
-        t1_key = sorted_dic_keys[best_score_index]
-        t2_key = sorted_dic_keys[best_score_index-1]
-        best_threshold = mean(dic[t1_key], dic[t2_key])
+        t1 = sorted_dic_keys[best_score_index]
+        t2 = sorted_dic_keys[best_score_index-1]
+        best_threshold = 0.5 + mean([t1, t2])   # adding 0.5 as the dictionary has been folded in half
 
         return best_threshold, max_score
 

@@ -81,9 +81,10 @@ class F1Score1Threshold(F1Score):
         # therefore we fold the dictionary in half
         for index in xrange(len(true_y)):
             if argmax(predictions[index]) != true_y[index]:     # FALSE NEGATIVE OR FALSE POSITIVE
-                dic[abs(0.5 - max(predictions[index]))] = 'FN_FP'
+                # floating to get a hashable float instead of unhashable numpy array
+                dic[float(abs(0.5 - max(predictions[index])))] = 'FN_FP'
             elif argmax(predictions[index]) == 1:   # TRUE POSITIVE
-                dic[abs(0.5 - max(predictions[index]))] = 'TP'
+                dic[float(abs(0.5 - max(predictions[index])))] = 'TP'
             # else TRUE NEGATIVE, we have no interest in this one
 
         TP = sum(dic.values())

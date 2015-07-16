@@ -64,7 +64,9 @@ def objective_function(samp):
         if network is not None:
             try:
                 # misclass_error = lowest_misclass_error(network.model)
-                f1_score_error = 1 - f1_score(network)
+                # f1_score_error = 1 - f1_score(network)
+                f1_score_error, threshold = f1_score_1threshold(network)
+                f1_score_error = 1 - f1_score_error
             except BaseException:  # TODO: this exception is to broad
                 with open(current_time + '_f1_error', 'w') as ERROR_FILE:
                     ERROR_FILE.write(traceback.format_exc())
@@ -107,4 +109,32 @@ def f1_score(train):
               "if you need F1 score calculated"
         raise ae
 
+
+def f1_score_1threshold(train):
+    from numpy import argmax
+    import sys
+    sys.path.append('..')
+    from algorithm_extensions.f1_score import F1Score1Threshold
+
+    try:
+        # finding F1Score extension in train.extensions
+        f1_score_ext = None
+        for element in train.extensions:
+            if isinstance(element, F1Score1Threshold):
+                f1_score_ext = element
+                break
+
+        best_f1_score = max(f1_score_ext.score_list)
+        threshold = f1_score_ext.threshold_list[argmax(f1_score_ext.score_list)]
+
+        print t.bold_red("D_OF1: Best score for this model: "+str(best_f1_score))
+        print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
+
+        return best_f1_score, threshold
+    except AttributeError as ae:
+        # return if F1Score extension hasn't been found
+        print "This pylearn.train.Train object doesn't use extensions.f1_score.F1Score extension. " \
+              "F1 score hasn't been calculated. Please provide include F1Score extension in yaml " \
+              "if you need F1 score calculated"
+        raise ae
 

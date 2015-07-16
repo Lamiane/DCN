@@ -36,13 +36,21 @@ class F1Score(TrainExtension):
 
 class F1Score1Threshold(F1Score):
     def __init__(self):
+        print "F1Score1Threshold init"
         super(F1Score1Threshold, self).__init__()
         self.threshold_list = []
 
     def setup(self, model, dataset, algorithm):
+        print "F1Score1Threshold setup"
         self.predictor = Predictor(model)
 
     def on_monitor(self, model, dataset, algorithm):
+        print "I'm in on monitor in F1Score1Threshold!"
+        print "I'm in on monitor in F1Score1Threshold!"
+        print "I'm in on monitor in F1Score1Threshold!"
+        print "I'm in on monitor in F1Score1Threshold!"
+        print "I'm in on monitor in F1Score1Threshold!"
+
         # this shall never happen but better safe than sorry
         if self.predictor is None:
             self.setup(model, dataset, algorithm)

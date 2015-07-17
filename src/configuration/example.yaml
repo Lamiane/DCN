@@ -56,6 +56,17 @@
             start: 1,
             saturate: 10,
             final_momentum: 0.99
-        }, !obj:algorithm_extensions.f1_score.F1Score1Threshold {}
+        }, !obj:algorithm_extensions.statistics.StatisticsNoThreshold{
+            call_list: [!obj:algorithm_extensions.no_threshold.F1Score,
+                        !obj:algorithm_extensions.no_threshold.Precision,
+                        !obj:algorithm_extensions.no_threshold.Recall,
+                        !obj:algorithm_extensions.no_threshold.Accuracy
+                      ]
+        }, !obj:algorithm_extensions.statistics.StatisticsSymmetricThreshold{
+            call_list: [!obj:algorithm_extensions.no_threshold.Precision,
+                        !obj:algorithm_extensions.no_threshold.Recall,
+                        !obj:algorithm_extensions.no_threshold.Accuracy
+                      ]
+         }
     ]
 }

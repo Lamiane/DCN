@@ -19,7 +19,7 @@ def objective_function(samp):
 
     print t.bold_cyan('SAMP'), samp
 
-    mod = build(samp)  # based on description generated build an object that will fit into yaml_paser
+    mod = build(samp)  # based on description generated build an object that will fit into yaml_parser
     print t.bold_blue('MODEL'), mod
 
     # obtain the yaml skelton
@@ -90,7 +90,7 @@ def lowest_misclass_error(model):
 def f1_score(train):
     import sys
     sys.path.append('..')
-    from algorithm_extensions.f1_score import F1Score
+    from algorithm_extensions.no_threshold import F1Score
 
     try:
         # finding F1Score extension in train.extensions
@@ -115,13 +115,13 @@ def f1_score_1threshold(train):
     from numpy import argmax
     import sys
     sys.path.append('..')
-    from algorithm_extensions.f1_score import F1Score1Threshold
+    from algorithm_extensions.symmetric_threshold import SymmetricThresholdWRTF1Score
 
     try:
         # finding F1Score1Threshold extension in train.extensions
         f1_score_ext = None
         for element in train.extensions:
-            if isinstance(element, F1Score1Threshold):
+            if isinstance(element, SymmetricThresholdWRTF1Score):
                 f1_score_ext = element
                 break
 

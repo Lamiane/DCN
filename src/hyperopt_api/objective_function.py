@@ -67,6 +67,7 @@ def objective_function(samp):
                 # f1_score_error = 1 - f1_score(network)
                 f1_score_error, threshold = f1_score_1threshold(network)
                 f1_score_error = 1 - f1_score_error
+                print t.bold_red("D_OF1: Best score for this model: "+str(f1_score_error))
                 print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
             except BaseException:  # TODO: this exception is to broad
                 with open(current_time + '_f1_error', 'w') as ERROR_FILE:
@@ -127,11 +128,8 @@ def f1_score_1threshold(train):
 
         best_f1_score = max(f1_score_ext.score_list)
         threshold = f1_score_ext.threshold_list[argmax(f1_score_ext.score_list)]
-
-        print t.bold_red("D_OF1: Best score for this model: "+str(best_f1_score))
-        print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
-
         return best_f1_score, threshold
+
     except AttributeError as ae:
         # return if F1Score extension hasn't been found
         print "This pylearn.train.Train object doesn't use " \

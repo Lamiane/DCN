@@ -57,7 +57,10 @@ class Precision(TrainExtension):
             stat_dic = label_lists2types(valid_y, y_pred)
 
         # precision = TP/(TP + FP)
-        precision = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FP])
+        if stat_dic[values.TP] == 0:
+            precision = 0
+        else:
+            precision = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FP])
 
         self.precision_list.append(precision)
         print "precision:", precision
@@ -85,7 +88,10 @@ class Recall(TrainExtension):
             stat_dic = label_lists2types(valid_y, y_pred)
 
         # recall = TP/(TP + FN)
-        recall = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FN])
+        if stat_dic[values.TP] == 0:
+            recall = 0
+        else:
+            recall = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FN])
 
         self.recall_list.append(recall)
         print "recall:", recall
@@ -114,7 +120,10 @@ class Accuracy(TrainExtension):
             stat_dic = label_lists2types(valid_y, y_pred)
 
         # accuracy = (TP + TN) / TOTAL
-        accuracy = (stat_dic[values.TP]+stat_dic[values.TN])/sum(stat_dic.values())
+        if (stat_dic[values.TP] + stat_dic[values.TN]) == 0:
+            accuracy = 0
+        else:
+            accuracy = (stat_dic[values.TP]+stat_dic[values.TN])/sum(stat_dic.values())
 
         self.accuracy_list.append(accuracy)
         print "accuracy:", accuracy

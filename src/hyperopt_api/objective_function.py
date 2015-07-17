@@ -66,9 +66,9 @@ def objective_function(samp):
                 # misclass_error = lowest_misclass_error(network.model)
                 # f1_score_error = 1 - f1_score(network)
                 f1_score_error, threshold = f1_score_1threshold(network)
-                f1_score_error = 1 - f1_score_error
                 print t.bold_red("D_OF1: Best score for this model: "+str(f1_score_error))
                 print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
+                f1_score_error = 1 - f1_score_error
             except BaseException:  # TODO: this exception is to broad
                 with open(current_time + '_f1_error', 'w') as ERROR_FILE:
                     ERROR_FILE.write(traceback.format_exc())

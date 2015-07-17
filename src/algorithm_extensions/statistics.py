@@ -75,6 +75,7 @@ class StatisticsSymmetricThreshold(TrainExtension):
         valid_y = algorithm.monitoring_dataset['valid'].y
         y_pred = self.predictor.get_predictions(valid_x)
         threshold, score = self.symmetric_threshold.compute_optimal_threshold_and_score(valid_y, y_pred)
+        print "Best threshold", threshold, '\ncorresponding F1Score:', score
         stat_dic = label_lists2types(valid_y, y_pred, sym_t=threshold)
 
         print values.TP, ':', stat_dic[values.TP], '\t\t', values.TN, ':', stat_dic[values.TN], '\n', \

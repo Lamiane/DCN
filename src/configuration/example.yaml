@@ -65,6 +65,7 @@
             ]
         }, !obj:algorithm_extensions.statistics.StatisticsSymmetricThreshold {
             call_list: [    # D2
+                !obj:algorithm_extensions.symmetric
                 !obj:algorithm_extensions.no_threshold.Precision { },
                 !obj:algorithm_extensions.no_threshold.Recall { },
                 !obj:algorithm_extensions.no_threshold.Accuracy { }

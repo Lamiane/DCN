@@ -73,39 +73,3 @@ class SymmetricThresholdWRTF1Score(F1Score):
         best_threshold = 0.5 + mean([t1, t2])   # adding 0.5 as the dictionary has been folded in half
 
         return best_threshold, max_score
-
-#
-# class OptimalF1Score1Threshold(TrainExtension):
-#     def __init__(self):
-#         self.f1_score_ext = None
-#         self.score_list = []
-#         self.threshold_list = []
-#         self.model = None
-#         self.dataset = None
-#         self.algorithm = None
-#
-#     def setup(self, model, dataset, algorithm):
-#         self.model = model
-#         self.dataset = dataset
-#         self.algorithm = algorithm
-#         self.f1_score_ext = F1Score1Threshold().setup(model, dataset, algorithm)
-#
-#     def on_monitor(self, model, dataset, algorithm):
-#         self.model = model
-#         self.dataset = dataset
-#         self.algorithm = algorithm
-#         search_space = [hp.uniform('t', 0, 1)]
-#         best_t = fmin(self.objective_function, search_space, algo=tpe.suggest, max_evals=10)
-#         self.threshold_list.append(best_t)
-#         f1_score = self.f1_score_ext.get_score(self.model, self.dataset, self.algorithm, best_t)
-#         self.score_list.append(f1_score)
-#
-#
-#     # we don't need it, let's inherit the default empty method
-#     # def on_save(self, model, dataset, algorithm):
-#     #     pass
-#
-#     def objective_function(self, samp):
-#         threshold = samp[0]
-#         f1_score = self.f1_score_ext.get_score(self.model, self.dataset, self.algorithm, threshold)
-#         return 1 - f1_score

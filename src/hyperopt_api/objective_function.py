@@ -105,7 +105,7 @@ def f1_score(train):
         return best_f1_score
     except AttributeError as ae:
         # return if F1Score extension hasn't been found
-        print "This pylearn.train.Train object doesn't use extensions.f1_score.F1Score extension. " \
+        print "This pylearn.train.Train object doesn't use algorithm_extensions.f1_score.F1Score extension. " \
               "F1 score hasn't been calculated. Please provide include F1Score extension in yaml " \
               "if you need F1 score calculated"
         raise ae
@@ -134,8 +134,9 @@ def f1_score_1threshold(train):
         return best_f1_score, threshold
     except AttributeError as ae:
         # return if F1Score extension hasn't been found
-        print "This pylearn.train.Train object doesn't use extensions.f1_score.F1Score1Threshold extension. " \
-              "F1 score hasn't been calculated. Please include F1Score extension in yaml " \
+        print "This pylearn.train.Train object doesn't use " \
+              "algorithm_extensions.symmetric_threshold.SymmetricThresholdWRTF1Score " \
+              "F1 score hasn't been calculated. Please include SymmetricThresholdWRTF1Score extension in yaml " \
               "if you need F1 score calculated"
         raise ae
 

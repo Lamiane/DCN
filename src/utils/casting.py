@@ -69,8 +69,8 @@ def label_lists2types(y_true, y_predicted, sym_t=None, t0=None, t1=None):
     FNN = 0
     FNP = 0
     for index in xrange(len(y_true)):
-        y_t = y_true[index]         # this is a label (a scalar value, 0 or 1)
-        y_p = y_predicted[index]    # these are predictions - a vector of two scalar values in range [0, 1]
+        y_t = y_true[index]             # this is a label (a scalar value, 0 or 1)
+        y_p = y_predicted[index][0]     # these are predictions - a vector of two scalar values in range [0, 1]
 
         print 'y_t', type(y_t), y_t
         print 'y_p', type(y_p), y_p

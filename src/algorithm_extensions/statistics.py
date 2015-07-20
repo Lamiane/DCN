@@ -115,7 +115,7 @@ class Precision(TrainExtension):
         if stat_dic[values.TP] == 0:
             precision = 0
         else:
-            precision = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FP])
+            precision = float(stat_dic[values.TP])/(stat_dic[values.TP] + stat_dic[values.FP])
 
         self.precision_list.append(precision)
         print "precision:", precision
@@ -146,7 +146,7 @@ class Recall(TrainExtension):
         if stat_dic[values.TP] == 0:
             recall = 0
         else:
-            recall = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FN])
+            recall = float(stat_dic[values.TP])/(stat_dic[values.TP] + stat_dic[values.FN])
 
         self.recall_list.append(recall)
         print "recall:", recall
@@ -178,7 +178,7 @@ class Accuracy(TrainExtension):
         if (stat_dic[values.TP] + stat_dic[values.TN]) == 0:
             accuracy = 0
         else:
-            accuracy = (stat_dic[values.TP]+stat_dic[values.TN])/sum(stat_dic.values())
+            accuracy = float(stat_dic[values.TP]+stat_dic[values.TN])/sum(stat_dic.values())
 
         self.accuracy_list.append(accuracy)
         print "accuracy:", accuracy

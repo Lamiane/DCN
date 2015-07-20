@@ -82,7 +82,7 @@ def label_lists2types(y_true, y_predicted, sym_t=None, t0=None, t1=None):
             FP += 1
         elif y_t == 1 and y_p[0] > t0:
             FN += 1
-        elif y_p == 0:  # and sample not classified
+        elif y_t == 0:  # and sample not classified
             FNN += 1
         else:   # y_p == 1 and sample not classified
             FNP += 1

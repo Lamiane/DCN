@@ -30,7 +30,8 @@ class SymmetricThresholdWRTF1Score(F1Score):
 
         if self.saving_path is not None:
             if max(self.score_list) == score:
-                model.save(self.saving_path)
+                pass
+                # TODO: saving here
 
         print "F1Score1Threshold score", score, "\ncorresponding threshold:", threshold
 

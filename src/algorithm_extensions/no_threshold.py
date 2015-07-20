@@ -33,7 +33,8 @@ class F1Score(TrainExtension):
 
         if self.saving_path is not None:
             if max(self.score_list) == score:
-                model.save(self.saving_path)
+                pass
+                # TODO: saving here
 
         print "F1 score:", score
 

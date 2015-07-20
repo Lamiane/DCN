@@ -43,10 +43,6 @@ class StatisticsNoThreshold(TrainExtension):
             except TypeError:
                 extension.on_monitor(model, dataset, algorithm)
 
-    # we don't need it, let's inherit the default empty method
-    # def on_save(self, model, dataset, algorithm):
-    #     pass
-
 
 class StatisticsSymmetricThreshold(TrainExtension):
     def __init__(self, call_list):
@@ -82,8 +78,6 @@ class StatisticsSymmetricThreshold(TrainExtension):
             values.FP, ':', stat_dic[values.FP], '\t\t', values.FN, ':', stat_dic[values.FN], '\n', \
             values.FNP, ':', stat_dic[values.FNP], '\t\t', values.FNN, ':', stat_dic[values.FNN]
 
-        print stat_dic
-
         for extension in self.call_list:
             # TODO: consider using inspect.getargspec()
             try:
@@ -94,3 +88,97 @@ class StatisticsSymmetricThreshold(TrainExtension):
     # we don't need it, let's inherit the default empty method
     # def on_save(self, model, dataset, algorithm):
     #     pass
+
+
+class Precision(TrainExtension):
+    def __init__(self):
+        self.predictor = None
+        self.precision_list = []
+
+    def setup(self, model, dataset, algorithm):
+        self.predictor = Predictor(model)
+
+    def on_monitor(self, model, dataset, algorithm, stat_dic=None):
+        import sys
+        sys.path.append('..')
+        from utils import values
+
+        if stat_dic is None:
+            from utils.casting import label_lists2types
+            # obtaining validating set
+            valid_x = algorithm.monitoring_dataset['valid'].X
+            valid_y = algorithm.monitoring_dataset['valid'].y
+            y_pred = self.predictor.get_predictions(valid_x)
+            stat_dic = label_lists2types(valid_y, y_pred)
+
+        # precision = TP/(TP + FP)
+        if stat_dic[values.TP] == 0:
+            precision = 0
+        else:
+            precision = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FP])
+
+        self.precision_list.append(precision)
+        print "precision:", precision
+
+
+class Recall(TrainExtension):
+    def __init__(self):
+        self.predictor = None
+        self.recall_list = []
+
+    def setup(self, model, dataset, algorithm):
+        self.predictor = Predictor(model)
+
+    def on_monitor(self, model, dataset, algorithm, stat_dic=None):
+        import sys
+        sys.path.append('..')
+        from utils import values
+
+        if stat_dic is None:
+            from utils.casting import label_lists2types
+            # obtaining validating set
+            valid_x = algorithm.monitoring_dataset['valid'].X
+            valid_y = algorithm.monitoring_dataset['valid'].y
+            y_pred = self.predictor.get_predictions(valid_x)
+            stat_dic = label_lists2types(valid_y, y_pred)
+
+        # recall = TP/(TP + FN)
+        if stat_dic[values.TP] == 0:
+            recall = 0
+        else:
+            recall = stat_dic[values.TP]/(stat_dic[values.TP] + stat_dic[values.FN])
+
+        self.recall_list.append(recall)
+        print "recall:", recall
+
+
+class Accuracy(TrainExtension):
+    def __init__(self):
+        self.predictor = None
+        self.accuracy_list = []
+
+    def setup(self, model, dataset, algorithm):
+        self.predictor = Predictor(model)
+
+    def on_monitor(self, model, dataset, algorithm, stat_dic=None):
+        import sys
+        sys.path.append('..')
+        from utils import values
+
+        if stat_dic is None:
+            from utils.casting import label_lists2types
+            # obtaining validating set
+            valid_x = algorithm.monitoring_dataset['valid'].X
+            valid_y = algorithm.monitoring_dataset['valid'].y
+
+            y_pred = self.predictor.get_predictions(valid_x)
+            stat_dic = label_lists2types(valid_y, y_pred)
+
+        # accuracy = (TP + TN) / TOTAL
+        if (stat_dic[values.TP] + stat_dic[values.TN]) == 0:
+            accuracy = 0
+        else:
+            accuracy = (stat_dic[values.TP]+stat_dic[values.TN])/sum(stat_dic.values())
+
+        self.accuracy_list.append(accuracy)
+        print "accuracy:", accuracy

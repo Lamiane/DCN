@@ -6,9 +6,10 @@ from get_predictions import Predictor
 
 
 class SymmetricThresholdWRTF1Score(F1Score):
-    def __init__(self):
+    def __init__(self, save_best_model_path=None):
         super(SymmetricThresholdWRTF1Score, self).__init__()
         self.threshold_list = []
+        self.saving_path = save_best_model_path
 
     def setup(self, model, dataset, algorithm):
         self.predictor = Predictor(model)
@@ -26,6 +27,10 @@ class SymmetricThresholdWRTF1Score(F1Score):
 
         self.threshold_list.append(threshold)
         self.score_list.append(score)
+
+        if self.saving_path is not None:
+            if max(self.score_list) == score:
+                model.save(self.saving_path)
 
         print "F1Score1Threshold score", score, "\ncorresponding threshold:", threshold
 
@@ -55,16 +60,16 @@ class SymmetricThresholdWRTF1Score(F1Score):
 
         TP = sum(1 for x in dic.values() if x == values.TP)
         FP_FN = len(dic)-TP
-        skipped = 0
+        unclassified = 0
         scores = []
         sorted_dic_keys = sorted(dic)   # don't want to sort dic over and over again
         for key in sorted_dic_keys:
-            skipped += 1
+            unclassified += 1
             if dic[key] == values.FN_FP:   # it was FN or FP
                 FP_FN -= 1
             else:
                 TP -= 1         # it was TP
-            scores.append(2*TP/(2*TP + FP_FN + 0.5 * skipped))
+            scores.append(2*TP/(2*TP + FP_FN + 0.5 * unclassified))
 
         best_score_index = argmax(scores)
         max_score = scores[best_score_index]

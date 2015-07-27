@@ -25,7 +25,7 @@ class StatisticsNoThreshold(TrainExtension):
         from utils.casting import label_lists2types
         from utils import values
 
-        print 'SHOWING STATISTICS FOR NO THRESHOLD'
+        print '\nSHOWING STATISTICS FOR NO THRESHOLD'
 
         valid_x = algorithm.monitoring_dataset['valid'].X
         valid_y = algorithm.monitoring_dataset['valid'].y
@@ -65,7 +65,7 @@ class StatisticsSymmetricThreshold(TrainExtension):
         from utils.casting import label_lists2types
         from utils import values
 
-        print 'SHOWING STATISTICS FOR SYMMETRIC THRESHOLD'
+        print '\nSHOWING STATISTICS FOR SYMMETRIC THRESHOLD'
 
         valid_x = algorithm.monitoring_dataset['valid'].X
         valid_y = algorithm.monitoring_dataset['valid'].y

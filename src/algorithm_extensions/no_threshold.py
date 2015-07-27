@@ -38,19 +38,19 @@ class F1Score(TrainExtension):
 
         print "F1 score:", score
 
-        ## <debug> POCHA
-        if self.debug:
-            import sys
-            sys.path.append('..')
-            from utils.common import get_timestamp
-            current_time = get_timestamp()
-            np.array(valid_x).dump(str(current_time)+"_valid_x")
-            np.array(valid_y).dump(str(current_time)+"_valid_y")
-            np.array(y_classes).dump(str(current_time)+"_y_classes")
-
-            self.debug = False
-
-        ## </debug> POCHA
+        # ## <debug> POCHA
+        # if self.debug:
+        #     import sys
+        #     sys.path.append('..')
+        #     from utils.common import get_timestamp
+        #     current_time = get_timestamp()
+        #     np.array(valid_x).dump(str(current_time)+"_valid_x")
+        #     np.array(valid_y).dump(str(current_time)+"_valid_y")
+        #     np.array(y_classes).dump(str(current_time)+"_y_classes")
+        #
+        #     self.debug = False
+        #
+        # ## </debug> POCHA
 
     # we don't need it, let's inherit the default empty method
     # def on_save(self, model, dataset, algorithm):

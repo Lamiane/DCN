@@ -8,6 +8,7 @@
 \usepackage{mathtools}
 %\usepackage{polski} %FIXME: może na końcu wywalić, chyba, ze ktoś z przypisów ma polskie nazwisko, o te nazwiska wcześniej zapytać
 \usepackage[T1]{fontenc}
+\usepackage{amsfonts}
 %\usepackage[sorting=nyt,style=apa]{biblatex}
 
 
@@ -60,6 +61,8 @@
     
     %TODO:Values: 0, 1, 2 and their meaning !!! nie ma tego w publikacji!
     The values constituting the dataset are discrete, namely: 0, 1 and 2. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).
+    
+    %TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmakoloblabla)
     
     \section{Sparsity} %TODO: zmienić hasła na zdania
     check if the data is sparse, it yes then state that it is and explain why
@@ -191,7 +194,7 @@
 	A *zmieniona wersja* of backpropagation algorithm has been provided to *include the changes that must be applied because of* the convolution operation and avoid the diminishing gradient flow. In this subsection the *zmienona wersja* of backpropagation is given and the problem of diminishing gradient flow is *addressed*.
 	
 	\subsubsection{The problems with a classical backpropagation} %TODO: notatki w tekst
-	  diminishing gradien flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.
+	  diminishing gradient flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.
 	
 	\subsubsection{Diminishing gradient flow} %TODO: zmienić poniższe notatki w tekst, sprawdzić czy w CNNach tez przypatkiem nie ma tego probloemu, bo w głębokich na pewno jest
 	  co to jest, skąd się bierze, można się wesprzeć wykładami Larochelle, on poleca dużo paperów zawsze.
@@ -206,6 +209,48 @@
     \section{Why was this model chosen}
 	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...
 	
+  \chapter{The Model} %TODO: napisac ten rozdzial
+      The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted, the untrue distribution of the data.
+      
+      \section{Small Data Size}
+      cross validation will be used. I have to implement it well and describe in this section
+      
+      \section{Unlabeled Data}
+      The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.
+      
+      \subsubsection{Naive Approach}
+      Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised but the unalabeled data could been used to improve parameters in the convolutional part of the model.
+           
+      % Example: if we had the following examples: [A, B, C, D, E] along with the following labels: [act, act, inact, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C, D, D, E, E] and the labels would be [act, act, act, act, inact, inact, inact, inact, act, inact].
+
+      Example: if we had the following examples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].
+      
+      The validation set included only labeled samples. The stochastic gradient descent algorithm included in pylearn2 package (include version) was used in this approach.
+      
+      \subsubsection{Fancy Approach}
+      In training set all the samples were included only once along with their proper labels. Once again the validation set included only labeled data. The learning algorithm was *changed* in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model but had no impact on the classification part.
+      
+      As a *base* we used the stochastic gradient descent algorithm implemented in pylearn2 (include version). The labeled examples were treated differently than the unlabeled ones.
+      
+      For labeled examples the SGD algorithm was run with no change. For unlabeled examples two *wektory poprawek (update vectors?)* were calculated - first was calculated as if the example was labeled as active, the second one as if the example was labeled as inactive. The two vectors were combined into a final one which was later used to update the parameters of the network.
+      
+      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeroes, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign then the corresponding element in the final vector was zero. If the corresponding elements in both vectors had the same sign then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
+      \begin{enumerate}
+       \item minimum of the absolute values of the two elements
+       \item maximum of the absolute values of the two elements
+       \item mean of the two elements
+       \item softmax mean of the two elements, i.e. having $x, y \in \mathbb{R}$ the softmax mean $\sigma$ is equal to $x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$.
+       
+       Remark: It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.
+      \end{enumerate}
+
+	
+      \section{Hyperparameters}
+      To perform this task we used hyperopt.
+      
+      \section{Unreal distribution of labels}
+      In reality there are more nonactive *samples* than active, in the data provided the ratio was 1/2.
+	
   \chapter{What can be improved} %TODO: napisać ten rozdział
     \section{Everything...}
       ...can be improved.\\
@@ -215,7 +260,7 @@
       Yoshua Bengio, Ian J. Goodfellow, Aaron Courville - \emph{Deep Learning}
     \bibitem{2DSIFT} %FIXME jak się robi przypisy? w sensie formalnym, nie latexowym
       Stefan Mordalski, Igor Podolak, Andrzej J. Bojarski - \emph{2D SIFt - a matrix of ligand-receptor interactions}
-    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, cool staff from Ph.D
+    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, cool staff from Ph.D, numpy, scipy?, hyperopt
     
   \end{thebibliography}
   

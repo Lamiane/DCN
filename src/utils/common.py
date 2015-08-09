@@ -60,3 +60,6 @@ def combinations(intersection):
     for s in xrange(0, len(intersection) + 1):
         for comb in itertools.combinations(intersection, s):
             yield comb
+
+
+

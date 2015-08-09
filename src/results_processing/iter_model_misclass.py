@@ -10,7 +10,8 @@ def process_raw_data(pathname):
     # not as I planned but it works well
     processed_data = ""
     for line in ppp:
-        if "misclass" in line or "ITERATION" in line:
+        # if "misclass" in line or "ITERATION" in line:
+        if "misclass" in line or "SAMP" in line:
             processed_data = processed_data + "\n" + line
     return processed_data
 
@@ -27,7 +28,8 @@ def prepare_data_for_plotting(processed_data):
 
     for line in processed_data:
         # either create a list for a new experiment
-        if 'ITERATION' in line:
+        # if 'ITERATION' in line:
+        if 'SAMP' in line:
             idx += 1
             results.append([])
         # or add a new misclass error to the experiment now being processed
@@ -41,12 +43,18 @@ def prepare_data_for_plotting(processed_data):
 
 def make_plots(y, min_n_of_epochs):
     import matplotlib.pyplot as plt
-    from os.path import join
+    from os.path import join, exists
+    from os import makedirs
     import sys
     sys.path.append('..')
     import configuration.model as config
     from utils.common import get_timestamp
     timestamp = get_timestamp()
+    # we are creating directory in which all the plots will be stored
+    storing_directory = join(config.path_for_storing, str(timestamp)+"_iter_middle_misclass")
+    # if directory doesn't exist (which should be always) create it
+    if not exists(storing_directory):
+        makedirs(storing_directory)
     # for each experiment that has been run
     for current_idx, experiment in enumerate(y):
         # if it has seen at least 3 epochs
@@ -55,7 +63,7 @@ def make_plots(y, min_n_of_epochs):
             plt.plot(range(1, len(experiment)+1), experiment, 'r-')
             plt.xlabel("number of epochs seen")
             plt.ylabel("misclass error")
-            plt.savefig(join(config.path_for_storing, timestamp+'epochs_misclass_model'+str(current_idx)+".png"),
+            plt.savefig(join(storing_directory, 'epochs_misclass_model'+str(current_idx)+".png"),
                         bbox_inches='tight')
             plt.clf()
 

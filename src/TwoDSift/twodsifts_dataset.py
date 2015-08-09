@@ -10,7 +10,7 @@ from pylearn2.utils.rng import make_np_rng
 class TwoDSiftData(DenseDesignMatrix):
 
     def __init__(self, filenames=[], y_val=[], nogap_type=True, labels=False, shuffle=True,
-                 start=None, stop=None, cv=None, normal_run=True):
+                 start=None, stop=None, cv=None, normal_run=True, indices_to_delete = None):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
         :type filenames: list of data files to read
@@ -74,6 +74,14 @@ class TwoDSiftData(DenseDesignMatrix):
         self.n_classes = len(set(y))
 
         y = np.array(y).reshape((self.examples, 1))     # POCHA TODO: czy to na pewno robi to co chcemy?
+
+        if indices_to_delete is not None:
+            for tuple_element in reversed(indices_to_delete):
+                from numpy import delete
+                ind = [i for i in xrange(tuple_element[0], tuple_element[1]+1)]
+                y = delete(y, ind)
+
+        print 'y.shape', y.shape
 
         if shuffle:
             self.shuffle_data(topo_view, y)

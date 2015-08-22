@@ -83,10 +83,19 @@ class SgdTailored(SGD):
         idx = 0
         on_load_batch = self.on_load_batch
         for batch in iterator:
+
+            ###############################################
+            # # # CHANGINGS TO THE ORIGINAL ALGORITHM # # #
+            ###############################################
+
+            # active     1    [[ 0. 1. 0. ]]
+            # nonactive  0    [[ 1. 0. 0. ]]
+            # middle    -1    [[ 0. 0. 1. ]]
+
             
             # if label was '0'
             if (batch[1] == np.array((1, 0, 0))).all():
-                batch = (batch[0], np.array((1,0)))
+                batch = (batch[0], np.array((1,0)))  # sure it's [1 0] not [0 1] ?
                 self.run_normal(dataset, batch)
                 continue 
             # if label was '1'
@@ -94,8 +103,23 @@ class SgdTailored(SGD):
                 batch = (batch[0], np.array((0,1)))
                 self.run_normal((dataset, batch)
                 continue
-            #elif we have to deal with unlabeled example
-            els
+            #else we have to deal with unlabeled example
+            else:  
+                parameters_on_load = self.save_parameters()
+                # running for active (or nonactive?)
+                batch = (batch[0], np.array((1,0)))
+                self.run_normal(dataset, batch)
+                diff1 = self.get_parameters
+                self.restore_parameters(parameters_on_load)
+                # running for nonactive (or active?)
+                batch = (batch[0], np.array((0,1)))
+                self.run_noraml(dataset, batch)
+                diff2 = self.get_parameters()
+                self.restore_parameters(parameters_on_load)
+                # updating the model
+                update_vector = self.calculate_update(diff1, diff2)
+                update_parameters(update_vector)
+
             #print 'batch', dir(batch)
             #print 'iterator', dir(iterator)
            
@@ -106,30 +130,10 @@ class SgdTailored(SGD):
             print 'batch', type(batch), batch[1],type(batch[1])
             #for callback in on_load_batch:
             #    callback(*batch)
-            ###############################################
-            # # # CHANGINGS TO THE ORIGINAL ALGORITHM # # #
-            ###############################################
-
-            # active     1    [[ 0. 1. 0. ]]
-            # nonactive  0    [[ 1. 0. 0. ]]
-            # middle    -1    [[ 0. 0. 1. ]]
- 
 
             from blessings import Terminal
             t = Terminal()
             from pprint import pprint
-
-            # if active
-            if (batch[1] == np.array([[ 0. 1. 0. ]])).all():
-                batch[1] = np.array([[ ... ]])
-                self.run_normal_sgd(batch)
-            # if nonactive
-            elif (batch[1] == np.array([[ 1. 0. 0. ]])).all():
-                batch[1] = np.array(([[ .. ]]))
-                self.run_normal_sgd(batch)
-            # else we have a middle, sir!
-            else:
-                self.run_tailored_sgd()
 
             #print t.bold_cyan('\n\n\n\tPARAMS before update:')
             #for param in self.params:

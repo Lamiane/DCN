@@ -7,6 +7,26 @@ from pylearn2.utils.data_specs import DataSpecsMapping
 
 
 class SgdTailored(SGD):
+
+    def __init__(self, learning_rate, combine_updates_rule, cost=None, batch_size=None,
+                 monitoring_batch_size=None, monitoring_batches=None,
+                 monitoring_dataset=None, monitor_iteration_mode='sequential',
+                 termination_criterion=None, update_callbacks=None, learning_rule=None,
+                 set_batch_size=False, train_iteration_mode=None, batches_per_iter=None,
+                 theano_function_mode=None, monitoring_costs=None, seed=[2012, 10, 5]):
+
+        self.combine_updates_rule = combine_updates_rule
+
+        super(SgdTailored, self).__init__(learning_rate=learning_rate, cost=cost, batch_size=batch_size,
+                                          monitoring_batch_size=monitoring_batch_size,
+                                          monitoring_batches=monitoring_batches, monitoring_dataset=monitoring_dataset,
+                                          monitor_iteration_mode=monitor_iteration_mode,
+                                          termination_criterion=termination_criterion, update_callbacks=update_callbacks,
+                                          learning_rule=learning_rule, set_batch_size=set_batch_size,
+                                          train_iteration_mode=train_iteration_mode, batches_per_iter=batches_per_iter,
+                                          theano_function_mode=theano_function_mode, monitoring_costs=monitoring_costs,
+                                          seed=seed)
+
     # we only want to change a part of training algorithm
     def train(self, dataset):
         """
@@ -39,7 +59,20 @@ class SgdTailored(SGD):
 
         print 'space tuple', type(space_tuple), space_tuple
         from pylearn2.space import VectorSpace
+
+        ###############################################
+        # # # CHANGINGS TO THE ORIGINAL ALGORITHM # # #
+        ###############################################
+
+        # we have 3 classes in dataset (active, inactive, middle), but only two softmax neurons
+        # therefore VectorSpace has dim = 2 and an error will be raised when trying to convert
+        # label to a vector of length 2. So we change the vector length for a while and convert
+        # things manually.
         space_tuple = (space_tuple[0], VectorSpace(dim=3))
+
+        #############################
+        # # #  END OF CHANGINGS # # #
+        #############################
 
         source_tuple = mapping.flatten(data_specs[1], return_tuple=True)
         if len(space_tuple) == 0:
@@ -58,7 +91,7 @@ class SgdTailored(SGD):
                                     return_tuple=True, rng=rng,
                                     num_batches=self.batches_per_iter)
 
-        print 'flat data specs', type(flat_data_specs), flat_data_specs
+        # print 'flat data specs', type(flat_data_specs), flat_data_specs
         # flat data specs <type 'tuple'>
         # (CompositeSpace(Conv2DSpace(shape=(18, 3492), num_channels=1, axes=('c', 0, 1, 'b'), dtype=float64),
         #                             VectorSpace(dim=2, dtype=float64)),
@@ -66,15 +99,21 @@ class SgdTailored(SGD):
 
         on_load_batch = self.on_load_batch
         for batch in iterator:
+            # batch is a list with two numpy arrays: [sample, label]
+            # self.params is a list with theano.tensor.sharedvar.TensorSharedVariables
+            # theano.tensor.sharedvar.TensorSharedVariable.get_value() returns numpy.array
+            # you can set value with theano.tensor.sharedvar.TensorSharedVariable.set_value(np.array_object)
+
             # this being here might cause troubles as batch is a nasty thing right now
             for callback in on_load_batch:
-               callback(*batch)
+                callback(*batch)
 
             ###############################################
             # # # CHANGINGS TO THE ORIGINAL ALGORITHM # # #
             ###############################################
 
             # GOOD ADVICE: if something is very wrong check it the following map is valid
+            # TODO: check this
             # active     1    [[ 0. 1. 0. ]]    [[ 0. 1. ]]
             # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
             # middle    -1    [[ 0. 0. 1. ]]
@@ -82,26 +121,53 @@ class SgdTailored(SGD):
             # if label was '0'
             if (batch[1] == np.array((1, 0, 0))).all():
                 batch = (batch[0], np.array((1, 0)))
-                self.run_normal(dataset, batch)
+                self.sgd_update(*batch)
             # if label was '1'
             elif (batch[1] == np.array((0, 1, 0))).all():
                 batch = (batch[0], np.array((0, 1)))
-                self.run_normal((dataset, batch))
+                self.sgd_update(*batch)
             # else we have to deal with unlabeled example
             else:
                 parameters_on_load = self.get_parameters()
-                # running for active (or nonactive?)
+
+                ######################################
+                # # # RUNNING AS INACTIVE SAMPLE # # #
+                ######################################
+
+                # setting label as inactive
                 batch = (batch[0], np.array((1, 0)))
-                self.run_normal(dataset, batch)
-                diff1 = self.get_parameters()
-                self.restore_parameters(parameters_on_load)
-                # running for nonactive (or active?)
-                batch = (batch[0], np.array((0, 1)))
-                self.run_normal(dataset, batch)
-                diff2 = self.get_parameters()
-                self.restore_parameters(parameters_on_load)
+
                 # updating the model
-                update_vector = self.calculate_update(diff1, diff2)
+                self.sgd_update(*batch)
+
+                # remember changing in parameters
+                params_after_active = self.get_parameters()
+                diff_active = self.get_difference(parameters_on_load, params_after_active)
+
+                # bring back on load parameters
+                self.restore_parameters(parameters_on_load)
+
+                ####################################
+                # # # RUNNING AS ACTIVE SAMPLE # # #
+                ####################################
+
+                # setting label as active
+                batch = (batch[0], np.array((0, 1)))
+
+                # updating the model
+                self.sgd_update(*batch)
+
+                # remember changing in parameters
+                params_after_inactive = self.get_parameters()
+                diff_inactive = self.get_difference(parameters_on_load, params_after_inactive)
+
+                # bring back on load parameters
+                self.restore_parameters(parameters_on_load)
+
+                ##############################
+                # # # UPDATING THE MODEL # # #
+                ##############################
+                update_vector = self.calculate_update(diff_active, diff_inactive)
                 self.update_parameters(update_vector)
 
             #############################
@@ -124,18 +190,40 @@ class SgdTailored(SGD):
             if not isfinite(value):
                 raise Exception("NaN in " + param.name)
 
-    def run_normal(self, dataset, batch):
-        pass
-
+    # TODO: debug
     def get_parameters(self):
-        pass
+        param_dict = {}
+        for param in self.params:
+            param_dict[param.name] = param.get_value.copy()
+        return param_dict
 
-    def restore_parameters(self, saved_parameters):
-        pass
+    def restore_parameters(self, saved_parameters_dict):
+        for param in self.params:
+            param = saved_parameters_dict[param.name].copy()
 
-    def calculate_update(self, vec1, vec2):
-        pass
+    def get_difference(self, base_value_dict, new_value_dict):
+        difference_dict = {}
+        for key in new_value_dict:
+            if key not in base_value_dict:
+                raise KeyError(key+"is not in base_value_dict")
+            difference_dict[key] = base_value_dict[key]-new_value_dict[key]
+        return difference_dict
 
-    def update_parameters(self, update_vector):
+    def calculate_update(self, vec1_dict, vec2_dict):
         pass
+        # niech wynik bedzie mapa po params
+
+    def update_parameters(self, update_vector_dict):
+        # mapa po params, dodawanie or something
+        # bez updejtu czesci klasyfikacyjnej!
+        # if 'softmax' in param.name or 'classif' in param.name
+        for param in self.params:
+            # not updating the classification part of network
+            # ASSUMPTION: layers responsible for classification have 'softmax' or 'classif' in name
+            # i.e. they are called for example softmax_1, classify, 01_classification_layer...
+            if 'softmax' in param.name or 'classif' in param.name:
+                continue
+            # else
+            param.set_value(update_vector_dict[param.name].copy())
+
 

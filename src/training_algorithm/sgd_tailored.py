@@ -123,7 +123,7 @@ class SgdTailored(SGD):
             # if label was '0'
             if (batch[1] == np.array((1, 0, 0))).all():
                 print "example: nonactive"
-                batch = (batch[0], np.array((1, 0)))
+                batch = (batch[0], np.reshape(np.array((1, 0)), (2, 1)))
                 self.sgd_update(*batch)
             # if label was '1'
             elif (batch[1] == np.array((0, 1, 0))).all():
@@ -140,7 +140,7 @@ class SgdTailored(SGD):
                 ######################################
                 print 'running as inactive'
                 # setting label as inactive
-                batch = (batch[0], np.array((1, 0)))
+                batch = (batch[0], np.reshape(np.array((1, 0)), (2, 1)))
                 self.print_params("on entering inactive")
                 # updating the model
                 self.sgd_update(*batch)
@@ -174,7 +174,7 @@ class SgdTailored(SGD):
                 ##############################
                 update_vector = self.calculate_update(diff_active, diff_inactive)
                 self.print_dict_of_params(update_vector, "update vector")
-                self.update_parameters(update_vector)
+                self.update_non_classification_parameters(update_vector)
 
             #############################
             # # #  END OF CHANGINGS # # #
@@ -220,7 +220,7 @@ class SgdTailored(SGD):
     def calculate_update(self, vec1_dict, vec2_dict):
         return self.combine_updates_rule.combine_dict(vec1_dict, vec2_dict)
 
-    def update_parameters(self, update_vector_dict):
+    def update_non_classification_parameters(self, update_vector_dict):
         # bez updejtu czesci klasyfikacyjnej!
         # if 'softmax' in param.name or 'classif' in param.name
         for param in self.params:
@@ -236,10 +236,10 @@ class SgdTailored(SGD):
     def print_params(self, information):
         print information.upper()
         for param in self.params:
-            print param.name, param.get_value()[0:9], '\n'
+            print param.name, param.get_value()[0][0:9], '\n'
 
     def print_dict_of_params(self, dict_of_params, information):
         print information.upper()
         for key in dict_of_params:
-            print key, dict_of_params[key][0:9], '\n'
+            print key, dict_of_params[key][0][0:9], '\n'
 

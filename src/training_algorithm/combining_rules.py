@@ -42,8 +42,11 @@ class Minimum(CombineRule):
             # check if keys are valid
             if key not in vec2_dict_zeroed:
                 raise KeyError
-            indices_lower_than_zero = vec1_dict_zeroed < 0
-            minimum_dict[key] = np.minimum(np.abs(vec1_dict_zeroed[key], np.abs(vec2_dict_zeroed[key])))
+            # TODO: testing
+            sign = np.sign(vec1_dict_zeroed)
+            # element-wise multiplication
+            minimum_dict[key] = np.multiply(sign,
+                                            np.minimum(np.abs(vec1_dict_zeroed[key], np.abs(vec2_dict_zeroed[key]))))
             # minimum_dict[key] = -1 razy te indices, jakos to ogarnac
 
         return minimum_dict
@@ -68,3 +71,26 @@ class Mean(CombineRule):
             mean_dict[key] = (vec1_dict_zeroed+vec2_dict_zeroed)/2
 
         return mean_dict
+
+
+class Softmax(CombineRule):
+    # TODO: testing
+    def combine_dict(self, vec1_dict, vec2_dict):
+        import numpy as np
+        # copy the input vectors in order not to change them in any way
+        # this might cause OutOfMemory problems
+        # but it helps avoiding difficult to track changes in network parameters
+        import copy
+        vec1_dict_zeroed, vec2_dict_zeroed = self.zero_opposite_values_dict(copy.deepcopy(vec1_dict),
+                                                                            copy.deepcopy(vec2_dict))
+
+        softmax_dict = {}
+        for key in vec1_dict_zeroed:
+            if key not in vec2_dict_zeroed:
+                raise KeyError
+            ve1 = vec1_dict_zeroed[key]
+            ve2 = vec2_dict_zeroed[key]
+            divisor = np.exp(ve1) + np.exp(ve2)
+            softmax_dict[key] = np.multiply(ve1, np.exp(ve1)/divisor) + np.multiply(ve2, np.exp(ve2)/divisor)
+
+        return softmax_dict

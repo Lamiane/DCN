@@ -108,6 +108,8 @@ class SgdTailored(SGD):
             for callback in on_load_batch:
                 callback(*batch)
 
+            self.print_params("on entering iteration")
+
             ###############################################
             # # # CHANGINGS TO THE ORIGINAL ALGORITHM # # #
             ###############################################
@@ -120,59 +122,65 @@ class SgdTailored(SGD):
 
             # if label was '0'
             if (batch[1] == np.array((1, 0, 0))).all():
+                print "example: nonactive"
                 batch = (batch[0], np.array((1, 0)))
                 self.sgd_update(*batch)
             # if label was '1'
             elif (batch[1] == np.array((0, 1, 0))).all():
+                print "example: active"
                 batch = (batch[0], np.array((0, 1)))
                 self.sgd_update(*batch)
             # else we have to deal with unlabeled example
             else:
+                print "example: middle"
                 parameters_on_load = self.get_parameters()
 
                 ######################################
                 # # # RUNNING AS INACTIVE SAMPLE # # #
                 ######################################
-
+                print 'running as inactive'
                 # setting label as inactive
                 batch = (batch[0], np.array((1, 0)))
-
+                self.print_params("on entering inactive")
                 # updating the model
                 self.sgd_update(*batch)
-
-                # remember changing in parameters
-                params_after_active = self.get_parameters()
-                diff_active = self.get_difference(parameters_on_load, params_after_active)
-
-                # bring back on load parameters
-                self.restore_parameters(parameters_on_load)
-
-                ####################################
-                # # # RUNNING AS ACTIVE SAMPLE # # #
-                ####################################
-
-                # setting label as active
-                batch = (batch[0], np.array((0, 1)))
-
-                # updating the model
-                self.sgd_update(*batch)
-
+                self.print_params("after update inactive")
                 # remember changing in parameters
                 params_after_inactive = self.get_parameters()
                 diff_inactive = self.get_difference(parameters_on_load, params_after_inactive)
-
+                self.print_dict_of_params(diff_inactive, "difference")
                 # bring back on load parameters
                 self.restore_parameters(parameters_on_load)
-
+                self.print_params('after restore')
+                ####################################
+                # # # RUNNING AS ACTIVE SAMPLE # # #
+                ####################################
+                print 'running as active'
+                # setting label as active
+                batch = (batch[0], np.array((0, 1)))
+                self.print_params('on entering active')
+                # updating the model
+                self.sgd_update(*batch)
+                self.print_params('after update active')
+                # remember changing in parameters
+                params_after_active = self.get_parameters()
+                diff_active = self.get_difference(parameters_on_load, params_after_active)
+                self.print_dict_of_params(diff_active, "difference")
+                # bring back on load parameters
+                self.restore_parameters(parameters_on_load)
+                self.print_params('after restore')
                 ##############################
                 # # # UPDATING THE MODEL # # #
                 ##############################
                 update_vector = self.calculate_update(diff_active, diff_inactive)
+                self.print_dict_of_params(update_vector, "update vector")
                 self.update_parameters(update_vector)
 
             #############################
             # # #  END OF CHANGINGS # # #
             #############################
+
+            self.print_params('on leaving')
 
             # iterator might return a smaller batch if dataset size
             # isn't divisible by batch_size
@@ -210,11 +218,9 @@ class SgdTailored(SGD):
         return difference_dict
 
     def calculate_update(self, vec1_dict, vec2_dict):
-        pass
-        # niech wynik bedzie mapa po params
+        return self.combine_updates_rule.combine_dict(vec1_dict, vec2_dict)
 
     def update_parameters(self, update_vector_dict):
-        # mapa po params, dodawanie or something
         # bez updejtu czesci klasyfikacyjnej!
         # if 'softmax' in param.name or 'classif' in param.name
         for param in self.params:
@@ -224,6 +230,16 @@ class SgdTailored(SGD):
             if 'softmax' in param.name or 'classif' in param.name:
                 continue
             # else
-            param.set_value(update_vector_dict[param.name].copy())
+            new_value = param.get_value() + update_vector_dict[param.name].copy()
+            param.set_value(new_value)
 
+    def print_params(self, information):
+        print information.upper()
+        for param in self.params:
+            print param.name, param.get_value()[0:9], '\n'
+
+    def print_dict_of_params(self, dict_of_params, information):
+        print information.upper()
+        for key in dict_of_params:
+            print key, dict_of_params[key][0:9], '\n'
 

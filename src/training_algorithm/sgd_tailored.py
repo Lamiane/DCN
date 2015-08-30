@@ -220,7 +220,7 @@ class SgdTailored(SGD):
 
     def restore_parameters(self, saved_parameters_dict):
         for param in self.params:
-            param = saved_parameters_dict[param.name].copy()
+            param.set_value(saved_parameters_dict[param.name].copy())
 
     def get_difference(self, base_value_dict, new_value_dict):
         difference_dict = {}
@@ -267,7 +267,7 @@ class SgdTailored(SGD):
             for key in dict_of_params:
                 if key not in self.debug_dict:
                     self.debug_dict[key] = ''
-                self.debug_dict[key] += information.upper() + ' ' + str(np.ravel(dict_of_params[key])[0:9]), '\n'
+                self.debug_dict[key] += information.upper() + ' ' + str(np.ravel(dict_of_params[key])[0:9]) + '\n'
 
     def print_self_debug(self, clear_self_debug_dict=True):
         for key in self.debug_dict:

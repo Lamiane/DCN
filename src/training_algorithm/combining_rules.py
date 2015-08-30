@@ -43,7 +43,7 @@ class Minimum(CombineRule):
             if key not in vec2_dict_zeroed:
                 raise KeyError
             # TODO: testing
-            sign = np.sign(vec1_dict_zeroed)
+            sign = np.sign(vec1_dict_zeroed[key])
             # element-wise multiplication
             minimum_dict[key] = np.multiply(sign,
                                             np.minimum(np.abs(vec1_dict_zeroed[key]), np.abs(vec2_dict_zeroed[key]))

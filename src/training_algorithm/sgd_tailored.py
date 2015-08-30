@@ -256,7 +256,7 @@ class SgdTailored(SGD):
                 if param.name not in self.debug_dict:
                     self.debug_dict[param.name] = ''
                 self.debug_dict[param.name] += information.upper() + ' ' + terminal_configuration +\
-                    np.ravel(param.get_value())[0:9] + ' ' + t.normal + '\n'
+                    str(np.ravel(param.get_value())[0:9]) + ' ' + t.normal + '\n'
 
     def print_dict_of_params(self, dict_of_params, information, step_by_step=False, param_by_param=True):
         if step_by_step:
@@ -267,7 +267,7 @@ class SgdTailored(SGD):
             for key in dict_of_params:
                 if key not in self.debug_dict:
                     self.debug_dict[key] = ''
-                self.debug_dict[key] += information.upper() + ' ' + np.ravel(dict_of_params[key])[0:9], '\n'
+                self.debug_dict[key] += information.upper() + ' ' + str(np.ravel(dict_of_params[key])[0:9]), '\n'
 
     def print_self_debug(self, clear_self_debug_dict=True):
         for key in self.debug_dict:

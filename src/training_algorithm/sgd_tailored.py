@@ -18,6 +18,7 @@ class SgdTailored(SGD):
                  theano_function_mode=None, monitoring_costs=None, seed=[2012, 10, 5]):
 
         self.combine_updates_rule = combine_updates_rule
+        self.debug_dict = {}
 
         super(SgdTailored, self).__init__(learning_rate=learning_rate, cost=cost, batch_size=batch_size,
                                           monitoring_batch_size=monitoring_batch_size,
@@ -190,11 +191,11 @@ class SgdTailored(SGD):
             # how many examples would actually have been in the batch,
             # since it was empty, so actual_batch_size would be reported as 0.
 
-
             # OK, now lines below need batch in the previous size. So I just set the batch to what is used to be
             # before my wicked transformations.
             batch = (batch[0], batch_1_on_load)
 
+            self.print_self_debug()
 
             #############################
             # # #  END OF CHANGINGS # # #
@@ -245,13 +246,31 @@ class SgdTailored(SGD):
             new_value = param.get_value() + update_vector_dict[param.name].copy()
             param.set_value(new_value)
 
-    def print_params(self, information, terminal_configuration):
-        print information.upper()
-        for param in self.params:
-            print terminal_configuration + param.name, np.ravel(param.get_value())[0:9], t.normal + '\n'
+    def print_params(self, information, terminal_configuration, step_by_step=False, param_by_param=True):
+        if step_by_step:
+            print information.upper()
+            for param in self.params:
+                print terminal_configuration + param.name, np.ravel(param.get_value())[0:9], t.normal + '\n'
+        elif param_by_param:
+            for param in self.params:
+                if param.name not in self.debug_dict:
+                    self.debug_dict[param.name] = ''
+                self.debug_dict[param.name] += information.upper() + ' ' + terminal_configuration +\
+                    np.ravel(param.get_value())[0:9] + ' ' + t.normal + '\n'
 
-    def print_dict_of_params(self, dict_of_params, information):
-        print information.upper()
-        for key in dict_of_params:
-            print key, np.ravel(dict_of_params[key])[0:9], '\n'
+    def print_dict_of_params(self, dict_of_params, information, step_by_step=False, param_by_param=True):
+        if step_by_step:
+            print information.upper()
+            for key in dict_of_params:
+                print key, np.ravel(dict_of_params[key])[0:9], '\n'
+        elif param_by_param:
+            for key in dict_of_params:
+                if key not in self.debug_dict:
+                    self.debug_dict[key] = ''
+                self.debug_dict[key] += information.upper() + ' ' + np.ravel(dict_of_params[key])[0:9], '\n'
 
+    def print_self_debug(self, clear_self_debug_dict=True):
+        for key in self.debug_dict:
+            print key, self.debug_dict[key], '\n'
+        if clear_self_debug_dict:
+            self.debug_dict = {}

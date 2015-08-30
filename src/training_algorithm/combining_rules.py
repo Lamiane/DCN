@@ -46,7 +46,8 @@ class Minimum(CombineRule):
             sign = np.sign(vec1_dict_zeroed)
             # element-wise multiplication
             minimum_dict[key] = np.multiply(sign,
-                                            np.minimum(np.abs(vec1_dict_zeroed[key], np.abs(vec2_dict_zeroed[key]))))
+                                            np.minimum(np.abs(vec1_dict_zeroed[key]), np.abs(vec2_dict_zeroed[key]))
+                                            )
             # minimum_dict[key] = -1 razy te indices, jakos to ogarnac
 
         return minimum_dict

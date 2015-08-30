@@ -127,7 +127,7 @@ class SgdTailored(SGD):
             # if label was '0'
             if (batch[1] == np.array((1, 0, 0))).all():
                 print "example: nonactive"
-                batch = (batch[0], np.reshape(np.array((1, 0)), (2, 1)))
+                batch = (batch[0], np.reshape(np.array((1, 0)), (1, 2)))
                 self.sgd_update(*batch)
             # if label was '1'
             elif (batch[1] == np.array((0, 1, 0))).all():
@@ -144,7 +144,7 @@ class SgdTailored(SGD):
                 ######################################
                 print 'running as inactive'
                 # setting label as inactive
-                batch = (batch[0], np.reshape(np.array((1, 0)), (2, 1)))
+                batch = (batch[0], np.reshape(np.array((1, 0)), (1, 2)))
                 self.print_params("on entering inactive", t.blue)
                 # updating the model
                 self.sgd_update(*batch)
@@ -161,7 +161,7 @@ class SgdTailored(SGD):
                 ####################################
                 print 'running as active'
                 # setting label as active
-                batch = (batch[0], np.array((0, 1)))
+                batch = (batch[0], np.reshape(np.array((0, 1)), (1, 2)))
                 self.print_params('on entering active', t.blue)
                 # updating the model
                 self.sgd_update(*batch)
@@ -248,10 +248,10 @@ class SgdTailored(SGD):
     def print_params(self, information, terminal_configuration):
         print information.upper()
         for param in self.params:
-            print terminal_configuration + param.name, param.get_value()[0:9], t.normal + '\n'
+            print terminal_configuration + param.name, np.ravel(param.get_value())[0:9], t.normal + '\n'
 
     def print_dict_of_params(self, dict_of_params, information):
         print information.upper()
         for key in dict_of_params:
-            print key, dict_of_params[key][0:9], '\n'
+            print key, np.ravel(dict_of_params[key])[0:9], '\n'
 

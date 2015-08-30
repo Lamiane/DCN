@@ -132,7 +132,7 @@ class SgdTailored(SGD):
             # if label was '1'
             elif (batch[1] == np.array((0, 1, 0))).all():
                 print "example: active"
-                batch = (batch[0], np.array((0, 1)))
+                batch = (batch[0], np.reshape(np.array((0, 1)), (1, 2)))
                 self.sgd_update(*batch)
             # else we have to deal with unlabeled example
             else:

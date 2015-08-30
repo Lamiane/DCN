@@ -4,6 +4,8 @@ from pylearn2.space import CompositeSpace
 from pylearn2.utils.iteration import is_stochastic
 from pylearn2.utils import isfinite
 from pylearn2.utils.data_specs import DataSpecsMapping
+from blessings import Terminal
+t = Terminal()
 
 
 class SgdTailored(SGD):
@@ -108,17 +110,19 @@ class SgdTailored(SGD):
             for callback in on_load_batch:
                 callback(*batch)
 
-            self.print_params("on entering iteration")
-
             ###############################################
             # # # CHANGINGS TO THE ORIGINAL ALGORITHM # # #
             ###############################################
+
+            self.print_params("on entering iteration", t.cyan)
 
             # GOOD ADVICE: if something is very wrong check it the following map is valid
             # TODO: check this
             # active     1    [[ 0. 1. 0. ]]    [[ 0. 1. ]]
             # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
             # middle    -1    [[ 0. 0. 1. ]]
+
+            batch_1_on_load = batch[1].copy()
 
             # if label was '0'
             if (batch[1] == np.array((1, 0, 0))).all():
@@ -141,34 +145,34 @@ class SgdTailored(SGD):
                 print 'running as inactive'
                 # setting label as inactive
                 batch = (batch[0], np.reshape(np.array((1, 0)), (2, 1)))
-                self.print_params("on entering inactive")
+                self.print_params("on entering inactive", t.blue)
                 # updating the model
                 self.sgd_update(*batch)
-                self.print_params("after update inactive")
+                self.print_params("after update inactive", t.green)
                 # remember changing in parameters
                 params_after_inactive = self.get_parameters()
                 diff_inactive = self.get_difference(parameters_on_load, params_after_inactive)
                 self.print_dict_of_params(diff_inactive, "difference")
                 # bring back on load parameters
                 self.restore_parameters(parameters_on_load)
-                self.print_params('after restore')
+                self.print_params('after restore', t.yellow)
                 ####################################
                 # # # RUNNING AS ACTIVE SAMPLE # # #
                 ####################################
                 print 'running as active'
                 # setting label as active
                 batch = (batch[0], np.array((0, 1)))
-                self.print_params('on entering active')
+                self.print_params('on entering active', t.blue)
                 # updating the model
                 self.sgd_update(*batch)
-                self.print_params('after update active')
+                self.print_params('after update active', t.green)
                 # remember changing in parameters
                 params_after_active = self.get_parameters()
                 diff_active = self.get_difference(parameters_on_load, params_after_active)
                 self.print_dict_of_params(diff_active, "difference")
                 # bring back on load parameters
                 self.restore_parameters(parameters_on_load)
-                self.print_params('after restore')
+                self.print_params('after restore', t.yellow)
                 ##############################
                 # # # UPDATING THE MODEL # # #
                 ##############################
@@ -176,17 +180,25 @@ class SgdTailored(SGD):
                 self.print_dict_of_params(update_vector, "update vector")
                 self.update_non_classification_parameters(update_vector)
 
-            #############################
-            # # #  END OF CHANGINGS # # #
-            #############################
+            # end of if
 
-            self.print_params('on leaving')
+            self.print_params('on leaving', t.red)
 
             # iterator might return a smaller batch if dataset size
             # isn't divisible by batch_size
             # Note: if data_specs[0] is a NullSpace, there is no way to know
             # how many examples would actually have been in the batch,
             # since it was empty, so actual_batch_size would be reported as 0.
+
+
+            # OK, now lines below need batch in the previous size. So I just set the batch to what is used to be
+            # before my wicked transformations.
+            batch = (batch[0], batch_1_on_load)
+
+
+            #############################
+            # # #  END OF CHANGINGS # # #
+            #############################
             actual_batch_size = flat_data_specs[0].np_batch_size(batch)
             self.monitor.report_batch(actual_batch_size)
             for callback in self.update_callbacks:
@@ -202,7 +214,7 @@ class SgdTailored(SGD):
     def get_parameters(self):
         param_dict = {}
         for param in self.params:
-            param_dict[param.name] = param.get_value.copy()
+            param_dict[param.name] = param.get_value().copy()
         return param_dict
 
     def restore_parameters(self, saved_parameters_dict):
@@ -233,13 +245,13 @@ class SgdTailored(SGD):
             new_value = param.get_value() + update_vector_dict[param.name].copy()
             param.set_value(new_value)
 
-    def print_params(self, information):
+    def print_params(self, information, terminal_configuration):
         print information.upper()
         for param in self.params:
-            print param.name, param.get_value()[0][0:9], '\n'
+            print terminal_configuration + param.name, param.get_value()[0:9], t.normal + '\n'
 
     def print_dict_of_params(self, dict_of_params, information):
         print information.upper()
         for key in dict_of_params:
-            print key, dict_of_params[key][0][0:9], '\n'
+            print key, dict_of_params[key][0:9], '\n'
 

@@ -21,7 +21,7 @@ class CombineRule(object):
             indices_to_zero = (vec1_dict_copy[key] * vec2_dict_copy[key]) < 0
             vec1_dict_copy[key][indices_to_zero] = 0
             vec2_dict_copy[key][indices_to_zero] = 0
-        return vec1_dict, vec2_dict
+        return vec1_dict_copy, vec2_dict_copy
 
 
 class Minimum(CombineRule):

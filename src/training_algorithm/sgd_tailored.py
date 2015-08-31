@@ -19,7 +19,7 @@ class SgdTailored(SGD):
 
         self.combine_updates_rule = combine_updates_rule
         self.debug_dict = {}
-
+        self.second = False
         super(SgdTailored, self).__init__(learning_rate=learning_rate, cost=cost, batch_size=batch_size,
                                           monitoring_batch_size=monitoring_batch_size,
                                           monitoring_batches=monitoring_batches, monitoring_dataset=monitoring_dataset,
@@ -197,6 +197,10 @@ class SgdTailored(SGD):
 
             self.print_self_debug()
 
+            if self.second:
+                import sys
+                sys.exit(0)
+
             #############################
             # # #  END OF CHANGINGS # # #
             #############################
@@ -210,6 +214,8 @@ class SgdTailored(SGD):
             value = param.get_value(borrow=True)
             if not isfinite(value):
                 raise Exception("NaN in " + param.name)
+        self.second = True
+
 
     # TODO: debug
     def get_parameters(self):

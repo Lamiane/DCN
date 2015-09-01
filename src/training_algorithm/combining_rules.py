@@ -70,7 +70,7 @@ class Mean(CombineRule):
         for key in vec1_dict_zeroed:
             if key not in vec2_dict_zeroed:
                 raise KeyError
-            mean_dict[key] = (vec1_dict_zeroed+vec2_dict_zeroed)/2
+            mean_dict[key] = (vec1_dict_zeroed[key]+vec2_dict_zeroed[key])/2
 
         return mean_dict
 

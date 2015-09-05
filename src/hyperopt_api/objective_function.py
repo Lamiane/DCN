@@ -96,10 +96,16 @@ def f1_score(train):
     try:
         # finding F1Score extension in train.extensions
         f1_score_ext = None
-        for element in train.extensions:
-            if isinstance(element, F1Score):
-                f1_score_ext = element
-                break
+        if 'extensions' in dir(train):
+            for element in train.extensions:
+                if isinstance(element, F1Score):
+                    f1_score_ext = element
+                    break
+        elif 'cv_extensions' in dir(train):
+            for element in train.cv_extensions:
+                if isinstance(element, F1Score):
+                    f1_score_ext = element
+                    break
 
         best_f1_score = max(f1_score_ext.score_list)
 
@@ -121,10 +127,16 @@ def f1_score_1threshold(train):
     try:
         # finding F1Score1Threshold extension in train.extensions
         f1_score_ext = None
-        for element in train.extensions:
-            if isinstance(element, SymmetricThresholdWRTF1Score):
-                f1_score_ext = element
-                break
+        if 'extensions' in dir(train):
+            for element in train.extensions:
+                if isinstance(element, SymmetricThresholdWRTF1Score):
+                    f1_score_ext = element
+                    break
+        elif 'cv_extensions' in dir(train):
+            for element in train.cv_extensions:
+                if isinstance(element, SymmetricThresholdWRTF1Score):
+                    f1_score_ext = element
+                    break
 
         best_f1_score = max(f1_score_ext.score_list)
         threshold = f1_score_ext.threshold_list[argmax(f1_score_ext.score_list)]

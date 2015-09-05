@@ -1,5 +1,6 @@
 __author__ = 'agnieszka'
 from pylearn2.train_extensions import TrainExtension
+from pylearn2.cross_validation.train_cv_extensions import TrainCVExtension
 from sklearn.metrics import f1_score
 import sys
 sys.path.append('..')

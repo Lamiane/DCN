@@ -1,11 +1,12 @@
-!obj:pylearn2.train.Train {
-    dataset: &train !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
-        filenames: %(path)s
-        y_val: [[1], [0], [-1]],
-        cv: [5, [0, 1, 2, 3]],
-        normal_run: True    # POCHA
+!obj:pylearn2.cross_validation.TrainCV {
+    dataset_iterator: !obj:pylearn2.cross_validation.dataset_iterators.DatasetKFold {
+        dataset: &train !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
+            filenames: %(path)s
+            y_val: [[1], [0], [-1]],
+            cv: [5, [0, 1, 2, 3]],
+            normal_run: True    # POCHA
+        },
     },
-
     model: %(model)s
 
     algorithm: !obj:training_algorithm.sgd_tailored.SgdTailored { # trainig algorithm: Batch Gradient Descent

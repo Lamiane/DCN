@@ -216,8 +216,6 @@ class SgdTailored(SGD):
                 raise Exception("NaN in " + param.name)
         self.second = True
 
-
-    # TODO: debug
     def get_parameters(self):
         param_dict = {}
         for param in self.params:

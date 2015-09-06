@@ -1,13 +1,6 @@
-from value_getters import f1_score_1threshold_get_value
-
 __author__ = 'agnieszka'
-from parser import build
-from pylearn2.config import yaml_parse
-from os.path import join
-import traceback
 import sys
 sys.path.append('..')
-from yaml_parser import yaml_parser as yp
 from blessings import Terminal
 t = Terminal()
 from utils.common import get_timestamp

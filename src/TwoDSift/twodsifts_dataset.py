@@ -120,13 +120,21 @@ class TwoDSiftData(DenseDesignMatrix):
 
             topo_view = topo_view[indices_list, :, :, :]
             y = y[indices_list]
-            self.examples = topo_view.shape
+            self.examples = topo_view.shape[0]
         # /end cv part
-
 
         print 'topo_view.shape', topo_view.shape
 
         # TODO: id self.middle not empty - add middle to the dataset and shuffle it again
+        if len(self.middle) > 0:
+            topo_middle, y_middle, skipped = self.read_nogaps(middle, middle_val)
+            topo_view = np.concatenate((topo_view, topo_middle))
+            y = np.concatenate((y, y_middle))
+            # self.examples was updated in read_nogaps
+
+        # middle examples were just added at the end of topo_view, so it needs to be shuffled again
+        if shuffle:
+            self.shuffle_data(topo_view, y)
 
         # extending data
         if normal_run:
@@ -137,14 +145,10 @@ class TwoDSiftData(DenseDesignMatrix):
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))
 
-        # TODO: update of paramteres
-
-        print 'X shape:', self.X.shape
-        print 'y shape:', self.y.shape
+        print " PO SUPER"
+        print "x shape", self.X.shape
+        print "y shape", self.y.shape
         print 'examples:', self.examples
-        print "data size is:", topo_view.size
-        import sys
-        sys.exit(0)
 
     def __str__(self):
         descr = "2D SiFT file:  " + self.name + \

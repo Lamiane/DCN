@@ -1,8 +1,8 @@
 __author__ = 'agnieszka'
-import sys
-sys.path.append('..')
 from blessings import Terminal
 t = Terminal()
+import sys
+sys.path.append('..')
 from utils.common import get_timestamp
 import configuration.model as config
 from training_algorithm.cross_validation import CrossValidator

@@ -43,12 +43,13 @@ class CrossValidator(object):
                                                     'middle_val': dataset_files['middle_values']
                                                     }
 
+            # we don't want any unlabelled examples in validation nor test data
             validation_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
                                                          'y_val': dataset_files['labeled_values'],
                                                          'cv': [k, train_parts],
                                                          'seed': seed,
-                                                         'middle_path': dataset_files['middle_paths'],
-                                                         'middle_val': dataset_files['middle_values']
+                                                         'middle_path': [],
+                                                         'middle_val': []
                                                          }
 
             mod = build(model_dictionary)   # based on description generated build an object that will fit into

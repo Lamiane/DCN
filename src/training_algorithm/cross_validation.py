@@ -15,14 +15,13 @@ from algorithm_extensions.value_getters import f1_score_1threshold_get_value
 
 
 class CrossValidator(object):
-
-    def run(self, k, model_dictionary, model_yaml_scheme, data_yaml_scheme, dataset_files, seed=1337):
+    @staticmethod
+    def run(k, model_dictionary, model_yaml_scheme, data_yaml_scheme, dataset_files, seed=1337):
         # obtain the yaml skelton
         with open(config.yaml_skelton_path) as f:
             default_string = f.read()
 
         list_of_scores = []
-
         for i in xrange(k):
             current_time = get_timestamp()
 
@@ -38,7 +37,7 @@ class CrossValidator(object):
                                                     'cv': [k, train_parts],
                                                     'seed': seed,
                                                     'middle_path': dataset_files['middle_paths'],
-                                                    'middle_val': dataset_files['middle_val']
+                                                    'middle_val': dataset_files['middle_values']
                                                     }
 
             validation_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
@@ -46,7 +45,7 @@ class CrossValidator(object):
                                                          'cv': [k, train_parts],
                                                          'seed': seed,
                                                          'middle_path': dataset_files['middle_paths'],
-                                                         'middle_val': dataset_files['middle_val']
+                                                         'middle_val': dataset_files['middle_values']
                                                          }
 
             mod = build(model_dictionary)   # based on description generated build an object that will fit into
@@ -107,4 +106,6 @@ class CrossValidator(object):
                 list_of_scores.append(f1_score_error)
 
         # end of for
+        # TODO: tak naprawde chcemy na kazdym najlepszym modelu ewaluowac sie na zbiorze testowym
+        # TODO: ... i dopiero z tej wartosci zwracac mean
         return mean(list_of_scores)

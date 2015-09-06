@@ -95,74 +95,40 @@ class TwoDSiftData(DenseDesignMatrix):
         # TODO raise(exception) in case of an error in parameters
         # TODO self.ligands should also be somehow restricted according to cv parameters
         if cv is not None and isinstance(cv, list) and self.is_cv_valid(self.cv):
-            # compute the possible splits
-            self.splits, remove_ans, add_ans = self.get_splits(self.examples, cv[0])
-            # check the splits returned and perform some additional example removal / addition needed
-            if remove_ans[1] == self.examples:
-                self.batch_size = remove_ans[0]
-            else:
-                # addition/removal of examples is needed to have a good batch size
-                if self.remove_examples:
-                    # cut out the last examples, provided they were shuffled earlier
-                    # TODO add some option if examples are not shuffled
-                    topo_view = topo_view[:remove_ans[1], :, :, :]
-                    y = y[:remove_ans[1]]
-                    self.splits = remove_ans[2]
-                    self.batch_size = remove_ans[0]
-                    self.examples = remove_ans[1]
-                elif self.add_examples:
-                    topo_view = np.vstack((topo_view, topo_view[add_ans[3], :, :, :]))
-                    y = np.vstack((y, y[add_ans[3]]))
-                    self.splits = add_ans[2]
-                    self.batch_size = add_ans[0]
-                    self.examples = add_ans[1]
+            split_list = []     # indices on which split will be performed
+            numberOfSplits = cv[0]
+            print "topo view shape:", topo_view.shape
+            fold_size = int(np.floor(float(topo_view.shape[0])/numberOfSplits))     # TODO: check
+            remainder = np.remainder(topo_view.shape[0], numberOfSplits)            # TODO: check
+            # populate split list
+            for k in xrange(numberOfSplits+1):
+                if len(split_list) > 0:
+                    index = split_list[-1] + fold_size
                 else:
-                    raise ValueError("self.remove_examples / self.add_examples not set")
-            # cutting into cross validation sets
-            if len(cv[1]) == 1:
-                if cv[1][0] == cv[0] - 1:
-                    from_example = self.splits[-1]
-                    first_not_example = self.examples
-                elif cv[1][0] == 0:
-                    from_example = 0
-                    first_not_example = self.splits[1]
-                else:
-                    from_example = self.splits[cv[1][0]]
-                    first_not_example = self.splits[cv[1][0] + 1]
-                topo_view = topo_view[from_example:first_not_example, :, :, :]
-                y = y[from_example:first_not_example]
-            else:
-                cv[1] = sorted(cv[1])
-                missing = list(set(range(cv[0])) - set(cv[1]))[0]
-                if missing == cv[0] - 1:
-                    from_example = 0
-                    first_not_example = self.splits[-1]
-                    topo_view = topo_view[from_example:first_not_example, :, :, :]
-                    y = y[from_example:first_not_example]
-                elif missing == 0:
-                    from_example = self.splits[1]
-                    first_not_example = self.examples
-                    topo_view = topo_view[from_example:first_not_example, :, :, :]
-                    y = y[from_example:first_not_example]
-                else:
-                    from_example_first = 0
-                    first_not_example_first = self.splits[missing]
-                    from_example_second = self.splits[missing + 1]
-                    first_not_example_second = self.examples
-                    topo_view = np.vstack((topo_view[from_example_first:first_not_example_first, :, :, :],
-                                           topo_view[from_example_second:first_not_example_second, :, :, :]))
-                    y = np.vstack((y[from_example_first:first_not_example_first],
-                                   y[from_example_second:first_not_example_second]))
+                    index = 0
+                if 0 < k <= remainder:
+                    index += 1
+                split_list.append(index)
+            assert split_list[-1] == topo_view.shape[0]     # TODO: check
 
-            start = 0
-            stop = topo_view.shape[0]
-            self.examples = stop - start
+            indices_list = []   # list with indices that we want to leave
+            # populate indices list
+            for kth in cv[1]:
+                _from = split_list[kth]
+                _to = split_list[kth+1]
+                indices_list.extend(xrange(_from, _to))
+
+            topo_view = topo_view[indices_list, :, :, :]
+            y = y[indices_list, :, :, :]
+            self.examples = topo_view.shape
         # /end cv part
 
+
+        print 'topo_view.shape', topo_view.shape
+
+        # TODO: id self.middle not empty - add middle to the dataset and shuffle it again
+
         # extending data
-
-        print topo_view.shape
-
         if normal_run:
             print "wszedlem do normal_run"  # POCHA
             topo_view = self.preprocess_data(topo_view)
@@ -171,26 +137,14 @@ class TwoDSiftData(DenseDesignMatrix):
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))
 
-        if start is not None:
-            assert start >= 0
-            if stop > self.X.shape[0]:
-                raise ValueError('stop=' + str(stop) + '>' +
-                                 'm=' + str(self.X.shape[0]))
-            assert stop > start
-            self.X = self.X[start:stop, :]
-            self.examples = stop - start + 1
-            if self.X.shape[0] != stop - start:
-                raise ValueError("X.shape[0]: %d. start: %d stop: %d"
-                                 % (self.X.shape[0], start, stop))
-            if len(self.y.shape) > 1:
-                self.y = self.y[start:stop, :]
-            else:
-                self.y = self.y[start:stop]
-            assert self.y.shape[0] == stop - start
+        # TODO: update of paramteres
 
-        self.X = self.X / np.abs(self.X).max()
-
+        print 'X shape:', self.X.shape
+        print 'y shape:', self.y.shape
+        print 'examples:', self.examples
         print "data size is:", topo_view.size
+        import sys
+        sys.exit(0)
 
     def __str__(self):
         descr = "2D SiFT file:  " + self.name + \
@@ -382,100 +336,3 @@ class TwoDSiftData(DenseDesignMatrix):
             lines.append(this_file_lines)
 
         return lines
-
-    @staticmethod
-    def get_splits(examples, cv):
-        """
-
-        :rtype : object
-        """
-
-        def compute_split(exmpls, cvno):
-            local_split = [int(np.ceil((exmpls / float(cvno)) * i)) for i in range(cvno)]
-            spl = list(local_split)
-            spl.append(exmpls)
-            lns = [spl[i + 1] - spl[i] for i in range(len(spl) - 1)]
-            if max(lns) > min(lns):
-                lns.sort(reverse=True)
-                local_split = [0]
-                for i in lns:
-                    local_split.append(local_split[-1] + i)
-                local_split = local_split[:-1]
-            return local_split
-
-        def is_power_of_2(n):
-            if (n > 0 and (n & (n - 1))) == 0:
-                return True
-            else:
-                return False
-
-        split = compute_split(exmpls=examples, cvno=cv)
-        # compute the best batch size and if some examples should be removed/added
-        # first column (== row index): batch size, second: how many examples to remove, third: how many to add
-        min_bs, max_bs = 8, 16
-        rtab = np.zeros((max_bs - min_bs + 1, 3), dtype=int)
-        for k, bs in enumerate(range(min_bs, max_bs + 1)):
-            rtab[k, :] = bs, examples % (cv * bs), ((cv * bs) - (examples % (cv * bs))) % (cv * bs)
-        # choose the best solution
-        # sort the array by the last column (number of elements to add)
-        # rtab = rtab[min_bs:max_bs + 1]
-        rtab = rtab[rtab[:, 2].argsort()]
-        # TODO select a best method to choose best
-        # prefer even numbers, prefer powers of 2, prefer one that nothing is to be changed
-        # first choose parameters for the REMOVE option
-        rtab = rtab[rtab[:, 1].argsort()]
-        indx = np.where(rtab[:, 1] == rtab[0, 1])
-        if len(indx[0]) == 1:
-            # only one row with smallest number of items to add
-            new_examples = examples - rtab[0, 1]
-            remove_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
-        else:
-            # if more answers with smallest number of items to remove are available, choose the best
-            # limit rtab to rows with minimal number of examples to remove
-            rem_rt = rtab[indx[0], :]
-            # first check for a power of 2 in the batch_size column (rtab[indx, 1])
-            l = [i for i in range(rem_rt.shape[0]) if is_power_of_2(n=rem_rt[i, 0])]
-            if len(l) > 0:
-                # at least one power of 2 found, select the first
-                p2_ind = l[0]
-                new_examples = examples - rem_rt[l[0], 1]
-                remove_ans = [rem_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
-            else:
-                # check if any of solutions is a multiple of 2
-                l = [i for i in range(rem_rt.shape[0]) if rem_rt[i, 0] % 2 == 0]
-                if len(l) > 0:
-                    # at least one multiple of 2 found
-                    new_examples = examples - rem_rt[l[0], 1]
-                    remove_ans = [rem_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
-                else:
-                    # all solutions are odd, choose the first one
-                    new_examples = examples - rtab[0, 1]
-                    remove_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
-        # perform the same computations for the ADD EXAMPLES option
-        rtab = rtab[rtab[:, 2].argsort()]
-        indx = np.where(rtab[:, 2] == rtab[0, 2])
-        if len(indx[0]) == 1:
-            new_examples = examples + rtab[0, 2]
-            add_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
-        else:
-            add_rt = rtab[indx[0], :]
-            l = [i for i in range(add_rt.shape[0]) if is_power_of_2(n=add_rt[i, 0])]
-            if len(l) > 0:
-                # at least one power of 2 found, select the first
-                p2_ind = l[0]
-                new_examples = examples + add_rt[l[0], 2]
-                add_ans = [add_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
-            else:
-                l = [i for i in range(add_rt.shape[0]) if add_rt[i, 0] % 2 == 0]
-                if len(l) > 0:
-                    # at least one multiple of 2 found
-                    new_examples = examples + add_rt[l[0], 2]
-                    add_ans = [add_rt[l[0], 0], new_examples, compute_split(new_examples, cv)]
-                else:
-                    # all solutions are odd, choose the first one
-                    new_examples = examples + rtab[0, 2]
-                    add_ans = [rtab[0, 0], new_examples, compute_split(exmpls=new_examples, cvno=cv)]
-        # draw a list of examples to be added in case they are not shuffled, otherwise take those from the end
-        # TODO rewrite so that drawing is always identical (constant seed? constant seed depending on original set?)
-        add_ans.append(list(np.random.randint(examples, size=add_ans[1]-examples)))
-        return split, remove_ans, add_ans

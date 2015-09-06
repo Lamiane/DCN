@@ -131,7 +131,7 @@ class TwoDSiftData(DenseDesignMatrix):
             topo_middle, y_middle, skipped = self.read_nogaps(middle, middle_val)
             topo_view = np.concatenate((topo_view, topo_middle))
             print 'y shape', y.shape
-            y_middle = np.reshape(y_middle * np.ones(topo_middle.shape[0]), (topo_middle.shape[0], 1))
+            y_middle = np.reshape(y_middle * np.ones(topo_middle.shape[0], dtype='int64'), (topo_middle.shape[0], 1))
             y = np.concatenate((y, y_middle))
             print 'topo_view.shape after middle', topo_view.shape
 

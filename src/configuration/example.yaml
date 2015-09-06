@@ -1,12 +1,6 @@
-!obj:pylearn2.cross_validation.TrainCV {
-    dataset_iterator: !obj:pylearn2.cross_validation.dataset_iterators.DatasetKFold {
-        dataset: &train !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
-            filenames: %(path)s
-            y_val: [[1], [0], [-1]],
-            cv: [5, [0, 1, 2, 3]],
-            normal_run: True    # POCHA
-        },
-    },
+!obj:pylearn2.train.Train {
+    dataset: %(train_data)s
+
     model: %(model)s
 
     algorithm: !obj:training_algorithm.sgd_tailored.SgdTailored { # trainig algorithm: Batch Gradient Descent
@@ -19,12 +13,7 @@
             nesterov_momentum: 0.2
         },
         monitoring_dataset: {
-            'valid':  !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
-                        filenames: %(path)s
-                        y_val: [[1], [0]],
-                        cv: [5, [4]],
-                        normal_run: True    # POCHA
-                      }
+            'valid':  %(validation_data)s
         },
         cost: !obj:pylearn2.costs.cost.SumOfCosts {
             costs: [
@@ -51,7 +40,7 @@
             ]
         },
     },
-    cv_extensions: [
+    extensions: [
         !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
              channel_name: 'valid_softmax_misclass', # monitoring channel name
              save_path: %(pkl_filename)s # here the learned model will be stored

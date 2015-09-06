@@ -1,0 +1,9 @@
+dataset: &train !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
+            filenames: %(path)s
+            y_val: %(y_val)s,            # actually a list
+            cv: %(cv)s,                  # actually a list
+            shuffle_seed: %(seed)i
+            middle: %(middle_path)s     # if not empty unlabeled examples will be added
+            middle_val: %(middle_val)i
+            normal_run: True            # POCHA
+        },

@@ -1,14 +1,14 @@
+from value_getters import f1_score_1threshold_get_value
+
 __author__ = 'agnieszka'
 from parser import build
 from pylearn2.config import yaml_parse
 from os.path import join
 import traceback
 import sys
-
 sys.path.append('..')
 from yaml_parser import yaml_parser as yp
 from blessings import Terminal
-
 t = Terminal()
 from utils.common import get_timestamp
 import configuration.model as config
@@ -65,7 +65,7 @@ def objective_function(samp):
             try:
                 # misclass_error = lowest_misclass_error(network.model)
                 # f1_score_error = 1 - f1_score(network)
-                f1_score_error, threshold = f1_score_1threshold(network)
+                f1_score_error, threshold = f1_score_1threshold_get_value(network)
                 print t.bold_red("D_OF1: Best score for this model: "+str(f1_score_error))
                 print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
                 f1_score_error = 1 - f1_score_error
@@ -80,73 +80,5 @@ def objective_function(samp):
 
 
 # based on pylearn2's scripts/plot_monitor.py
-def lowest_misclass_error(model):
-    this_model_channels = model.monitor.channels
-    my_channel = this_model_channels['valid_softmax_misclass']  # TODO: maybe it shall be set in configuration?
-    import numpy as np
 
-    return np.min(my_channel.val_record)
-
-
-def f1_score(train):
-    import sys
-    sys.path.append('..')
-    from algorithm_extensions.no_threshold import F1Score
-
-    try:
-        # finding F1Score extension in train.extensions
-        f1_score_ext = None
-        if 'extensions' in dir(train):
-            for element in train.extensions:
-                if isinstance(element, F1Score):
-                    f1_score_ext = element
-                    break
-        elif 'cv_extensions' in dir(train):
-            for element in train.cv_extensions:
-                if isinstance(element, F1Score):
-                    f1_score_ext = element
-                    break
-
-        best_f1_score = max(f1_score_ext.score_list)
-
-        return best_f1_score
-    except AttributeError as ae:
-        # return if F1Score extension hasn't been found
-        print "This pylearn.train.Train object doesn't use algorithm_extensions.f1_score.F1Score extension. " \
-              "F1 score hasn't been calculated. Please provide include F1Score extension in yaml " \
-              "if you need F1 score calculated"
-        raise ae
-
-
-def f1_score_1threshold(train):
-    from numpy import argmax
-    import sys
-    sys.path.append('..')
-    from algorithm_extensions.symmetric_threshold import SymmetricThresholdWRTF1Score
-
-    try:
-        # finding F1Score1Threshold extension in train.extensions
-        f1_score_ext = None
-        if 'extensions' in dir(train):
-            for element in train.extensions:
-                if isinstance(element, SymmetricThresholdWRTF1Score):
-                    f1_score_ext = element
-                    break
-        elif 'cv_extensions' in dir(train):
-            for element in train.cv_extensions:
-                if isinstance(element, SymmetricThresholdWRTF1Score):
-                    f1_score_ext = element
-                    break
-
-        best_f1_score = max(f1_score_ext.score_list)
-        threshold = f1_score_ext.threshold_list[argmax(f1_score_ext.score_list)]
-        return best_f1_score, threshold
-
-    except AttributeError as ae:
-        # return if F1Score extension hasn't been found
-        print "This pylearn.train.Train object doesn't use " \
-              "algorithm_extensions.symmetric_threshold.SymmetricThresholdWRTF1Score " \
-              "F1 score hasn't been calculated. Please include SymmetricThresholdWRTF1Score extension in yaml " \
-              "if you need F1 score calculated"
-        raise ae
 

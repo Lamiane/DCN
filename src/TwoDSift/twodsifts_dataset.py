@@ -10,7 +10,8 @@ from pylearn2.utils.rng import make_np_rng
 class TwoDSiftData(DenseDesignMatrix):
 
     def __init__(self, filenames=[], y_val=[], nogap_type=True, labels=False, shuffle=True,
-                 start=None, stop=None, cv=None, normal_run=True, indices_to_delete = None):
+                 start=None, stop=None, cv=None, normal_run=True, indices_to_delete=None, shuffle_seed=1337,
+        middle=[], middle_val=-1):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
         :type filenames: list of data files to read
@@ -59,6 +60,9 @@ class TwoDSiftData(DenseDesignMatrix):
         self.n_classes = 0
         self.remove_examples = False
         self.add_examples = not self.remove_examples
+        self.shuffle_seed = shuffle_seed
+        self.middle = middle
+        self.middle_val = middle_val
 
         if y_val is None:
             raise ValueError('y_val must be provided')
@@ -73,7 +77,7 @@ class TwoDSiftData(DenseDesignMatrix):
 
         self.n_classes = len(set(y))
 
-        y = np.array(y).reshape((self.examples, 1))     # POCHA TODO: czy to na pewno robi to co chcemy?
+        y = np.array(y).reshape((self.examples, 1))
 
         if indices_to_delete is not None:
             for tuple_element in reversed(indices_to_delete):
@@ -315,8 +319,8 @@ class TwoDSiftData(DenseDesignMatrix):
     @staticmethod
     def is_cv_valid(cv):
         if len(cv) != 2:
-                print "cv split: incorrect cv parameter list:", cv
-                return False
+            print "cv split: incorrect cv parameter list:", cv
+            return False
         if not isinstance(cv[0], int) or cv[0] < 2:
             print "cv split: incorrect number of parts to split:", cv[0]
             return False
@@ -335,7 +339,7 @@ class TwoDSiftData(DenseDesignMatrix):
         return True
 
     def shuffle_data(self, topo_view, y):
-        shuffle_rng = make_np_rng(None, [1, 2, 3], which_method="shuffle")
+        shuffle_rng = make_np_rng(None, default_seed=self.shuffle_seed, which_method="shuffle")
         for i in xrange(topo_view.shape[0]):
             j = shuffle_rng.randint(self.examples)
             # Copy ensures that memory is not aliased.

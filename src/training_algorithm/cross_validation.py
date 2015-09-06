@@ -112,4 +112,6 @@ class CrossValidator(object):
         # end of for
         # TODO: tak naprawde chcemy na kazdym najlepszym modelu ewaluowac sie na zbiorze testowym
         # TODO: ... i dopiero z tej wartosci zwracac mean
+
+
         return mean(list_of_scores)

@@ -51,6 +51,8 @@ class SymmetricThresholdWRTF1Score(F1Score):
         # the threshold will be symmetric, so we only care about how far away is the prediction from 0.5
         # therefore we fold the dictionary in half
         for index in xrange(len(true_y)):
+            print 'prediction index', predictions[index]
+            print 'predictions shape', predictions.shape
             if argmax(predictions[index]) != true_y[index]:     # FALSE NEGATIVE OR FALSE POSITIVE
                 # floating to get a hashable float instead of unhashable numpy array
                 # we also need max max because numpy...

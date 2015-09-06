@@ -127,9 +127,12 @@ class TwoDSiftData(DenseDesignMatrix):
 
         # TODO: id self.middle not empty - add middle to the dataset and shuffle it again
         if len(self.middle) > 0:
+            print 'entering middle'
             topo_middle, y_middle, skipped = self.read_nogaps(middle, middle_val)
             topo_view = np.concatenate((topo_view, topo_middle))
             y = np.concatenate((y, y_middle))
+            print 'topo_view.shape after middle', topo_view.shape
+
             # self.examples was updated in read_nogaps
 
         # middle examples were just added at the end of topo_view, so it needs to be shuffled again

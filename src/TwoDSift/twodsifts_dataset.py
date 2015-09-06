@@ -119,7 +119,7 @@ class TwoDSiftData(DenseDesignMatrix):
                 indices_list.extend(xrange(_from, _to))
 
             topo_view = topo_view[indices_list, :, :, :]
-            y = y[indices_list, :, :, :]
+            y = y[indices_list]
             self.examples = topo_view.shape
         # /end cv part
 

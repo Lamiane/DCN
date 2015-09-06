@@ -39,9 +39,9 @@ data_dir_path = get_data_path()
 
 data_dict = {'labeled_paths': [join(data_dir_path, '2RH1_actives_2dfp.dat'),
                                join(data_dir_path, '2RH1_inactives_2dfp.dat')],
-             'labeled_values': [1, 0],
+             'labeled_values': [[1], [0]],
              'middle_paths': [join(data_dir_path, '2RH1_middle_2dfp.dat')],
-             'middle_values': [-1]
+             'middle_values': [[-1]]
              }
 
 number_of_cross_validation_parts = 5

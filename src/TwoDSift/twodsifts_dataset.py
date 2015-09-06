@@ -97,7 +97,7 @@ class TwoDSiftData(DenseDesignMatrix):
         if cv is not None and isinstance(cv, list) and self.is_cv_valid(self.cv):
             split_list = []     # indices on which split will be performed
             numberOfSplits = cv[0]
-            print "topo view shape:", topo_view.shape
+            print "topo view shape on entering cross validation part:", topo_view.shape
             fold_size = int(np.floor(float(topo_view.shape[0])/numberOfSplits))     # TODO: check
             remainder = np.remainder(topo_view.shape[0], numberOfSplits)            # TODO: check
             # populate split list
@@ -123,13 +123,15 @@ class TwoDSiftData(DenseDesignMatrix):
             self.examples = topo_view.shape[0]
         # /end cv part
 
-        print 'topo_view.shape', topo_view.shape
+        print 'topo_view.shape after cross validation', topo_view.shape
 
         # TODO: id self.middle not empty - add middle to the dataset and shuffle it again
         if len(self.middle) > 0:
             print 'entering middle'
             topo_middle, y_middle, skipped = self.read_nogaps(middle, middle_val)
             topo_view = np.concatenate((topo_view, topo_middle))
+            print 'y shape', y.shape
+            y_middle = y_middle * np.ones(topo_middle.shape[0])
             y = np.concatenate((y, y_middle))
             print 'topo_view.shape after middle', topo_view.shape
 

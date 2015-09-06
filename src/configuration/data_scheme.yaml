@@ -1,4 +1,4 @@
-&train !obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
+!obj:TwoDSift.twodsifts_dataset.TwoDSiftData {
             filenames: %(path)s,
             y_val: %(y_val)s,            # a list
             cv: %(cv)s,                  # a list

@@ -16,10 +16,13 @@ from algorithm_extensions.value_getters import f1_score_1threshold_get_value
 
 class CrossValidator(object):
     @staticmethod
-    def run(k, model_dictionary, model_yaml_scheme, data_yaml_scheme, dataset_files, seed=1337):
+    def run(k, model_dictionary, model_yaml_scheme, data_yaml_scheme_path, dataset_files, seed=1337):
         # obtain the yaml skelton
         with open(config.yaml_skelton_path) as f:
             default_string = f.read()
+
+        with open(data_yaml_scheme_path) as f:
+            data_yaml_scheme = f.read()
 
         list_of_scores = []
         for i in xrange(k):

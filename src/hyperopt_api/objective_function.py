@@ -15,7 +15,7 @@ def objective_function(samp):
     dataset_dict = config.data_dict
     seed = config.seed
     return CrossValidator.run(k=k, model_dictionary=samp, model_yaml_scheme=yaml_scheme_path,
-                              data_yaml_scheme=data_scheme_yaml, dataset_files=dataset_dict, seed=seed)
+                              data_yaml_scheme_path=data_scheme_yaml, dataset_files=dataset_dict, seed=seed)
 
 
 # based on pylearn2's scripts/plot_monitor.py

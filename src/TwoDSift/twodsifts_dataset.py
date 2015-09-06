@@ -154,6 +154,7 @@ class TwoDSiftData(DenseDesignMatrix):
         print "x shape", self.X.shape
         print "y shape", self.y.shape
         print 'examples:', self.examples
+        print 'classes:', self.n_classes
 
     def __str__(self):
         descr = "2D SiFT file:  " + self.name + \

@@ -60,7 +60,7 @@ class SgdTailored(SGD):
         mapping = DataSpecsMapping(data_specs)
         space_tuple = mapping.flatten(data_specs[0], return_tuple=True)
 
-        print 'space tuple', type(space_tuple), space_tuple
+        # print 'space tuple', type(space_tuple), space_tuple
         from pylearn2.space import VectorSpace
 
         ###############################################
@@ -127,23 +127,23 @@ class SgdTailored(SGD):
 
             # if label was '0'
             if (batch[1] == np.array((1, 0, 0))).all():
-                print "example: nonactive"
+                # print "example: nonactive"
                 batch = (batch[0], np.reshape(np.array((1, 0)), (1, 2)))
                 self.sgd_update(*batch)
             # if label was '1'
             elif (batch[1] == np.array((0, 1, 0))).all():
-                print "example: active"
+                # print "example: active"
                 batch = (batch[0], np.reshape(np.array((0, 1)), (1, 2)))
                 self.sgd_update(*batch)
             # else we have to deal with unlabeled example
             else:
-                print "example: middle"
+                # print "example: middle"
                 parameters_on_load = self.get_parameters()
 
                 ######################################
                 # # # RUNNING AS INACTIVE SAMPLE # # #
                 ######################################
-                print 'running as inactive'
+                # print 'running as inactive'
                 # setting label as inactive
                 batch = (batch[0], np.reshape(np.array((1, 0)), (1, 2)))
                 self.print_params("on entering inactive", t.blue)
@@ -160,7 +160,7 @@ class SgdTailored(SGD):
                 ####################################
                 # # # RUNNING AS ACTIVE SAMPLE # # #
                 ####################################
-                print 'running as active'
+                # print 'running as active'
                 # setting label as active
                 batch = (batch[0], np.reshape(np.array((0, 1)), (1, 2)))
                 self.print_params('on entering active', t.blue)
@@ -252,9 +252,10 @@ class SgdTailored(SGD):
 
     def print_params(self, information, terminal_configuration, step_by_step=False, param_by_param=True):
         if step_by_step:
-            print information.upper()
+            # print information.upper()
             for param in self.params:
-                print terminal_configuration + param.name, np.ravel(param.get_value())[0:9], t.normal + '\n'
+                # print terminal_configuration + param.name, np.ravel(param.get_value())[0:9], t.normal + '\n'
+                pass
         elif param_by_param:
             for param in self.params:
                 if param.name not in self.debug_dict:
@@ -264,9 +265,10 @@ class SgdTailored(SGD):
 
     def print_dict_of_params(self, dict_of_params, information, step_by_step=False, param_by_param=True):
         if step_by_step:
-            print information.upper()
+            # print information.upper()
             for key in dict_of_params:
-                print key, np.ravel(dict_of_params[key])[0:9], '\n'
+                # print key, np.ravel(dict_of_params[key])[0:9], '\n'
+                pass
         elif param_by_param:
             for key in dict_of_params:
                 if key not in self.debug_dict:
@@ -275,6 +277,7 @@ class SgdTailored(SGD):
 
     def print_self_debug(self, clear_self_debug_dict=True):
         for key in self.debug_dict:
-            print key, self.debug_dict[key], '\n'
+            # print key, self.debug_dict[key], '\n'
+            pass
         if clear_self_debug_dict:
             self.debug_dict = {}

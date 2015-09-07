@@ -5,10 +5,11 @@ from no_threshold import F1Score
 from get_predictions import Predictor
 
 
-class SymmetricThresholdWRTF1Score(F1Score):
+# TODO testing!
+class TwoThresholdWRTF1Score(F1Score):
     def __init__(self, save_best_model_path=None):
-        super(SymmetricThresholdWRTF1Score, self).__init__()
-        self.threshold_list = []
+        super(TwoThresholdWRTF1Score, self).__init__()
+        self.thresholds_list = []
         self.saving_path = save_best_model_path
 
     def setup(self, model, dataset, algorithm):
@@ -25,7 +26,7 @@ class SymmetricThresholdWRTF1Score(F1Score):
         predictions = self.predictor.get_predictions(valid_x)
         threshold, score = self.compute_optimal_threshold_and_score(valid_y, predictions)
 
-        self.threshold_list.append(threshold)
+        self.thresholds_list.append(threshold)
         self.score_list.append(score)
 
         if self.saving_path is not None:
@@ -33,7 +34,7 @@ class SymmetricThresholdWRTF1Score(F1Score):
                 pass
                 # TODO: saving here
 
-        print "F1Score1Threshold score", score, "\ncorresponding threshold:", threshold
+        print "TwoThreshold score", score, "\ncorresponding threshold pair:", threshold
 
     @staticmethod
     def compute_optimal_threshold_and_score(true_y, predictions):
@@ -54,28 +55,56 @@ class SymmetricThresholdWRTF1Score(F1Score):
             if argmax(predictions[index]) != true_y[index]:     # FALSE NEGATIVE OR FALSE POSITIVE
                 # floating to get a hashable float instead of unhashable numpy array
                 # we also need max max because numpy...
-                dic[float(abs(0.5 - max(max(predictions[index]))))] = values.FN_FP
+                # dic[float(abs(0.5 - max(max(predictions[index]))))] = values.FN_FP
+                dic[float(max(max(predictions[index])))] = values.FN_FP
             elif argmax(predictions[index]) == 1:   # TRUE POSITIVE
-                dic[float(abs(0.5 - max(max(predictions[index]))))] = values.TP
+                # dic[float(abs(0.5 - max(max(predictions[index]))))] = values.TP
+                dic[float(max(max(predictions[index])))] = values.TP
             # else TRUE NEGATIVE, we have no interest in this one
 
         TP = sum(1 for x in dic.values() if x == values.TP)
         FP_FN = len(dic)-TP
         unclassified = 0
-        scores = []
+        scores_down = []
+        scores_up = []
         sorted_dic_keys = sorted(dic)   # don't want to sort dic over and over again
+
+        # down threshold
         for key in sorted_dic_keys:
+            if key > 0.5:
+                break
             unclassified += 1
             if dic[key] == values.FN_FP:   # it was FN or FP
                 FP_FN -= 1
             else:
                 TP -= 1         # it was TP
-            scores.append(2*TP/(2*TP + FP_FN + 0.5 * unclassified))
+            scores_down.append(2*TP/(2*TP + FP_FN + 0.5 * unclassified))
 
-        best_score_index = argmax(scores)
+        for key in sorted_dic_keys:
+            if key < 0.5:
+                continue
+            unclassified += 1
+            if dic[key] == values.FN_FP:   # it was FN or FP
+                FP_FN -= 1
+            else:
+                TP -= 1         # it was TP
+            scores_up.append(2*TP/(2*TP + FP_FN + 0.5 * unclassified))
+
+        best_score_index_down = argmax(scores_down)
+        best_score_index_up = argmax(scores_up)
+        # TODO: max score musi zostac jakos policzone!
         max_score = scores[best_score_index]
-        t1 = sorted_dic_keys[best_score_index]
-        t2 = sorted_dic_keys[best_score_index-1]
-        best_threshold = 0.5 + mean([t1, t2])   # adding 0.5 as the dictionary has been folded in half
 
-        return best_threshold, max_score
+        # down
+        t1_down = sorted_dic_keys[best_score_index_down]
+        # TODO: minus czy plus?
+        t2_down = sorted_dic_keys[best_score_index_down-1]
+        best_threshold_down = mean([t1_down, t2_down])
+
+        # up
+        t1_up = sorted_dic_keys[best_score_index_up]
+        # TODO: minus czy plus?
+        t2_up = sorted_dic_keys[best_score_index_up-1]
+        best_threshold_up = 0.5 + mean([t1_up, t2_up])
+
+        return (best_threshold_down, best_threshold_up), max_score

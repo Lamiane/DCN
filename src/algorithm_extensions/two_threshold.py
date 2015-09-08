@@ -86,8 +86,6 @@ class TwoThresholdWRTF1Score(F1Score):
             else:
                 fn_global += 1
 
-        print best_y_idx, best_x_idx
-
         best_y = 0 if best_y_idx == 0 else 1
         if len(axis) > best_y_idx > 0:
             best_y = (axis[best_y_idx-1][0] + axis[best_y_idx][0]) / 2.0

@@ -3,6 +3,7 @@ from os.path import join
 from numpy import mean
 from pylearn2.config import yaml_parse
 import traceback
+from pylearn2.utils import serial
 from blessings import Terminal
 t = Terminal()
 import sys
@@ -46,11 +47,19 @@ class CrossValidator(object):
             # we don't want any unlabelled examples in validation nor test data
             validation_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
                                                          'y_val': dataset_files['labeled_values'],
-                                                         'cv': [k, train_parts],
+                                                         'cv': [k, validation_part],
                                                          'seed': seed,
                                                          'middle_path': [],
                                                          'middle_val': []
                                                          }
+
+            test_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
+                                                   'y_val': dataset_files['labeled_values'],
+                                                   'cv': [k, test_part],
+                                                   'seed': seed,
+                                                   'middle_path': [],
+                                                   'middle_val': []
+                                                   }
 
             mod = build(model_dictionary)   # based on description generated build an object that will fit into
                                             # yaml_parser
@@ -112,6 +121,33 @@ class CrossValidator(object):
         # end of for
         # TODO: tak naprawde chcemy na kazdym najlepszym modelu ewaluowac sie na zbiorze testowym
         # TODO: ... i dopiero z tej wartosci zwracac mean
+        test_data = yaml_parse.load(test_data_string)
+        model = serial.load('best_f1score.model')
+        model.fprop(test_data.X)
 
+        X = model.get_input_space().make_theano_batch()
+        Y = model.fprop( X )
+        Y = T.argmax( Y, axis = 1 )
+        f = theano.function( [X], Y )
+        fp = 0
+        fn = 0
+        tp = 0
+        tn = 0
+        for i in xrange(test_data.X.shape[0]):
+            sample  = test_data.X[i]
+            y_true = test_data.y[i]
+            y_pred = f( sample )
+            if y_pred == 1:
+                if y_true == 1:
+                    tp += 1
+                else:
+                    fp += 1
+            else:
+                if y_true == 0:
+                    tn += 1
+                else:
+                    fn += 1
+        score = (2.0 * tp)/(2.0 * tp + fn + fp)
+        list_of_scores.append(score)
 
         return mean(list_of_scores)

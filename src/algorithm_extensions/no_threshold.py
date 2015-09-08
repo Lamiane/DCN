@@ -1,5 +1,7 @@
 __author__ = 'agnieszka'
 from pylearn2.train_extensions import TrainExtension
+from pylearn2.train import SerializationGuard
+from pylearn2.utils import serial
 from pylearn2.cross_validation.train_cv_extensions import TrainCVExtension
 from sklearn.metrics import f1_score
 import sys
@@ -34,8 +36,14 @@ class F1Score(TrainExtension):
 
         if self.saving_path is not None:
             if max(self.score_list) == score:
-                pass
-                # TODO: saving here
+                try:
+                    # Make sure that saving does not serialize the dataset
+                    dataset._serialization_guard = SerializationGuard()
+                    save_path = 'best_f1score.model'
+                    serial.save(save_path, model,
+                                on_overwrite='backup')
+                finally:
+                    dataset._serialization_guard = None
 
         print "F1 score:", score
 

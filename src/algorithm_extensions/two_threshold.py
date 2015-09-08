@@ -56,7 +56,6 @@ class TwoThresholdWRTF1Score(F1Score):
 
         # calculating down threshold influence
         sorted_dic_keys = sorted(dic)   # sorting from lowest to highest
-        print 'sorted dic keys', sorted_dic_keys    # TODO: check and remove in the future
         score = len(sorted_dic_keys)*0.5    # they're all middle for now
         min_score = sys.maxint
         minimums = {}
@@ -97,54 +96,3 @@ class TwoThresholdWRTF1Score(F1Score):
         maximal_score = max(up_scores, key=up_scores.get)
 
         return key_with_maximal_up_threshold_score, respective_down_threshold, maximal_score
-
-
-
-
-
-    # TP = sum(1 for x in dic.values() if x == values.TP)
-    # FP_FN = len(dic)-TP
-    # unclassified = 0
-    # scores_down = []
-    # scores_up = []
-    # sorted_dic_keys = sorted(dic)   # don't want to sort dic over and over again
-    #
-    # # down threshold
-    # for key in sorted_dic_keys:
-    #     if key > 0.5:
-    #         break
-    #     unclassified += 1
-    #     if dic[key] == values.FN_FP:   # it was FN or FP
-    #         FP_FN -= 1
-    #     else:
-    #         TP -= 1         # it was TP
-    #     scores_down.append(2*TP/(2*TP + FP_FN + 0.5 * unclassified))
-    #
-    # for key in sorted_dic_keys:
-    #     if key < 0.5:
-    #         continue
-    #     unclassified += 1
-    #     if dic[key] == values.FN_FP:   # it was FN or FP
-    #         FP_FN -= 1
-    #     else:
-    #         TP -= 1         # it was TP
-    #     scores_up.append(2*TP/(2*TP + FP_FN + 0.5 * unclassified))
-    #
-    # best_score_index_down = argmax(scores_down)
-    # best_score_index_up = argmax(scores_up)
-    # # TODO: max score musi zostac jakos policzone!
-    # max_score = scores[best_score_index]
-    #
-    # # down
-    # t1_down = sorted_dic_keys[best_score_index_down]
-    # # TODO: minus czy plus?
-    # t2_down = sorted_dic_keys[best_score_index_down-1]
-    # best_threshold_down = mean([t1_down, t2_down])
-    #
-    # # up
-    # t1_up = sorted_dic_keys[best_score_index_up]
-    # # TODO: minus czy plus?
-    # t2_up = sorted_dic_keys[best_score_index_up-1]
-    # best_threshold_up = 0.5 + mean([t1_up, t2_up])
-    #
-    # return (best_threshold_down, best_threshold_up), max_score

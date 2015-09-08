@@ -91,7 +91,7 @@ class TwoThresholdWRTF1Score(F1Score):
             up_scores[key] = up_score
 
         key_with_maximal_up_threshold_score = max(up_scores, key=up_scores.get)
-        maximal_score = up_scores(key_with_maximal_up_threshold_score)
+        maximal_score = up_scores[key_with_maximal_up_threshold_score]
         respective_down_threshold = minimums[key_with_maximal_up_threshold_score] + sys.float_info.min
         key_with_maximal_up_threshold_score -= sys.float_info.min
 

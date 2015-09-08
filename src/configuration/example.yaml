@@ -64,6 +64,7 @@
                 !obj:algorithm_extensions.statistics.Recall { },
                 !obj:algorithm_extensions.statistics.Accuracy { }
             ]
+         },!obj:algorithm_extensions.two_threshold.TwoThresholdWRTF1Score {
          }
     ]
 }

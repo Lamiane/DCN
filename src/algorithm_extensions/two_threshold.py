@@ -87,7 +87,15 @@ class TwoThresholdWRTF1Score(F1Score):
             best_down_threshold_key = minimums[key]
             best_down_threshold_num_mid, best_down_threshold_num_fn = mid_fn_dic[best_down_threshold_key]
             num_middle = best_down_threshold_num_mid - num_tp - num_fp  # some examples are now classified
-            up_score = (2 * float(num_tp))/(2 * float(num_tp) + num_fp + num_fn + 0.5 * float(num_middle))
+            if num_middle < 0:
+                continue    # breaking if thresholds swap
+            up_score = (2 * float(num_tp))/(2 * float(num_tp) + num_fp + best_down_threshold_num_fn + 0.5 * float(num_middle))
+            print 'key:', key
+            print 'lower:', best_down_threshold_key, 'upper:', key
+            print 'tp:', num_tp, '\nfp:', num_fp, '\tfn:', best_down_threshold_num_fn
+            print 'middle', num_middle
+            print 'middle from lower:', best_down_threshold_num_mid
+            print 'score:', up_score, '\n'
             up_scores[key] = up_score
 
         key_with_maximal_up_threshold_score = max(up_scores, key=up_scores.get)

@@ -1,6 +1,8 @@
 __author__ = 'nex'
 from os.path import join
 from numpy import mean
+import theano
+from theano import tensor as t
 from pylearn2.config import yaml_parse
 import traceback
 from pylearn2.utils import serial
@@ -134,7 +136,7 @@ class CrossValidator(object):
         tp = 0
         tn = 0
         for i in xrange(test_data.X.shape[0]):
-            sample  = test_data.X[i]
+            sample = test_data.X[i]
             y_true = test_data.y[i]
             y_pred = f( sample )
             if y_pred == 1:

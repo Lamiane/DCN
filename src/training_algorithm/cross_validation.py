@@ -2,7 +2,7 @@ __author__ = 'nex'
 from os.path import join
 from numpy import mean
 import theano
-from theano import tensor as t
+from theano import tensor as T
 from pylearn2.config import yaml_parse
 import traceback
 from pylearn2.utils import serial

@@ -1,5 +1,5 @@
 !obj:pylearn2.train.Train {
-    dataset: &train %(train_data)s
+    dataset: &train %(train_data)s,
 
     model: %(model)s
 
@@ -13,7 +13,7 @@
             nesterov_momentum: 0.2
         },
         monitoring_dataset: {
-            'valid':  %(validation_data)s
+            'valid':  %(validation_data)s,
         },
         cost: !obj:pylearn2.costs.cost.SumOfCosts {
             costs: [

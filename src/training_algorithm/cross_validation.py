@@ -94,6 +94,8 @@ class CrossValidator(object):
                 # train the model
                 network.main_loop()
 
+
+
             except BaseException:  # TODO: this exception is to broad
                 # if exception was thrown save yaml of a model that generated that exception
                 with open(current_time + '.yaml', 'w') as YAML_FILE:
@@ -103,6 +105,36 @@ class CrossValidator(object):
                     ERROR_FILE.write(traceback.format_exc())
 
             finally:
+                # run predictions to obtain score for this model
+                test_data = yaml_parse.load(test_data_string)
+                best_model = serial.load('best_f1score.model')
+                best_model.fprop(test_data.X)
+
+                X = best_model.get_input_space().make_theano_batch()
+                Y = best_model.fprop( X )
+                Y = T.argmax( Y, axis = 1 )
+                f = theano.function( [X], Y )
+                fp = 0
+                fn = 0
+                tp = 0
+                tn = 0
+                for ind in xrange(test_data.X.shape[0]):
+                    sample = test_data.X[ind]
+                    y_true = test_data.y[ind]
+                    y_pred = f( sample )
+                    if y_pred == 1:
+                        if y_true == 1:
+                            tp += 1
+                        else:
+                            fp += 1
+                    else:
+                        if y_true == 0:
+                            tn += 1
+                        else:
+                            fn += 1
+                score = (2.0 * tp)/(2.0 * tp + fn + fp)
+                list_of_scores.append(score)
+
                 if network is not None:
                     try:
                         # misclass_error = lowest_misclass_error(network.model)
@@ -119,34 +151,5 @@ class CrossValidator(object):
                 # return misclass_error
                 print t.bold_red("M_02: f1 score error for this model: " + str(f1_score_error))
                 list_of_scores.append(f1_score_error)
-
-            test_data = yaml_parse.load(test_data_string)
-            model = serial.load('best_f1score.model')
-            model.fprop(test_data.X)
-
-            X = model.get_input_space().make_theano_batch()
-            Y = model.fprop( X )
-            Y = T.argmax( Y, axis = 1 )
-            f = theano.function( [X], Y )
-            fp = 0
-            fn = 0
-            tp = 0
-            tn = 0
-            for ind in xrange(test_data.X.shape[0]):
-                sample = test_data.X[ind]
-                y_true = test_data.y[ind]
-                y_pred = f( sample )
-                if y_pred == 1:
-                    if y_true == 1:
-                        tp += 1
-                    else:
-                        fp += 1
-                else:
-                    if y_true == 0:
-                        tn += 1
-                    else:
-                        fn += 1
-            score = (2.0 * tp)/(2.0 * tp + fn + fp)
-            list_of_scores.append(score)
 
         return mean(list_of_scores)

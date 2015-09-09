@@ -6,4 +6,4 @@
             middle: %(middle_path)s,     # if not empty unlabeled examples will be added
             middle_val: %(middle_val)s,  # a list
             normal_run: True,            # POCHA
-        },
+        }

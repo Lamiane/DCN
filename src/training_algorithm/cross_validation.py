@@ -116,19 +116,20 @@ class CrossValidator(object):
                 tp = 0
                 tn = 0
                 for ind in xrange(test_data.X.shape[0]):
-                    sample = test_data.X[ind]
-                    y_true = test_data.y[ind]
-                    y_pred = f( sample )
-                    if y_pred == 1:
-                        if y_true == 1:
-                            tp += 1
+                    # sample = test_data.X[ind]
+                    y_true = test_data.y
+                    y_pred = f(test_data.X)
+                    for tr, pre in zip(y_true, y_pred):
+                        if pre == 1:
+                            if tr == 1:
+                                tp += 1
+                            else:
+                                fp += 1
                         else:
-                            fp += 1
-                    else:
-                        if y_true == 0:
-                            tn += 1
-                        else:
-                            fn += 1
+                            if pre == 0:
+                                tn += 1
+                            else:
+                                fn += 1
                 score = (2.0 * tp)/(2.0 * tp + fn + fp)
                 list_of_scores.append(score)
 

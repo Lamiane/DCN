@@ -151,7 +151,7 @@ class SgdTailored(SGD):
                 self.print_params("after update inactive", t.green)
                 # remember changing in parameters
                 params_after_inactive = self.get_parameters()
-                diff_inactive = self.get_difference(parameters_on_load, params_after_inactive)
+                diff_inactive = self.get_difference(params_after_inactive, parameters_on_load)
                 self.print_dict_of_params(diff_inactive, "difference")
                 # bring back on load parameters
                 self.restore_parameters(parameters_on_load)
@@ -168,7 +168,7 @@ class SgdTailored(SGD):
                 self.print_params('after update active', t.green)
                 # remember changing in parameters
                 params_after_active = self.get_parameters()
-                diff_active = self.get_difference(parameters_on_load, params_after_active)
+                diff_active = self.get_difference(params_after_active, parameters_on_load)
                 self.print_dict_of_params(diff_active, "difference")
                 # bring back on load parameters
                 self.restore_parameters(parameters_on_load)

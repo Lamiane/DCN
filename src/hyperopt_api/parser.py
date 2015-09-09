@@ -114,8 +114,11 @@ def build_conv_rectified_linear(dictionary, layer_name, data_height, data_width)
 
     print t.bold_magenta("layer name: "+str(layer_name)
                          + "\nconvolution_matrix shape: " + str(crl.kernel_shape)
+                         + "\npool shape: " + str(crl.pool_shape)
                          + "\t\tconvolution_matrix stride: " + str(crl.kernel_stride)
-                         + "\npool shape: " + str(crl.pool_shape) + "\t\tpool_stride: " + str(crl.pool_stride))
+                         + "\t\tpool_stride: " + str(crl.pool_stride)
+                         + "\noutput channels: " + str(crl.output_channels)
+                         )
 
     new_data_height, new_data_width = \
         calculate_new_data_shape(data_height, data_width,

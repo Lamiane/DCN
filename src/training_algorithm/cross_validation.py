@@ -94,8 +94,6 @@ class CrossValidator(object):
                 # train the model
                 network.main_loop()
 
-
-
             except BaseException:  # TODO: this exception is to broad
                 # if exception was thrown save yaml of a model that generated that exception
                 with open(current_time + '.yaml', 'w') as YAML_FILE:
@@ -108,10 +106,9 @@ class CrossValidator(object):
                 # run predictions to obtain score for this model
                 test_data = yaml_parse.load(test_data_string)
                 best_model = serial.load('best_f1score.model')
-                best_model.fprop(test_data.X)
 
                 X = best_model.get_input_space().make_theano_batch()
-                Y = best_model.fprop( X )
+                Y = best_model.fprop(X)
                 Y = T.argmax( Y, axis = 1 )
                 f = theano.function( [X], Y )
                 fp = 0

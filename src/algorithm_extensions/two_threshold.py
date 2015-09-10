@@ -34,7 +34,7 @@ class TwoThresholdWRTF1Score(F1Score):
                 pass
                 # TODO: saving here
 
-        print "TwoThreshold score", score, "\ncorresponding threshold pair:", lower_threshold, ':', upper_threshold
+        print "\n\nTwoThreshold score", score, "\ncorresponding threshold pair:", lower_threshold, ':', upper_threshold
 
     @staticmethod
     def compute_optimal_threshold_and_score(true_y, predictions):

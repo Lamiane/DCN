@@ -118,7 +118,7 @@ class CrossValidator(object):
                 for ind in xrange(test_data.X.shape[0]):
                     # sample = test_data.X[ind]
                     y_true = test_data.y
-                    y_pred = f(test_data.X)
+                    y_pred = f(test_data.topo_view)
                     for tr, pre in zip(y_true, y_pred):
                         if pre == 1:
                             if tr == 1:

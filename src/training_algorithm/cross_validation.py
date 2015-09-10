@@ -104,6 +104,7 @@ class CrossValidator(object):
                     ERROR_FILE.write(traceback.format_exc())
 
             finally:
+                from numpy import argmax
                 # run predictions to obtain score for this model
                 test_data = yaml_parse.load(test_data_string)
                 best_model = serial.load('best_f1score.model')
@@ -117,13 +118,13 @@ class CrossValidator(object):
                 tn = 0
 
                 for tr, pre in zip(test_data.y, predictions):
-                    if pre == 1:
+                    if argmax(pre) == 1:
                         if tr == 1:
                             tp += 1
                         else:
                             fp += 1
                     else:
-                        if pre == 0:
+                        if argmax(pre) == 0:
                             tn += 1
                         else:
                             fn += 1

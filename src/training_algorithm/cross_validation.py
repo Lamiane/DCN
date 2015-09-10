@@ -15,7 +15,7 @@ import configuration.model as config
 from utils.common import get_timestamp
 from yaml_parser import yaml_parser as yp
 from algorithm_extensions.value_getters import f1_score_1threshold_get_value
-from get_predictions import Predictor
+from algorithm_extensions.get_predictions import Predictor
 
 
 class CrossValidator(object):

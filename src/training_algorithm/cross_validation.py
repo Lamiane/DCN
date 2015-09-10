@@ -15,6 +15,7 @@ import configuration.model as config
 from utils.common import get_timestamp
 from yaml_parser import yaml_parser as yp
 from algorithm_extensions.value_getters import f1_score_1threshold_get_value
+from get_predictions import Predictor
 
 
 class CrossValidator(object):
@@ -107,29 +108,25 @@ class CrossValidator(object):
                 test_data = yaml_parse.load(test_data_string)
                 best_model = serial.load('best_f1score.model')
 
-                X = best_model.get_input_space().make_theano_batch()
-                Y = best_model.fprop(X)
-                Y = T.argmax( Y, axis = 1 )
-                f = theano.function( [X], Y )
+                predictor = Predictor(best_model)
+                predictions = predictor.get_predictions(test_data.X)
+
                 fp = 0
                 fn = 0
                 tp = 0
                 tn = 0
-                for ind in xrange(test_data.X.shape[0]):
-                    # sample = test_data.X[ind]
-                    y_true = test_data.y
-                    y_pred = f(test_data.topo_view)
-                    for tr, pre in zip(y_true, y_pred):
-                        if pre == 1:
-                            if tr == 1:
-                                tp += 1
-                            else:
-                                fp += 1
+
+                for tr, pre in zip(test_data.y, predictions):
+                    if pre == 1:
+                        if tr == 1:
+                            tp += 1
                         else:
-                            if pre == 0:
-                                tn += 1
-                            else:
-                                fn += 1
+                            fp += 1
+                    else:
+                        if pre == 0:
+                            tn += 1
+                        else:
+                            fn += 1
                 score = (2.0 * tp)/(2.0 * tp + fn + fp)
                 list_of_scores.append(score)
 

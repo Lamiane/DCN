@@ -5,7 +5,6 @@ from no_threshold import F1Score
 from get_predictions import Predictor
 
 
-# TODO testing!
 class TwoThresholdWRTF1Score(F1Score):
     def __init__(self, save_best_model_path=None):
         super(TwoThresholdWRTF1Score, self).__init__()

@@ -1,8 +1,6 @@
 __author__ = 'nex'
 from os.path import join
 from numpy import mean
-import theano
-from theano import tensor as T
 from pylearn2.config import yaml_parse
 import traceback
 from pylearn2.utils import serial
@@ -20,8 +18,10 @@ from algorithm_extensions.get_predictions import Predictor
 
 class CrossValidator(object):
     @staticmethod
-    def run(k, model_dictionary, model_yaml_scheme, data_yaml_scheme_path, dataset_files, seed=1337):
+    def run(k, model_dictionary, data_yaml_scheme_path, dataset_files, seed=1337):
         # obtain the yaml skelton
+        assert k >= 3   # we need to have at least 3 sets: train, validation, test
+
         with open(config.yaml_skelton_path) as f:
             default_string = f.read()
 

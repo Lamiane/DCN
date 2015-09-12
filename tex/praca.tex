@@ -10,6 +10,11 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsfonts}
 %\usepackage[sorting=nyt,style=apa]{biblatex}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
 
 
 % Title Page
@@ -36,12 +41,9 @@
     \section{Terminology} %TODO: zmienić hasła na zdania   
     One of major areas of study nowadays is \textbf{drug design}. It is a quickly developing field, facing challenging problems, such as conducting experiments which are very expensive and extremely time consuming. Therefore, computer modelling is of vital importance. Artificial intellingence and machine learning have been successfuly incorporated to this field. (citation needed?). One of the most common problems in drug design is telling whether \textbf{protein} and \textbf{ligand} will together produce an \textbf{active} or \textbf{inactive} compund.\\
     
-    \textbf{Proteins} are molecules built from \textbf{amino acid residues} forming a single \textbf{chain}. The number of residues defines the length of the chain. Proteins are the most elementary (łeż) things building bodies of living creatures, crucial for many major things going on in our bodies.\\
+    \textbf{Proteins} are molecules built from \textbf{amino acid residues} forming a single \textbf{chain}. The number of residues defines the length of the chain. Proteins are present in all leaving organisms.\\
     
-    ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\ %TODO: dokończyć
-    
-    \textbf{big data} but not complete and from different sources%TODO: dokończyć
-         
+    ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\ %TODO: dokończyć         
     \section{Fingerprints} %TODO: zmienić hasła na zdania, citations! czy to co ja używam to w ogóle fingerprinty są?
     One of the first questions that have to be answered before *any modelling task can be started* is: how will I represent my data? Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. It might seem that a natural representation of a protein will be a graph containing extra information about how the nodes are arranged in space. Unfortunately, graph algorithms are computationally expensive and it is nowadays not possible to use them (na czym się opieram?). Therefore, *we* need another representation, that will carry as much information as possible and *be computationally effective*. *For this reason* many types of fingerprints have been designed and they meet the criterions metioned.\\
     
@@ -53,14 +55,19 @@
     drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.
     
     \section{Datasets}
-    The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands. Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix describing how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. Moreover each data sample is labeled by *?* (*(the *protein* is)* active), *?* (not active), *?* (no information). \\
-
-    \{obrazek\} \\ %TODO
+    The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands. Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. Most of the data samples are labeled as active or nonactive, the rest is unlabeled. A single data sample is presented on figure \ref{fig:single_data_sample}.\\
+    
+    \begin{figure}[h!]
+      \centering
+      \includegraphics{single_data_sample.png}
+      \caption{A single data sample.}
+      \label{fig:single_data_sample}
+    \end{figure} 
     
     The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic. \\
     
-    %TODO:Values: 0, 1, 2 and their meaning !!! nie ma tego w publikacji!
-    The values constituting the dataset are discrete, namely: 0, 1 and 2. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).
+    %TODO:Values meaning !!! nie ma tego w publikacji!
+    The values constituting the dataset are discrete, namely: 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).
     
     %TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmakoloblabla)
     
@@ -105,11 +112,18 @@
       \subsection{Computation Flow} %TODO zmienić poniższe notatki w tekst
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection I will describe how the signal is processed within the convolutional subnetwork. I will not *dig into* the classifying subnetwork as any neural network that can be used to classify objects might be used. Many such networks exist*s* and they are well described in the literature. \\ %TODO: citation needed?
 	
-	In each layer of the convolutional subnetwork there are three *elemental* operations *wykonywane*. Firstly, the input is convoluted with a kernel matrix. The result of this operation is an input to the activation function. If the input is a matrix *(and it usually/always is a matrix)* each element forms a single input to the activation function *(a może da się inaczej?)*. Finally, the pooling is applied to the result. \\
+	In each layer of the convolutional subnetwork there are three elemental operations are performed. Firstly, the input is convoluted with a kernel matrix. The result of this operation is an input to the activation function. If the input is a matrix *(and it usually/always is a matrix)* each element forms a single input to the activation function *(a może da się inaczej?)*. Finally, the pooling is applied to the result. \\
 	
-	\{obrazek\}  może też wzorek? pooling(sigmoid(convolution(input))) \\
+	może też wzorek? pooling(sigmoid(convolution(input))) \\ %TODO 
 	
-	One might also imagine three consecutive seperate layers: a convolutional layer, a *classical* layer that applies activation function *(an activation layer)* and finally, a pooling layer.\\
+	\begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=0.65]{convolutional_neuron.png}
+	  \caption{The three elemental operations performed in each layer.}
+	  \label{fig:con_neur}	%TODO referencing does not work!
+	\end{figure} 
+	  
+	One might also imagine three consecutive seperate layers: a convolutional layer, a classical layer that applies activation function and finally, a pooling layer.\\
 	
 	In the following subsections I will describe in details how each of this operation exactly works. *Szczególna uwaga zostanie zwrócona na to, jak zmieniają się wymiary danych na każdym etapie*\\
 	
@@ -128,13 +142,13 @@
 	  
 	  Usually, the kernel that is used is much smaller then the input and convolution is appplied multiple times. Each time kernel is convoluted with a submatrix of input. The result of this operation is a scalar, and a result of a whole process is a matrix.\\
 	  
-	  As stated above, each kernel might be seen as a filter extracting a single feature. Usually, *we* need to extract multiple features from the image. As a result, in each layer many convolutional kernels are used. It is worth noting, that kernels are different in each layer. Kernels in the next layer work on the features extracted from the previous layer. *It might be shown* (citation needed), that the features from the next layer are constructed of features from the previous layer. Therefore, in each layer features are more and more complicated.\\
+	  As stated above, each kernel might be seen as a filter extracting a single feature. Usually, there is need to extract multiple features from the image. As a result, in each layer many convolutional kernels are used. It is worth noting, that kernels are different in each layer. Kernels in the next layer work on the features extracted from the previous layer. *It might be shown* (citation needed), that the features from the next layer are constructed of features from the previous layer. Therefore, in each layer features are more and more complicated.\\
 	  
-	  *Let's* assume that the input is a $I1$x$I2$ matrix and the kernel is $K1$x$K2$ matrix *with* $1$x$1$ stride. Therefore the first submatrix to convolute with a kernel will be *[1:$K1$]$x$[1:$K2$]* and it will return a *single value/scalar*. The last sub,atrix will be *[$I1-K1+1$:$I1$]x[$I2_k2+1$:$I2$]* and it will produce a  *single value/scalar* as well. As a result the output will be a ($I1-K1+1$)x($I2-K2+1$) matrix.\\
+	  Let the input be a $I1$x$I2$ matrix and the kernel a $K1$x$K2$ matrix with a $1$x$1$ stride. Therefore the first submatrix to convolute with a kernel will be *[1:$K1$]$x$[1:$K2$]* and it will return a *single value/scalar*. The last submatrix will be *[$I1-K1+1$:$I1$]x[$I2_k2+1$:$I2$]* and it will produce a  *single value/scalar* as well. As a result the output will be a ($I1-K1+1$)x($I2-K2+1$) matrix.\\
 	  
 	  \{obrazek\} ilustrujący problem z kernelem i brzegami. Niech na nim będzie, first, second, (może third) i last submatrix\\
 	  
-	  It is *easy* to observe that the values laying close to the edge of the input matrix will be underrepresented and consequently the output matrix will be of smaller size than the input matrix. There is a variety of ways to address this problem, e.g. zero-pad.\\
+	  Itcan be observed that the values laying close to the edge of the input matrix will be underrepresented and consequently the output matrix will be of smaller size than the input matrix. There is a variety of ways to address this problem, e.g. zero-pad.\\
 	  
 	  %FIXME: cytaty do Bengia, sprawdzić nazwy i szczegóły, cytaty do matlaba?
 	  
@@ -155,7 +169,7 @@
 
 	  \{obrazek\} jak wygląda max pooling \\
 	  
-	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines how many values will be taken as an input - the bigger the size of pooling, the more information is *lost*. The pooling stride defines where will be the next submatrix with respect to the pravious one. Fig *???* illustrates this concept. \\
+	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines how many values will be taken as an input - the bigger the size of pooling, the more information is accumulated in single value. The pooling stride defines where will be the next submatrix with respect to its previous location. Fig *???* illustrates this concept. \\
 	  
 	  \{obrazek\} pooling size and stride \\
 	  
@@ -166,7 +180,7 @@
 	  \{obrazek\} dlaczego daje nam invariance
 	
 	\subsubsection{Summary} %TODO: zmienić poniższe notatki w tekst 
-	  During the convolutional subnetwork flow the features are extracted from the data. These features are later used by the *classifying* subnetwork. *Convolution/pooling* provide us *with* spatial invariance and *this other awesome thing*. In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, activation function and pooling. \\ %FIXME: JĘZYK!
+	  During the convolutional subnetwork flow the features are extracted from the data. These features are then used by the classifying part of the network. *Convolution/pooling* provide us *with* spatial invariance and *this other awesome thing*. In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, activation function and pooling. \\ %FIXME: JĘZYK!
 	  
 	  $output = pooling(activation\_function(convolution(input, kernel)))$\\ %FIXME: notacja (ten sam wzorek jest w computation flow)
 	  
@@ -210,46 +224,189 @@
 	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...
 	
   \chapter{The Model} %TODO: napisac ten rozdzial
-      The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted, the untrue distribution of the data.
+      The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted, the untrue distribution of the data.\\
       
-      \section{Small Data Size}
-      cross validation will be used. I have to implement it well and describe in this section
+      \section{Approaches to handle the unlabeled data}
+      The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.\\
       
-      \section{Unlabeled Data}
-      The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.
-      
-      \subsubsection{Naive Approach}
-      Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised but the unalabeled data could been used to improve parameters in the convolutional part of the model.
-           
-      % Example: if we had the following examples: [A, B, C, D, E] along with the following labels: [act, act, inact, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C, D, D, E, E] and the labels would be [act, act, act, act, inact, inact, inact, inact, act, inact].
+	\subsection{Naive Approach}
+	Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised but the unalabeled data could been used to improve parameters in the convolutional part of the model.
+	    
+	% Example: if we had the following examples: [A, B, C, D, E] along with the following labels: [act, act, inact, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C, D, D, E, E] and the labels would be [act, act, act, act, inact, inact, inact, inact, act, inact].
 
-      Example: if we had the following examples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].
+	  \subsubsection{Example:} if we had the following examples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].\\
+	  
+	  The validation set included only labeled samples. The stochastic gradient descent algorithm included in pylearn2 package (include version) was used in this approach.\\
+	  
+	\subsection{Fancy Approach}
+	In training set all the samples were included only once along with their proper labels. Once again the validation set included only labeled data. The learning algorithm was *changed* in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model but had no impact on the classification part.\\
+    
+	<<GOTO: The Learning Algorithm>>\\      
       
-      The validation set included only labeled samples. The stochastic gradient descent algorithm included in pylearn2 package (include version) was used in this approach.
+      \section{Data}
+	The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands. Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid.A single data sample is presented on figure \ref{fig:single_data_sample2}.\\
+	
+	\begin{figure}[h!]
+	  \centering
+	  \includegraphics{single_data_sample.png}
+	  \caption{A single data sample.}
+	  \label{fig:single_data_sample2}
+	\end{figure} 
+	
+	The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic. \\
+	
+	%TODO:Values meaning !!! nie ma tego w publikacji!
+	The values constituting the dataset are discrete, namely: 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information). The data was very sparse - more than 99\% of all values were zeros.\\
+	
+	%TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmak
+	
+	Out of 5844 samples 2655 were labeled as active, 1945 was labeled as inactive and there were also 1244 unlabeled examples.\\
+	
+	%2RH1_middle_2dfp.dat
+	%    ||   0:   25795857.0   ||   1:   126528.0   ||   2:   58546.0  ||    3:   21098.0   ||   4:    6490.0   ||
+	%    ||   5:       2957.0   ||   6:     1053.0   ||   7:     498.0  ||    8:     116.0   ||   9:     182.0   ||
+
+	%    ||      0:      0.991640130587   ||      1:      0.00486396875447        ||      2:      0.00225061579018        ||    %    3:       0.000811045877449       ||      4:      0.00024948752226        ||      5:      0.000113672512068       ||    %    6:       4.04792543821e-05       ||      7:      1.9144034836e-05        ||      8:      4.45925309433e-06       ||    %    9:       6.99641433765e-06       ||
+	    
+        %2RH1_actives_2dfp.dat
+        %   ||   0:    56394518.0    ||  1:   250661.0   ||   2:  125666.0  ||    3:   61630.0   ||   4:      14732.0 ||
+        %   ||   5:        7482.0    ||  6:     3815.0   ||   7:    2893.0  ||    8:     733.0   ||   9:      534.0   ||
+           
+	%   ||       0:      0.991767075844  ||      1:      0.00440818249388        ||      2:      0.00220999142777        ||    %   3:       0.00108383947681        ||      4:      0.000259080369502       ||      5:      0.000131580187661       ||    %   6:       6.70914749967e-05       ||      7:      5.08769691128e-05       ||      8:      1.289070804e-05         ||      %   9:       9.39104787634e-06       ||
+	    
+	%2RH1_inactives_2dfp.dat
+	%  ||    0:    41022606.0    ||  1:   204438.0   ||   2:   93580.0  ||     3:  34181.0   ||    4:       14486.0 ||
+	%  ||    5:        3760.0    ||  6:     1494.0   ||   7:     592.0  ||     8:    284.0   ||    9:       166.0   ||
+
+	%  ||      0:      0.991468858194  ||      1:      0.00494102959796        ||      2:      0.00226172017813        ||    
+	%  3:       0.000826115167865      ||      4:      0.000350109836508       ||      5:      9.08748436608e-05       ||   
+	%  6:       3.61082490503e-05      ||      7:      1.43079541083e-05       ||      8:      6.86395095736e-06       ||    
+	%  9:       4.01202767226e-06       ||
+
+	
+	<<DATA EXTENDING>>
       
-      \subsubsection{Fancy Approach}
-      In training set all the samples were included only once along with their proper labels. Once again the validation set included only labeled data. The learning algorithm was *changed* in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model but had no impact on the classification part.
+      \subsubsection{Remark:}
+      \textbf{Unreal distribution of labels} In reality there are more nonactive *samples* than active, in the data provided the ratio was 1/2.
       
-      As a *base* we used the stochastic gradient descent algorithm implemented in pylearn2 (include version). The labeled examples were treated differently than the unlabeled ones.
+	
+	
+      \section{The Architecture}
+      %TODO: check to 16 i 32 czy nie jest 17 i 33
+      In this section we will describe the type of architecture which we used for experiments. All the models we have trained were convolutional neural networks with one or two convolutional rectified linear layers. Each layer had 16 or 32 output channels. The number of layers have been chosen in such a way that the learning process will not take too much time and the data size will not be reduced too much. Rectifier activation function was used because of its good properties. 
+   
+      The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$. The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$, always smaller than the convolutional window and if it only was possible (i.e. all dimensions of the convolutional window were smaller then the corresponding dimensions of the data) small enough to be able to have at least two ``windows'' in each dimension. The convolution windows width size was due to the size of the window describing binding of a certain aminoacids. We wanted the network to be able to find patterns describin connection between ... of two following aminoacids, so both ... had to be in one convolutional window.
       
-      For labeled examples the SGD algorithm was run with no change. For unlabeled examples two *wektory poprawek (update vectors?)* were calculated - first was calculated as if the example was labeled as active, the second one as if the example was labeled as inactive. The two vectors were combined into a final one which was later used to update the parameters of the network.
+      The shape of pooling windows was (1, 1), (2, 1) or (2, 2) and smaller by at least one than the data size in each dimension so moving the pooling window was always possible. Pooling stride was always equal or smaller by half than the pooling window in each dimension. Max pooling was used.
       
-      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeroes, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign then the corresponding element in the final vector was zero. If the corresponding elements in both vectors had the same sign then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
+      The last layer of the network was a softmax layer with two neurons. It was used to classify the sample based on features extracted by the convolutional part of the network.
+      
+      \section{Hyperparameters} %TODO how many models? Five in objective functions? F1Score for measuring the performance of the models?
+      Due to many hyperparameters there are many models that fulfill our architecture restrictions so it is not possible to train and measure the performance of all of them. To perform this task we used the Tree of Parzen Estimators algorithm provided by hyperopt and let it sample <<HOW MANY>> models.
+      
+      The objective function choosen to measure the performance of the algorithm created five models of a given architecture, trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. The unlabeled samples were present only in the training set. Validation and test set included only labeled examples as classifying unlabeled examples would not be possible. The measure used to determine the model's preformance was F1Score because <<WHY?>>. The detailed description of the objective function used in hyperopt is in pesudo code presented as Algorithm 1.
+      
+      \begin{algorithm}
+      \caption{Learning}\label{euclid}
+      \begin{algorithmic}[1]
+      \Procedure{objective\_func}{sample, data\_labeled, data\_unlabeled}
+      \State
+      \State $\textit{scores} \gets \textit{empty list}$
+      \State
+      \For {$\textit{k} \in \textit{range(0,K)}$} 
+	\State $\textit{train\_set, validation\_set, test\_set} \gets \textit{split(data\_labeled, k)} $
+	\State $\textit{train\_set} \gets \textit{train\_set + data\_unlabeled}$
+	\State $\textit{model} \gets \textit{build\_model(sample)}$
+	\State $\textit{model} \gets \textit{train(model)}$
+	\State $\textit{score} \gets \textit{measure\_performance(model)}$
+	\State $\textit{scores.append(score)}$
+      \EndFor
+      \State       
+      \State
+      \Return{$\textit{mean(scores)}$}
+      \EndProcedure
+      \end{algorithmic}
+      \end{algorithm}
+      
+      
+      \section{The Learning Algorithm}
+      For learning a variation of stochastic gradient descent algorithm was written. It enabled using unlabeled examples during the learning process. It used the SGD implementation provided in pylearn2 (version) and changed the learning phase in case of getting unlabeled example. The pseudo code of this algorithm can be found below as Algorithm 2.
+      
+      \begin{algorithm}
+      \caption{Learning}\label{euclid}
+      \begin{algorithmic}[1]
+      \Procedure{train}{sample, label}
+      \If {$\textit{sample is unclassified}$}
+	\State $\textit{parameters\_on\_enter} \gets \textit{current\_parameters}$
+	\State
+	\State $\textit{SGD(sample, inactive)}$
+	\State $\textit{diff\_vec\_1} \gets \textit{current\_parameters} -\textit{parameters\_on\_enter}$
+	\State $\textit{current\_parameters} \gets \textit{parameters\_on\_load}$
+	\State
+	\State $\textit{SGD(sample, active)}$
+	\State $\textit{diff\_vec\_2} \gets \textit{current\_parameters} - \textit{parameters\_on\_enter}$
+	\State $\textit{current\_parameters} \gets \textit{parameters\_on\_load}$
+	\State
+	\State $\textit{update\_vector} = \textit{new vector of length same to difference vectors}$
+	\For {$\textit{el1, el2, up\_el} \in \textit{zip(diff\_vec\_1, diff\_vec\_2, update\_vec)}$}
+	  \If {$\textit{sign(el1)} == \textit{sign(el2)}$}
+	    \State $\textit{up\_el} \gets \textit{combination\_function(el1, el2)}$
+	  \Else
+	    \State $\textit{up\_el} \gets 0$
+	  \EndIf
+	\EndFor
+	\State
+	\For {$\textit{up\_el} \in \textit{update\_vec}$}
+	  \If {$\textit{up\_el is responsible for updating the classification part}$}
+	    \State $\textit{up\_el} \gets 0$
+	  \EndIf
+	\EndFor
+	\State
+	\State $\textit{current\_parameters} \gets \textit{parameters\_on\_enter} + \textit{update\_vector}$
+	\Else
+	\State $\textit{SGD(sample, label)}$
+      \EndIf
+      \State
+      \EndProcedure
+      \end{algorithmic}
+      \end{algorithm}
+      
+      For labeled samples the learning process was performed with no changes. When the saple was unlabeled the network parameters were stored and then the sample was presented to the network as if it was labeled as inactive. During this process the network parameters were updated. The difference in the network parameters was stored and old parameters were restored. The the sample was presented to network again - this time as an active sample. The procedure was the same as before. After calculating the difference and restoring the old parameters the two vectors of differences were compared to produce to final vector of updates.\\
+           
+      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeroes, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign then the corresponding element in the final vector was zero. ecause of that the unlabeled samples were helping the network to learn only these filters that were useful for classifying samples of both classes. If the corresponding elements in both vectors had the same sign then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:\\
+      
       \begin{enumerate}
-       \item minimum of the absolute values of the two elements
-       \item maximum of the absolute values of the two elements
+       \item minimum by absolute value of the two elements
+       \item maximum by absolute value of the two elements
        \item mean of the two elements
        \item softmax mean of the two elements, i.e. having $x, y \in \mathbb{R}$ the softmax mean $\sigma$ is equal to $x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$.
        
-       Remark: It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.
+       \subsubsection{Remark}
+       It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.
       \end{enumerate}
-
-	
-      \section{Hyperparameters}
-      To perform this task we used hyperopt.
       
-      \section{Unreal distribution of labels}
-      In reality there are more nonactive *samples* than active, in the data provided the ratio was 1/2.
+      Finally all parameters corresponding to the classifying part of the network were zereod, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.
+	
+      Concluding: the update vector had zeroes in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions.
+      
+      \subsubsection{Example}
+      If the vectors of differences were: $[2.5, 1, -3, 5, 7]$ and $[-2, 3, -1, -7, -7, 7]$, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example in ilustrated in figure \ref{fig:combining}
+      
+      \begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=0.7]{combining_min.png}
+	  \caption{Example of the min combining function}
+	  \label{fig:combining}	%TODO referencing does not work!
+	\end{figure} 
+      
+      \section{Experiments}
+      
+      \begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=0.6]{control_flow.png}
+	  \caption{The control flow of the experiments.}
+	  \label{fig:control_flow}	%TODO referencing does not work!
+	\end{figure} 
 	
   \chapter{What can be improved} %TODO: napisać ten rozdział
     \section{Everything...}
@@ -260,7 +417,7 @@
       Yoshua Bengio, Ian J. Goodfellow, Aaron Courville - \emph{Deep Learning}
     \bibitem{2DSIFT} %FIXME jak się robi przypisy? w sensie formalnym, nie latexowym
       Stefan Mordalski, Igor Podolak, Andrzej J. Bojarski - \emph{2D SIFt - a matrix of ligand-receptor interactions}
-    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, cool staff from Ph.D, numpy, scipy?, hyperopt
+    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, cool staff from Ph.D, numpy, scipy?, hyperopt, the dutch paper, sklearn metrics for f12 score, latex, draw, io
     
   \end{thebibliography}
   

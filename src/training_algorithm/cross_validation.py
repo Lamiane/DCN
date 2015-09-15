@@ -123,6 +123,9 @@ class CrossValidator(object):
                         tn = 0
 
                         for tr, pre in zip(test_data.y, predictions):
+                            print 'cross validation'
+                            print 'tr', tr
+                            print 'pre', pre
                             if pre[1] > threshold:
                                 if tr == 1:
                                     tp += 1

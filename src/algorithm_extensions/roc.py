@@ -31,7 +31,7 @@ class ROC_Yoduen(F1Score):
         predictions = self.predictor.get_predictions(valid_x)
         best_threshold, best_score = self.compute_optimal_threshold_and_score(valid_y, predictions)
 
-        self.thresholds_list.append(best_threshold)
+        self.threshold_list.append(best_threshold)
         self.score_list.append(best_score)
 
         if self.saving_path is not None and self.save:

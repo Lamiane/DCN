@@ -22,10 +22,6 @@ def types_dict(y_true, y_predicted, threshold=0.5):
     FNP = 0
 
     for tr, pre in axis:
-        print 'casting'
-        print 'tr', tr
-        print 'pre', pre
-        sys.exit(0)
         if tr[0] == 1:
             if pre[0][1] >= threshold:
                 TP += 1

@@ -107,7 +107,7 @@ class CrossValidator(object):
                 from numpy import argmax
                 # run predictions to obtain score for this model
                 test_data = yaml_parse.load(test_data_string)
-                best_model = serial.load('best_f1score.model')
+                best_model = serial.load('best_model_roc_youden.model')
 
                 predictor = Predictor(best_model)
                 predictions = predictor.get_predictions(test_data.X)
@@ -146,6 +146,6 @@ class CrossValidator(object):
                 # print t.bold_red("M_01: misclass_error for this model: "+str(misclass_error))
                 # return misclass_error
                 print t.bold_red("M_02: f1 score error for this model: " + str(f1_score_error))
-                list_of_scores.append(f1_score_error)
+                # list_of_scores.append(f1_score_error)
 
         return mean(list_of_scores)

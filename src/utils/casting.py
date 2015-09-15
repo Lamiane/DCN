@@ -12,7 +12,7 @@ def types_dict(y_true, y_predicted, threshold=0.5):
     # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
     # middle    -1    [[ 0. 0. 1. ]]
 
-    print 'y_predicted', y_predicted.shape
+    print 'y_predicted', len(y_predicted)
     axis = sorted(zip(y_true, y_predicted))
     TP = 0
     FP = 0

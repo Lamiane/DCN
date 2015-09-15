@@ -12,7 +12,6 @@ def types_dict(y_true, y_predicted, threshold=0.5):
     # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
     # middle    -1    [[ 0. 0. 1. ]]
 
-    print 'y_predicted', len(y_predicted)
     axis = zip(y_true, y_predicted)
     TP = 0
     FP = 0
@@ -22,6 +21,9 @@ def types_dict(y_true, y_predicted, threshold=0.5):
     FNP = 0
 
     for tr, pre in axis:
+        print 'casting'
+        print 'pre', pre
+        print 'pre[0][1]', pre[0][1]
         if tr[0] == 1:
             if pre[0][1] >= threshold:
                 TP += 1

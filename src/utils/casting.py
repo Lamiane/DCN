@@ -1,6 +1,39 @@
 __author__ = 'agnieszka'
 
 
+# only for one threshold
+def types_dict(y_true, y_predicted, threshold=0.5):
+    import sys
+    sys.path.append('..')
+    from utils import values
+
+    # active     1    [[ 0. 1. 0. ]]    [[ 0. 1. ]]
+    # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
+    # middle    -1    [[ 0. 0. 1. ]]
+
+    axis = sorted(zip(y_true, y_predicted))
+    TP = 0
+    FP = 0
+    TN = 0
+    FN = 0
+    FNN = 0
+    FNP = 0
+
+    for tr, pre in axis:
+        if tr == 1:
+            if pre[1] >= threshold:
+                TP += 1
+            else:
+                FN += 1
+        else:
+            if pre[1] < threshold:
+                TN += 1
+            else:
+                FP += 1
+
+    return {values.TP: TP, values.FP: FP, values.TN: TN, values.FN: FN, values.FNN: FNN, values.FNP: FNP}
+
+
 def pkl2model(filepath):
     # TODO: test if needed. Perhaps calling this method after running python shell from utils directory will fail
     import sys

@@ -29,9 +29,9 @@ def roc_score_threshold_getter(train):
     except AttributeError as ae:
         # return if F1Score extension hasn't been found
         print "This pylearn.train.Train object doesn't use " \
-              "algorithm_extensions.symmetric_threshold.SymmetricThresholdWRTF1Score " \
-              "F1 score hasn't been calculated. Please include SymmetricThresholdWRTF1Score extension in yaml " \
-              "if you need F1 score calculated.\n" \
+              "algorithm_extensions.roc.ROC_Yoduen " \
+              "F1 score hasn't been calculated. Please include ROC_Yoduen extension in yaml " \
+              "if you need ROC score calculated.\n" \
               "Message raised from algorithm_extensions/value_getters/roc_score_threshold_getter."
         raise ae
 

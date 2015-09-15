@@ -5,13 +5,13 @@ import sys
 sys.path.append('..')
 from no_threshold import F1Score
 from get_predictions import Predictor
-from utils.casting import label_lists2types
+from utils.casting import types_dict
 from utils import values
 
 class ROC_Yoduen(F1Score):
     def __init__(self, save_best_model_path=None, save=False):
         super(ROC_Yoduen, self).__init__()
-        self.thresholds_list = []
+        self.threshold_list = []
         self.saving_path = save_best_model_path
         self.save = save
 
@@ -46,13 +46,20 @@ class ROC_Yoduen(F1Score):
                 finally:
                     dataset._serialization_guard = None
 
-        stat_dic = label_lists2types(valid_y, predictions, t0=best_threshold, t1=best_threshold)
+        stat_dic = types_dict(valid_y, predictions, threshold=predictions)
 
         print '\nSHOWING STATISTICS FOR ROC with Youden metric'
-        print "\n\nROC using Youden metric\nscore:", best_score, "\ncorresponding threshold:", best_threshold
+        print "ROC using Youden metric\nscore:", best_score, "\ncorresponding threshold:", best_threshold
         print values.TP, ':', stat_dic[values.TP], '\t\t', values.TN, ':', stat_dic[values.TN], '\n', \
             values.FP, ':', stat_dic[values.FP], '\t\t', values.FN, ':', stat_dic[values.FN], '\n', \
             values.FNP, ':', stat_dic[values.FNP], '\t\t', values.FNN, ':', stat_dic[values.FNN]
+
+        precision = float(stat_dic[values.TP])/(stat_dic[values.TP] + stat_dic[values.FP])
+        recall = float(stat_dic[values.TP])/(stat_dic[values.TP] + stat_dic[values.FN])
+        f1score = 2*precision*recall/(precision+recall)
+        print 'precision:',precision
+        print "recall:", recall
+        print "f1score", f1score
 
 
     @staticmethod
@@ -88,15 +95,16 @@ class ROC_Yoduen(F1Score):
                 TN -= 1     # so that's one well classified negative example less
             # calculating score according to Youden's metric
             score = (float(TP)/(float(TP) + FN)) - (float(FP)/(float(FP) + TN))
-            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN, '\t\tscore:', score
+            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
+            print 'score:', score, 'threshold:', prediction, '\n\n'
 
             if update_next:
                 update_next = False
                 next_pred_after_best_threshold = prediction
             if score == best_score:
-                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN
+                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
             if score > best_score:
-                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN
+                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
                 best_score = score
                 best_threshold = prediction
                 update_next = True

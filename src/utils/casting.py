@@ -12,8 +12,7 @@ def types_dict(y_true, y_predicted, threshold=0.5):
     # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
     # middle    -1    [[ 0. 0. 1. ]]
 
-    print 'y_true', y_true
-    print 'y_predicted', y_predicted
+    print 'y_predicted', y_predicted.shape
     axis = sorted(zip(y_true, y_predicted))
     TP = 0
     FP = 0
@@ -26,7 +25,7 @@ def types_dict(y_true, y_predicted, threshold=0.5):
         print 'tr', tr
         print 'pre', pre
         sys.exit(0)
-        if tr == 1:
+        if tr[0] == 1:
             if pre[1] >= threshold:
                 TP += 1
             else:

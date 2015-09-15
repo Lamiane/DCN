@@ -22,6 +22,8 @@ class ROC_Yoduen(F1Score):
         if self.predictor is None:
             self.setup(model, dataset, algorithm)
 
+        print 'into the roc!'
+
         # obtaining validating set # TODO: finally we want to have train-validation-test set. Or sth.
         valid_x = algorithm.monitoring_dataset['valid'].X
         valid_y = algorithm.monitoring_dataset['valid'].y
@@ -43,7 +45,7 @@ class ROC_Yoduen(F1Score):
                 finally:
                     dataset._serialization_guard = None
 
-        print "\n\nROC using Youden metric\n score:", best_score, "\ncorresponding threshold:", best_threshold
+        print "\n\nROC using Youden metric\nscore:", best_score, "\ncorresponding threshold:", best_threshold
 
     @staticmethod
     def compute_optimal_threshold_and_score(true_y, predictions):
@@ -52,6 +54,8 @@ class ROC_Yoduen(F1Score):
         # active     1    [[ 0. 1. 0. ]]    [[ 0. 1. ]]
         # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
         # middle    -1    [[ 0. 0. 1. ]]
+
+        print 'into the insides of roc!'
 
         actives = sum([1 for arr_pred_lab in axis if arr_pred_lab[1] == 1])
         nonactives = len(axis) - actives
@@ -78,6 +82,8 @@ class ROC_Yoduen(F1Score):
             if update_next:
                 update_next = False
                 next_pred_after_best_threshold = prediction
+            if score == best_score:
+                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN
             if score > best_score:
                 print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN
                 best_score = score

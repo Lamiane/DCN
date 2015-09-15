@@ -126,13 +126,13 @@ class CrossValidator(object):
                             print 'cross validation'
                             print 'tr', tr
                             print 'pre', pre
-                            if pre[1] > threshold:
-                                if tr == 1:
+                            if pre[0][1] > threshold:
+                                if tr[0] == 1:
                                     tp += 1
                                 else:
                                     fp += 1
                             else:
-                                if argmax(pre) == 0:
+                                if argmax(pre[0]) == 0:
                                     tn += 1
                                 else:
                                     fn += 1

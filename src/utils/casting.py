@@ -27,12 +27,12 @@ def types_dict(y_true, y_predicted, threshold=0.5):
         print 'pre', pre
         sys.exit(0)
         if tr[0] == 1:
-            if pre[1] >= threshold:
+            if pre[0][1] >= threshold:
                 TP += 1
             else:
                 FN += 1
         else:
-            if pre[1] < threshold:
+            if pre[0][1] < threshold:
                 TN += 1
             else:
                 FP += 1

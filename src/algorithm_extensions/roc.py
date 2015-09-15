@@ -73,6 +73,7 @@ class ROC_Yoduen(F1Score):
                 FP -= 1     # we have one wrongly classified negative example more
                 TN += 1     # so that's one well classified negative example less
             # calculating score according to Youden's metric
+            print 'TP:', TP, '\tFP:', FP, '\nFN', FN, '\tTN', TN
             score = (float(TP)/(float(TP) + FN)) - (float(FP)/(float(FP) + TN))
             if update_next:
                 update_next = False

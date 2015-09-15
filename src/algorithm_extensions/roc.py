@@ -46,7 +46,7 @@ class ROC_Yoduen(F1Score):
                 finally:
                     dataset._serialization_guard = None
 
-        stat_dic = types_dict(valid_y, predictions, threshold=predictions)
+        stat_dic = types_dict(valid_y, predictions, threshold=best_threshold)
 
         print '\nSHOWING STATISTICS FOR ROC with Youden metric'
         print "ROC using Youden metric\nscore:", best_score, "\ncorresponding threshold:", best_threshold

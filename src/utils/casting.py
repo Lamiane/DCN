@@ -24,6 +24,7 @@ def types_dict(y_true, y_predicted, threshold=0.5):
         print 'casting'
         print 'pre', pre
         print 'pre[0][1]', pre[0][1]
+        print 'threshold', threshold
         if tr[0] == 1:
             if pre[0][1] >= threshold:
                 TP += 1

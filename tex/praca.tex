@@ -49,10 +49,10 @@
     
     Conventionally, fingerprints represent a *protein/molecule* as a binary(?) vector. Each element of this vector *tells* whether a specific structure is present in the *protein/molecule* or not, e.g. whether the *protein/molecule* has a .......... (oprzeć się na jakiejś publikacji). Vectors are widely used in machine learning as data representation as they can be *compilled* into matrices which allows to *easy computation, easy proofs, happy algebra* <<We need a simpler representation - such on which we can quickly apply many function, such that is well designed for computers, for modern algorithms>> Even though representing a protein as a vector means loosing a lot of information about it, it enables effective computation and still provides us with reasonable results.\\
     
-    As already said, there are many different fingerprints designed. They vary in length and the features included. Some of them are designed for specific tasks. (citation needed). In this work 2D-SIFt will be used.
+    As already said, there are many different fingerprints designed. They vary in length and the features included. Some of them are designed for specific tasks. (citation needed). In this work 2D-SIFt will be used.\\
   
     \section{Problem} %TODO: zmienić hasła na zdania
-    drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.
+    drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.\\
     
     \section{Datasets}
     The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands. Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. Most of the data samples are labeled as active or nonactive, the rest is unlabeled. A single data sample is presented on figure \ref{fig:single_data_sample}.\\
@@ -67,12 +67,12 @@
     The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic. \\
     
     %TODO:Values meaning !!! nie ma tego w publikacji!
-    The values constituting the dataset are discrete, namely: 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).
+    The values constituting the dataset are discrete, namely: 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).\\
     
     %TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmakoloblabla)
     
     \section{Sparsity} %TODO: zmienić hasła na zdania
-    check if the data is sparse, it yes then state that it is and explain why
+    check if the data is sparse, it yes then state that it is and explain why\\
     
     \section{Data representation} %TODO: pewnie chcę napisać coś więcej + zmienić notatki na zdania
     Each data sample is represented as a vector of $r*6*9$ length, where $r$ is the length of the protein. Data samples constitute a dataset. Each dataset describes a reaction/bonding between a certain protein and the ligand.\\
@@ -91,12 +91,12 @@
       
       \{obrazek\} \\ % jakiś typowy lenet
       
-      In this section I will give motivation that stands behind using convolutional neural networks, *explain/define* what is the convolution operation, and give a detailed explanation of CNNs and its properties. Finally, I will describe what problems might arise while learning a CNN model and how to prevent them. The learning algorithm for CNNs will be given.
+      In this section I will give motivation that stands behind using convolutional neural networks, *explain/define* what is the convolution operation, and give a detailed explanation of CNNs and its properties. Finally, I will describe what problems might arise while learning a CNN model and how to prevent them. The learning algorithm for CNNs will be given.\\
       
       \subsection{Motivation} %TODO: zmienić poniższe notatki w tekst 
 	%TODO: why are CNNs so useful, awesome and important, w czym dokonały przełomu? (citation needed? praca hoelnderska?)
-	Convolutional neural networks are *mostly* applied to image recognition, video analysis and natural language processing problems. %FIXME: citation needed?
-	This attempts *are often succesful/often give better results than (any other) models*. %TODO: citation needed
+	Convolutional neural networks are *mostly* applied to image recognition, video analysis and natural language processing problems.\\ %FIXME: citation needed?
+	This attempts *are often succesful/often give better results than (any other) models*.\\ %TODO: citation needed
 	
       \subsection{Convolution} %TODO: zmienić poniższe notatki w tekst 
 	Convolution operation takes as *operands* two functions (dziedzina? zbiór wartości?) and return a new function (dziedzina? zbiór wartości?) as a result. Mathematically, convolution is defined as: \\
@@ -107,7 +107,7 @@
 	  \\
 	
 	It is often useful to see kernels as feature extractors. %TODO
-	why kernels can be seen as feature extractors?
+	why kernels can be seen as feature extractors?\\
 	
       \subsection{Computation Flow} %TODO zmienić poniższe notatki w tekst
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection I will describe how the signal is processed within the convolutional subnetwork. I will not *dig into* the classifying subnetwork as any neural network that can be used to classify objects might be used. Many such networks exist*s* and they are well described in the literature. \\ %TODO: citation needed?
@@ -126,9 +126,7 @@
 	One might also imagine three consecutive seperate layers: a convolutional layer, a classical layer that applies activation function and finally, a pooling layer.\\
 	
 	In the following subsections I will describe in details how each of this operation exactly works. *Szczególna uwaga zostanie zwrócona na to, jak zmieniają się wymiary danych na każdym etapie*\\
-	
-	\{obrazek\} chyba ten u góry tylko
-	
+		
 	\subsubsection{Convolution for neural networks}%TODO: zmienić poniższe notatki w tekst 
 	  The convolution operation was defined as: \\
 	  
@@ -155,7 +153,7 @@
 	  Opisać jakie rozwiązanie zostało użyte przez nas. %TODO:
 	
 	\subsubsection{Activation function} %TODO: zmienić poniższe notatki w tekst 
-	  różne możliwe typy
+	  różne możliwe typy\\
 	
 	\subsubsection{Pooling} %TODO: zmienić poniższe notatki w tekst 
 	  Pooling is an operation that takes as an input multiple values and returns *the statistic(s) of these values*. It is usually applied on a matrix. It takes as *an* input the submatrices and returns a single value as a result. 3 most common *(citation needed?)* types of pooling are:
@@ -173,9 +171,9 @@
 	  
 	  \{obrazek\} pooling size and stride \\
 	  
-	  The same problems might be encountered with pooling on the edges as with the convolutions, namely the output of the layer will be off smaller size than the input unless some techniques avoiding it will *are/will be* applied.
+	  The same problems might be encountered with pooling on the edges as with the convolutions, namely the output of the layer will be off smaller size than the input unless some techniques avoiding it will *are/will be* applied.\\
 	  
-	   The kernel is smaller than the input. It is moved around the picture. It will find feature everywhere - we need this własność spatial invariance. %FIXME: ogarnąć ten akapit
+	   The kernel is smaller than the input. It is moved around the picture. It will find feature everywhere - we need this własność spatial invariance.\\ %FIXME: ogarnąć ten akapit
 	  
 	  \{obrazek\} dlaczego daje nam invariance
 	
@@ -184,12 +182,12 @@
 	  
 	  $output = pooling(activation\_function(convolution(input, kernel)))$\\ %FIXME: notacja (ten sam wzorek jest w computation flow)
 	  
-	  Convolution and pooling might decrease the size of the input. This might be avoided by zero-pad or other methods. Several types of pooling and activation functions have been provided. %FIXME: JĘZYK!
+	  Convolution and pooling might decrease the size of the input. This might be avoided by zero-pad or other methods. Several types of pooling and activation functions have been provided.\\ %FIXME: JĘZYK!
 	  
       \subsection{implementationally awesome things} %FIXME: change this stupid title
       
 	\subsubsection{Fast computation}
-	  (spatial invariance) $\rightarrow$ temu nie musimy też mieć osobnych macierzy na feature w każdym miejscu - oszczędzamy pamięć na parametry (i efektywnośc, bo im więcej paramterów, tym wolniej się uczymy). Small kernel $=$ litlle parameters.
+	  (spatial invariance) $\rightarrow$ temu nie musimy też mieć osobnych macierzy na feature w każdym miejscu - oszczędzamy pamięć na parametry (i efektywnośc, bo im więcej paramterów, tym wolniej się uczymy). Small kernel $=$ litlle parameters.\\
 	
 	\subsubsection{sparse interactions} %TODO: zmienić poniższe notatki w tekst 
 	  because kernel is smaller then data so it not kazdy z kazdym but some with some (sparse) $\rightarrow$ computational boost, kernel is small and moved around input - less parameters, instead of a big matrix we store a small one that runs over the data\\
@@ -202,38 +200,39 @@
 	  \{obrazek\} a moze nie?
 	  
 	\subsubsection{equivariant representations} %TODO: zmienić poniższe notatki w tekst
-	  equivariance - property of *what?* meaning that if the input changes that output changes the same way. $f(g(x)) = g(f(x))$ Intuition about it: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t?
+	  equivariance - property of *what?* meaning that if the input changes that output changes the same way. $f(g(x)) = g(f(x))$ Intuition about it: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t?\\
       
       \subsection{Learning Algorithm} %TODO: backpropagation, state that this one is best (citation needed!)
-	A *zmieniona wersja* of backpropagation algorithm has been provided to *include the changes that must be applied because of* the convolution operation and avoid the diminishing gradient flow. In this subsection the *zmienona wersja* of backpropagation is given and the problem of diminishing gradient flow is *addressed*.
+	A *zmieniona wersja* of backpropagation algorithm has been provided to *include the changes that must be applied because of* the convolution operation and avoid the diminishing gradient flow. In this subsection the *zmienona wersja* of backpropagation is given and the problem of diminishing gradient flow is *addressed*.\\
 	
 	\subsubsection{The problems with a classical backpropagation} %TODO: notatki w tekst
-	  diminishing gradient flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.
+	  diminishing gradient flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.\\
 	
 	\subsubsection{Diminishing gradient flow} %TODO: zmienić poniższe notatki w tekst, sprawdzić czy w CNNach tez przypatkiem nie ma tego probloemu, bo w głębokich na pewno jest
-	  co to jest, skąd się bierze, można się wesprzeć wykładami Larochelle, on poleca dużo paperów zawsze.
+	  co to jest, skąd się bierze, można się wesprzeć wykładami Larochelle, on poleca dużo paperów zawsze.\\
 	  
 	\subsubsection{Backpropagation} %TODO: zmienić poniższe notatki w tekst
-	  See (Goodfellow, 2010) from Bengio
+	  See (Goodfellow, 2010) from Bengio\\
 	
       \subsection{Extensions} %FIXME this title shall not last! %TODO: zmienić poniższe notatki w tekst
-	dropout/dropconnect method, activation functions for dropout, other things from the Dutch paper
+	dropout/dropconnect method, activation functions for dropout, other things from the Dutch paper\\
 	
 	
     \section{Why was this model chosen}
-	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...
+	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...\\
 	
   \chapter{The Model} %TODO: napisac ten rozdzial
+      
+      \section{Goal}
       The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted, the untrue distribution of the data.\\
       
-      \section{Approaches to handle the unlabeled data}
+      \section{Approaches to handle the unlabeled data}      
       The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.\\
       
 	\subsection{Naive Approach}
-	Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised but the unalabeled data could been used to improve parameters in the convolutional part of the model.
+	Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised but the unalabeled data could been used to improve parameters in the convolutional part of the model.\\
 	    
 	% Example: if we had the following examples: [A, B, C, D, E] along with the following labels: [act, act, inact, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C, D, D, E, E] and the labels would be [act, act, act, act, inact, inact, inact, inact, act, inact].
-
 	  \subsubsection{Example:} if we had the following examples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].\\
 	  
 	  The validation set included only labeled samples. The stochastic gradient descent algorithm included in pylearn2 package (include version) was used in this approach.\\
@@ -287,24 +286,24 @@
 	<<DATA EXTENDING>>
       
       \subsubsection{Remark:}
-      \textbf{Unreal distribution of labels} In reality there are more nonactive *samples* than active, in the data provided the ratio was 1/2.
+      \textbf{Unreal distribution of labels} In reality there are more nonactive *samples* than active, in the data provided the ratio was 1/2.\\
       
 	
 	
       \section{The Architecture}
       %TODO: check to 16 i 32 czy nie jest 17 i 33
-      In this section we will describe the type of architecture which we used for experiments. All the models we have trained were convolutional neural networks with one or two convolutional rectified linear layers. Each layer had 16 or 32 output channels. The number of layers have been chosen in such a way that the learning process will not take too much time and the data size will not be reduced too much. Rectifier activation function was used because of its good properties. 
+      In this section we will describe the type of architecture which we used for experiments. All the models we have trained were convolutional neural networks with one or two convolutional rectified linear layers. Each layer had 16 or 32 output channels. The number of layers have been chosen in such a way that the learning process will not take too much time and the data size will not be reduced too much. Rectifier activation function was used because of its good properties.\\ 
    
-      The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$. The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$, always smaller than the convolutional window and if it only was possible (i.e. all dimensions of the convolutional window were smaller then the corresponding dimensions of the data) small enough to be able to have at least two ``windows'' in each dimension. The convolution windows width size was due to the size of the window describing binding of a certain aminoacids. We wanted the network to be able to find patterns describin connection between ... of two following aminoacids, so both ... had to be in one convolutional window.
+      The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$. The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$, always smaller than the convolutional window and if it only was possible (i.e. all dimensions of the convolutional window were smaller then the corresponding dimensions of the data) small enough to be able to have at least two ``windows'' in each dimension. The convolution windows width size was due to the size of the window describing binding of a certain aminoacids. We wanted the network to be able to find patterns describin connection between ... of two following aminoacids, so both ... had to be in one convolutional window.\\
       
-      The shape of pooling windows was (1, 1), (2, 1) or (2, 2) and smaller by at least one than the data size in each dimension so moving the pooling window was always possible. Pooling stride was always equal or smaller by half than the pooling window in each dimension. Max pooling was used.
+      The shape of pooling windows was (1, 1), (2, 1) or (2, 2) and smaller by at least one than the data size in each dimension so moving the pooling window was always possible. Pooling stride was always equal or smaller by half than the pooling window in each dimension. Max pooling was used.\\
       
-      The last layer of the network was a softmax layer with two neurons. It was used to classify the sample based on features extracted by the convolutional part of the network.
+      The last layer of the network was a softmax layer with two neurons. It was used to classify the sample based on features extracted by the convolutional part of the network.\\
       
       \section{Hyperparameters} %TODO how many models? Five in objective functions? F1Score for measuring the performance of the models?
-      Due to many hyperparameters there are many models that fulfill our architecture restrictions so it is not possible to train and measure the performance of all of them. To perform this task we used the Tree of Parzen Estimators algorithm provided by hyperopt and let it sample <<HOW MANY>> models.
+      Due to many hyperparameters there are many models that fulfill our architecture restrictions so it is not possible to train and measure the performance of all of them. To perform this task we used the Tree of Parzen Estimators algorithm provided by hyperopt and let it sample <<HOW MANY>> models.\\
       
-      The objective function choosen to measure the performance of the algorithm created five models of a given architecture, trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. The unlabeled samples were present only in the training set. Validation and test set included only labeled examples as classifying unlabeled examples would not be possible. The measure used to determine the model's preformance was F1Score because <<WHY?>>. The detailed description of the objective function used in hyperopt is in pesudo code presented as Algorithm 1.
+      The objective function choosen to measure the performance of the algorithm created five models of a given architecture, trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. The unlabeled samples were present only in the training set. Validation and test set included only labeled examples as classifying unlabeled examples would not be possible. The measure used to determine the model's preformance was F1Score because <<WHY?>>. The detailed description of the objective function used in hyperopt is in pesudo code presented as Algorithm 1.\\
       
       \begin{algorithm}
       \caption{Learning}\label{euclid}
@@ -330,7 +329,7 @@
       
       
       \section{The Learning Algorithm}
-      For learning a variation of stochastic gradient descent algorithm was written. It enabled using unlabeled examples during the learning process. It used the SGD implementation provided in pylearn2 (version) and changed the learning phase in case of getting unlabeled example. The pseudo code of this algorithm can be found below as Algorithm 2.
+      For learning a variation of stochastic gradient descent algorithm was written. It enabled using unlabeled examples during the learning process. It used the SGD implementation provided in pylearn2 (version) and changed the learning phase in case of getting unlabeled example. The pseudo code of this algorithm can be found below as Algorithm 2.\\
       
       \begin{algorithm}
       \caption{Learning}\label{euclid}
@@ -373,24 +372,24 @@
       
       For labeled samples the learning process was performed with no changes. When the saple was unlabeled the network parameters were stored and then the sample was presented to the network as if it was labeled as inactive. During this process the network parameters were updated. The difference in the network parameters was stored and old parameters were restored. The the sample was presented to network again - this time as an active sample. The procedure was the same as before. After calculating the difference and restoring the old parameters the two vectors of differences were compared to produce to final vector of updates.\\
            
-      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeroes, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign then the corresponding element in the final vector was zero. ecause of that the unlabeled samples were helping the network to learn only these filters that were useful for classifying samples of both classes. If the corresponding elements in both vectors had the same sign then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:\\
+      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeroes, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign then the corresponding element in the final vector was zero. ecause of that the unlabeled samples were helping the network to learn only these filters that were useful for classifying samples of both classes. If the corresponding elements in both vectors had the same sign then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
       
-      \begin{enumerate}
+      \begin{itemize}
        \item minimum by absolute value of the two elements
        \item maximum by absolute value of the two elements
        \item mean of the two elements
        \item softmax mean of the two elements, i.e. having $x, y \in \mathbb{R}$ the softmax mean $\sigma$ is equal to $x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$.
        
        \subsubsection{Remark}
-       It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.
-      \end{enumerate}
+       It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.\\
+      \end{itemize}
       
-      Finally all parameters corresponding to the classifying part of the network were zereod, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.
+      Finally all parameters corresponding to the classifying part of the network were zereod, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.\\
 	
-      Concluding: the update vector had zeroes in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions.
+      Concluding: the update vector had zeroes in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions.\\
       
       \subsubsection{Example}
-      If the vectors of differences were: $[2.5, 1, -3, 5, 7]$ and $[-2, 3, -1, -7, -7, 7]$, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example in ilustrated in figure \ref{fig:combining}
+      If the vectors of differences were: $[2.5, 1, -3, 5, 7]$ and $[-2, 3, -1, -7, -7, 7]$, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example in ilustrated in figure \ref{fig:combining}.\\
       
       \begin{figure}[h!]
 	  \centering
@@ -427,12 +426,12 @@
 	  
       \{obrazek\} ilustrujący te przykłady \\
 	  
-      One can question *legitimacy* of such approach. Adding zeros invites new information into the matrix and might cause additional noise. Instead of adding zeros one might try to change a matrix into torus or instead of zeros use the values that already are present in the original matrix. The added values might be symmetrical *lustrzane odbicie.*
+      One can question *legitimacy* of such approach. Adding zeros invites new information into the matrix and might cause additional noise. Instead of adding zeros one might try to change a matrix into torus or instead of zeros use the values that already are present in the original matrix. The added values might be symmetrical *lustrzane odbicie.*\\
 	  
       \{obrazek\} ilustrujący te przykłady 
       
     \section{pooling}	  
-      is pooling subsampling and if yes then why is polling subsampling? 
+      is pooling subsampling and if yes then why is polling subsampling?\\
 
     
 \end{document}          

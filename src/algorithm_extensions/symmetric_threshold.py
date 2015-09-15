@@ -1,4 +1,6 @@
 __author__ = 'agnieszka'
+from pylearn2.train import SerializationGuard
+from pylearn2.utils import serial
 import sys
 sys.path.append('..')
 from no_threshold import F1Score
@@ -6,10 +8,11 @@ from get_predictions import Predictor
 
 
 class SymmetricThresholdWRTF1Score(F1Score):
-    def __init__(self, save_best_model_path=None):
+    def __init__(self, save_best_model_path=None, save=False):
         super(SymmetricThresholdWRTF1Score, self).__init__()
         self.threshold_list = []
         self.saving_path = save_best_model_path
+        self.save = save
 
     def setup(self, model, dataset, algorithm):
         self.predictor = Predictor(model)
@@ -28,10 +31,16 @@ class SymmetricThresholdWRTF1Score(F1Score):
         self.threshold_list.append(threshold)
         self.score_list.append(score)
 
-        if self.saving_path is not None:
+        if self.saving_path is not None and self.save:
             if max(self.score_list) == score:
-                pass
-                # TODO: saving here
+                try:
+                    # Make sure that saving does not serialize the dataset
+                    dataset._serialization_guard = SerializationGuard()
+                    save_path = self.saving_path
+                    serial.save(save_path, model,
+                                on_overwrite='backup')
+                finally:
+                    dataset._serialization_guard = None
 
         print "F1Score1Threshold score", score, "\ncorresponding threshold:", threshold
 

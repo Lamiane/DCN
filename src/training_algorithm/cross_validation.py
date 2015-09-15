@@ -12,7 +12,7 @@ from hyperopt_api.parser import build
 import configuration.model as config
 from utils.common import get_timestamp
 from yaml_parser import yaml_parser as yp
-from algorithm_extensions.value_getters import f1_score_1threshold_get_value
+from algorithm_extensions.value_getters import roc_score_threshold_getter
 from algorithm_extensions.get_predictions import Predictor
 
 
@@ -86,7 +86,8 @@ class CrossValidator(object):
 
             network = None
             # misclass_error = 1
-            f1_score_error = 1
+            # f1_score_error = 1
+            roc_score = 0
 
             try:
                 # create the model based on a yaml
@@ -104,48 +105,47 @@ class CrossValidator(object):
                     ERROR_FILE.write(traceback.format_exc())
 
             finally:
-                from numpy import argmax
-                # run predictions to obtain score for this model
-                test_data = yaml_parse.load(test_data_string)
-                best_model = serial.load('best_model_roc_youden.model')
-
-                predictor = Predictor(best_model)
-                predictions = predictor.get_predictions(test_data.X)
-
-                fp = 0
-                fn = 0
-                tp = 0
-                tn = 0
-
-                for tr, pre in zip(test_data.y, predictions):
-                    if argmax(pre) == 1:
-                        if tr == 1:
-                            tp += 1
-                        else:
-                            fp += 1
-                    else:
-                        if argmax(pre) == 0:
-                            tn += 1
-                        else:
-                            fn += 1
-                score = (2.0 * tp)/(2.0 * tp + fn + fp)
-                list_of_scores.append(score)
-
                 if network is not None:
                     try:
-                        # misclass_error = lowest_misclass_error(network.model)
-                        # f1_score_error = 1 - f1_score(network)
-                        f1_score_error, threshold = f1_score_1threshold_get_value(network)
-                        print t.bold_red("D_OF1: Best score for this model: "+str(f1_score_error))
+                        from numpy import argmax
+                        # run predictions to obtain score for this model
+                        test_data = yaml_parse.load(test_data_string)
+                        best_model = serial.load('best_model_roc_youden.model')
+
+                        roc_score_, threshold = roc_score_threshold_getter(network)
+
+                        predictor = Predictor(best_model)
+                        predictions = predictor.get_predictions(test_data.X)
+
+                        fp = 0
+                        fn = 0
+                        tp = 0
+                        tn = 0
+
+                        for tr, pre in zip(test_data.y, predictions):
+                            if pre[1] > threshold:
+                                if tr == 1:
+                                    tp += 1
+                                else:
+                                    fp += 1
+                            else:
+                                if argmax(pre) == 0:
+                                    tn += 1
+                                else:
+                                    fn += 1
+                        score = (float(tp)/(float(tp) + fn)) - (float(fp)/(float(fp) + tn))
+                        list_of_scores.append(1-score)  # we want to maximise this score, hyperopt minimises
+
+                        print t.bold_red("_ROC: Best roc score for this model: "+str(score))
                         print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
-                        f1_score_error = 1 - f1_score_error
+
                     except BaseException:  # TODO: this exception is to broad
-                        with open(current_time + '_f1_error', 'w') as ERROR_FILE:
-                            ERROR_FILE.write(traceback.format_exc())
+                            with open(current_time + '_ROC_error', 'w') as ERROR_FILE:
+                                ERROR_FILE.write(traceback.format_exc())
 
                 # print t.bold_red("M_01: misclass_error for this model: "+str(misclass_error))
                 # return misclass_error
-                print t.bold_red("M_02: f1 score error for this model: " + str(f1_score_error))
+                print t.bold_red("M_02: roc score error for this model: " + str(roc_score))
                 # list_of_scores.append(f1_score_error)
 
         return mean(list_of_scores)

@@ -36,7 +36,8 @@ class ROC_Yoduen(F1Score):
                 try:
                     # Make sure that saving does not serialize the dataset
                     dataset._serialization_guard = SerializationGuard()
-                    save_path = self.saving_path
+                    # TODO: this should actually be: save_path = self.saving_path
+                    save_path = 'best_model_roc_youden.model'
                     serial.save(save_path, model,
                                 on_overwrite='backup')
                 finally:
@@ -73,12 +74,12 @@ class ROC_Yoduen(F1Score):
                 FP += 1     # we have one wrongly classified negative example more
                 TN -= 1     # so that's one well classified negative example less
             # calculating score according to Youden's metric
-            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN
             score = (float(TP)/(float(TP) + FN)) - (float(FP)/(float(FP) + TN))
             if update_next:
                 update_next = False
                 next_pred_after_best_threshold = prediction
             if score > best_score:
+                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN
                 best_score = score
                 best_threshold = prediction
                 update_next = True

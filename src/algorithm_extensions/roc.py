@@ -5,7 +5,8 @@ import sys
 sys.path.append('..')
 from no_threshold import F1Score
 from get_predictions import Predictor
-
+from utils.casting import label_lists2types
+from utils import values
 
 class ROC_Yoduen(F1Score):
     def __init__(self, save_best_model_path=None, save=False):
@@ -45,7 +46,14 @@ class ROC_Yoduen(F1Score):
                 finally:
                     dataset._serialization_guard = None
 
+        stat_dic = label_lists2types(valid_y, predictions, t0=best_threshold, t1=best_threshold)
+
+        print '\nSHOWING STATISTICS FOR ROC with Youden metric'
         print "\n\nROC using Youden metric\nscore:", best_score, "\ncorresponding threshold:", best_threshold
+        print values.TP, ':', stat_dic[values.TP], '\t\t', values.TN, ':', stat_dic[values.TN], '\n', \
+            values.FP, ':', stat_dic[values.FP], '\t\t', values.FN, ':', stat_dic[values.FN], '\n', \
+            values.FNP, ':', stat_dic[values.FNP], '\t\t', values.FNN, ':', stat_dic[values.FNN]
+
 
     @staticmethod
     def compute_optimal_threshold_and_score(true_y, predictions):
@@ -70,6 +78,7 @@ class ROC_Yoduen(F1Score):
         best_threshold = 0
         next_pred_after_best_threshold = 0
         update_next = False
+        print 'axis length', len(axis)
         for prediction, label in axis:
             if label == 1:
                 TP += 1     # after moving threshold we have one well classified positive example more
@@ -79,6 +88,8 @@ class ROC_Yoduen(F1Score):
                 TN -= 1     # so that's one well classified negative example less
             # calculating score according to Youden's metric
             score = (float(TP)/(float(TP) + FN)) - (float(FP)/(float(FP) + TN))
+            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN, '\t\tscore:', score
+
             if update_next:
                 update_next = False
                 next_pred_after_best_threshold = prediction

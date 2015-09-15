@@ -95,16 +95,16 @@ class ROC_Yoduen(F1Score):
                 TN -= 1     # so that's one well classified negative example less
             # calculating score according to Youden's metric
             score = (float(TP)/(float(TP) + FN)) - (float(FP)/(float(FP) + TN))
-            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
-            print 'score:', score, 'threshold:', prediction, '\n\n'
+            #print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
+            #print 'score:', score, 'threshold:', prediction, '\n\n'
 
             if update_next:
                 update_next = False
                 next_pred_after_best_threshold = prediction
             if score == best_score:
-                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
+                #print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
             if score > best_score:
-                print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
+                #print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
                 best_score = score
                 best_threshold = prediction
                 update_next = True

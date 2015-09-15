@@ -102,6 +102,7 @@ class ROC_Yoduen(F1Score):
                 update_next = False
                 next_pred_after_best_threshold = prediction
             if score == best_score:
+                pass
                 #print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
             if score > best_score:
                 #print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN

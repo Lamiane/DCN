@@ -70,10 +70,10 @@ class ROC_Yoduen(F1Score):
                 TP += 1     # after moving threshold we have one well classified positive example more
                 FN -= 1     # and that means we classify wrongly one positive example less
             else:   # label is 0 - means nonactive
-                FP -= 1     # we have one wrongly classified negative example more
-                TN += 1     # so that's one well classified negative example less
+                FP += 1     # we have one wrongly classified negative example more
+                TN -= 1     # so that's one well classified negative example less
             # calculating score according to Youden's metric
-            print 'TP:', TP, '\tFP:', FP, '\nFN', FN, '\tTN', TN
+            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN', TN
             score = (float(TP)/(float(TP) + FN)) - (float(FP)/(float(FP) + TN))
             if update_next:
                 update_next = False

@@ -82,7 +82,7 @@ class ROC_Yoduen(F1Score):
         FN = actives
 
         best_score = 0
-        best_threshold = 0
+        best_threshold = float(0)
         next_pred_after_best_threshold = 0
         update_next = False
         print 'axis length', len(axis)
@@ -94,9 +94,9 @@ class ROC_Yoduen(F1Score):
                 FP += 1     # we have one wrongly classified negative example more
                 TN -= 1     # so that's one well classified negative example less
             # calculating score according to Youden's metric
-            score = (float(TP)/(float(TP) + FN)) - (float(FP)/(float(FP) + TN))
-            #print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
-            #print 'score:', score, 'threshold:', prediction, '\n\n'
+            score = (float(TP)/(float(TP) + float(FN))) - (float(FP)/(float(FP) + float(TN)))
+            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
+            print 'score:', score, 'threshold:', prediction, '\n\n'
 
             if update_next:
                 update_next = False

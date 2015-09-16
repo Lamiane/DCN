@@ -44,7 +44,7 @@ data_dict = {'labeled_paths': [join(data_dir_path, '2RH1_actives_2dfp.dat'),
              'middle_values': [[-1]]
              }
 
-number_of_cross_validation_parts = 20
+number_of_cross_validation_parts = 5
 
 seed = 1337
 

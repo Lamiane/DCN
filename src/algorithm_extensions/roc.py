@@ -92,8 +92,8 @@ class ROC_Yoduen(F1Score):
                 FP -= 1     # so that's one wrongly classified negative example less
             # calculating score according to Youden's metric
             score = (float(TP)/(float(TP) + float(FN))) - (float(FP)/(float(FP) + float(TN)))
-            print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
-            print 'score:', score, 'threshold:', prediction, '\n\n'
+            # print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN
+            # print 'score:', score, 'threshold:', prediction, '\n\n'
 
             if update_next:
                 update_next = False

@@ -56,7 +56,9 @@ class ROC_Yoduen(F1Score):
 
         precision = float(stat_dic[values.TP])/(stat_dic[values.TP] + stat_dic[values.FP])
         recall = float(stat_dic[values.TP])/(stat_dic[values.TP] + stat_dic[values.FN])
-        f1score = 2*precision*recall/(precision+recall)
+        f1score = 0
+        if precision+recall != 0:
+            f1score = 2*precision*recall/(precision+recall)
         print 'precision:',precision
         print "recall:", recall
         print "f1score", f1score

@@ -19,6 +19,7 @@ from algorithm_extensions.get_predictions import Predictor
 class CrossValidator(object):
     @staticmethod
     def run(k, model_dictionary, data_yaml_scheme_path, dataset_files, seed=1337):
+        print 'CV_ENTER'
         # obtain the yaml skelton
         assert k >= 3   # we need to have at least 3 sets: train, validation, test
 
@@ -129,15 +130,23 @@ class CrossValidator(object):
                                 else:
                                     fp += 1
                             else:
-                                if argmax(pre[0]) == 0:
+                                if tr[0] == 0:
                                     tn += 1
                                 else:
                                     fn += 1
-                        score = (float(tp)/(float(tp) + fn)) - (float(fp)/(float(fp) + tn))
-                        list_of_scores.append(1-score)  # we want to maximise this score, hyperopt minimises
+                        roc_score = (float(tp)/(float(tp) + fn)) - (float(fp)/(float(fp) + tn))
+                        list_of_scores.append(1-roc_score)  # we want to maximise this score, hyperopt minimises
 
-                        print t.bold_red("_ROC: Best roc score for this model: "+str(score))
-                        print t.bold_red("D_OF1: Obtained for threshold: "+str(threshold))
+                        print t.bold_red("_ROC: Best roc score for this model: "+str(roc_score))
+                        print t.bold_red("_ROC: Obtained for threshold: "+str(threshold))
+                        precision = float(tp)/(tp + fp)
+                        recall = float(tp)/(tp + fn)
+                        f1score = 0
+                        if precision+recall != 0:
+                            f1score = 2*precision*recall/(precision+recall)
+                        print 'precision:', precision
+                        print "recall:", recall
+                        print "f1score", f1score
 
                     except BaseException:  # TODO: this exception is to broad
                             with open(current_time + '_ROC_error', 'w') as ERROR_FILE:
@@ -147,5 +156,6 @@ class CrossValidator(object):
                 # return misclass_error
                 print t.bold_red("M_02: roc score error for this model: " + str(roc_score))
                 # list_of_scores.append(f1_score_error)
-
-        return mean(list_of_scores)
+        m = mean(list_of_scores)
+        print "CV_MEAN mean(1-ROC) on this architecture:", m
+        return m

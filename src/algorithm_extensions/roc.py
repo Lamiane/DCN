@@ -57,7 +57,7 @@ class ROC_Yoduen(F1Score):
         f1score = 0
         if precision+recall != 0:
             f1score = 2*precision*recall/(precision+recall)
-        print 'precision:',precision
+        print 'precision:', precision
         print "recall:", recall
         print "f1score", f1score
 

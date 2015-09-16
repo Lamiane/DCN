@@ -5,7 +5,7 @@
 
     algorithm: !obj:training_algorithm.sgd_tailored.SgdTailored { # trainig algorithm: Batch Gradient Descent
         batch_size: 1,  # don't change if you want to use verbessert algo! POCHA
-        combine_updates_rule: !obj:training_algorithm.combining_rules.Softmax {
+        combine_updates_rule: !obj:training_algorithm.combining_rules.Minimum {
         },
         learning_rate: 0.01,
         learning_rule: !obj:pylearn2.training_algorithms.learning_rule.Momentum {

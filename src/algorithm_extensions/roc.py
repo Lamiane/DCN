@@ -89,12 +89,12 @@ class ROC_Yoduen(F1Score):
         update_next = False
         print 'axis length', len(axis)
         for prediction, label in axis:
-            if label == 1:
-                TP += 1     # after moving threshold we have one well classified positive example more
-                FN -= 1     # and that means we classify wrongly one positive example less
+            if label[0] == 1:
+                TP -= 1     # after moving threshold we have one well classified positive example less
+                FN += 1     # and that means we classify wrongly one positive example more
             else:   # label is 0 - means nonactive
-                FP += 1     # we have one wrongly classified negative example more
-                TN -= 1     # so that's one well classified negative example less
+                TN += 1     # we have one well classified negative example more
+                FP -= 1     # so that's one wrongly classified negative example less
             # calculating score according to Youden's metric
             score = (float(TP)/(float(TP) + float(FN))) - (float(FP)/(float(FP) + float(TN)))
             print 'TP:', TP, '\tFP:', FP, '\nFN:', FN, '\tTN:', TN

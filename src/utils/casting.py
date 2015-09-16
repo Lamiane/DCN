@@ -3,7 +3,6 @@ __author__ = 'agnieszka'
 
 # only for one threshold
 def types_dict(y_true, y_predicted, threshold=0.5):
-    print ' entering types dict '
     import sys
     sys.path.append('..')
     from utils import values

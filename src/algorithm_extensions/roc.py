@@ -23,8 +23,6 @@ class ROC_Yoduen(F1Score):
         if self.predictor is None:
             self.setup(model, dataset, algorithm)
 
-        print 'into the roc!'
-
         # obtaining validating set # TODO: finally we want to have train-validation-test set. Or sth.
         valid_x = algorithm.monitoring_dataset['valid'].X
         valid_y = algorithm.monitoring_dataset['valid'].y
@@ -72,22 +70,19 @@ class ROC_Yoduen(F1Score):
         # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
         # middle    -1    [[ 0. 0. 1. ]]
 
-        print 'into the insides of roc!'
-
         actives = sum([1 for arr_pred_lab in axis if arr_pred_lab[1] == 1])
         nonactives = len(axis) - actives
 
         # threshold is zero, it means we label ALL the samples as negatives
-        TP = 0
-        FP = 0
-        TN = nonactives
-        FN = actives
+        TP = actives
+        FP = nonactives
+        TN = 0
+        FN = 0
 
         best_score = 0
         best_threshold = float(0)
         next_pred_after_best_threshold = 0
         update_next = False
-        print 'axis length', len(axis)
         for prediction, label in axis:
             if label[0] == 1:
                 TP -= 1     # after moving threshold we have one well classified positive example less

@@ -224,7 +224,7 @@
   \chapter{The Model} %TODO: napisac ten rozdzial
       
       \section{Goal}
-      The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted, the untrue distribution of the data.\\
+      The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted.\\
       
       \section{Approaches to handle the unlabeled data}      
       The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.\\
@@ -243,7 +243,7 @@
 	<<GOTO: The Learning Algorithm>>\\      
       
       \section{Data}
-	The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands. Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid.A single data sample is presented on figure \ref{fig:single_data_sample2}.\\
+	The dataset describes interactions between a single protein and multiple ligands. One might choose to see the dataset as a four dimensional matrix with axes dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a protein bounds with a specific ligand. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid.A single data sample is presented on figure \ref{fig:single_data_sample2}.\\
 	
 	\begin{figure}[h!]
 	  \centering
@@ -252,14 +252,24 @@
 	  \label{fig:single_data_sample2}
 	\end{figure} 
 	
-	The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic. \\
+	The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic.\\
+	
+	Even though it might be intuitive to look at this data as if it were 4-dimensional, it was stored in the memory in a 3-dimensional form by placing the 6 x 9 matrices adjacent to each other. If we had a protein with only three residues, name them A, B and C, a single sample would look like on figure \ref{fig:data_original}\\
+	
+	\begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=0.5]{original_dataset.png}
+	  \caption{Data stored in the memory}
+	  \label{fig:data_original}
+	\end{figure} 
 	
 	%TODO:Values meaning !!! nie ma tego w publikacji!
-	The values constituting the dataset are discrete, namely: 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information). The data was very sparse - more than 99\% of all values were zeros.\\
+	The values constituting the dataset are discrete numbers in range 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? The data was very sparse - more than 99\% of all values were zeros.\\
+	
+	The dataset was stored in 3 files - each file contained samples of only one type: active, inactive, middle (not labled). Out of 5844 samples 2655 were labeled as active, 1945 was labeled as inactive and there were also 1244 unlabeled examples.\\
 	
 	%TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmak
-	
-	Out of 5844 samples 2655 were labeled as active, 1945 was labeled as inactive and there were also 1244 unlabeled examples.\\
+
 	
 	%2RH1_middle_2dfp.dat
 	%    ||   0:   25795857.0   ||   1:   126528.0   ||   2:   58546.0  ||    3:   21098.0   ||   4:    6490.0   ||
@@ -282,51 +292,72 @@
 	%  6:       3.61082490503e-05      ||      7:      1.43079541083e-05       ||      8:      6.86395095736e-06       ||    
 	%  9:       4.01202767226e-06       ||
 
-	
-	<<DATA EXTENDING>>
+	\subsection{Data preprocessing}\label{sec:data_processing}
+	  In order to extract most promising features, the data has been preprocessed. We decided to perform a preprocessing in such a way that the model would be able to build such patterns that could detect whether a bound of a specific kind was present in both adjacent residues. We expected that such approach might lead to discovering of interesting correlations.\\
+	  
+	  To achieve such a form of the dataset that would enable this approach, the dataset was extended in the following way: three copies of the dataset have been created and combined, each copy stored just below the previous one. Each copy was shifted in such a way that going from up to down and from left to right would preserve the order of the residues. The shift forced us to either complement each row with zeros or to cut off the residues that would stick out. We decided not to cut off any residues so each of them will be present in the whole dataset the same number of times - this way no residue will be underrepresented. As a result each sample had 18 instead of 6 rows and 18 columns more.\\
+	  
+	  The schema of this approach is shown on figure \ref{fig:extended_data} which depicts the simple example of a protein with only three residues. It can be observed that a convolution window broader than 9 would be able to detect whether an interaction of some type is present in both adjacent residues while convolution window higher than 6 would be able to detect if two adjacent residues have same pharmacophore features.\\
+	  
+	  \begin{figure}[h!]
+	    \centering
+	    \includegraphics[scale=0.50]{dataset_extension.png}
+	    \caption{Data after preprocessing.}
+	    \label{fig:extended_data}
+	  \end{figure} 
       
-      \subsubsection{Remark:}
-      \textbf{Unreal distribution of labels} In reality there are more nonactive *samples* than active, in the data provided the ratio was 1/2.\\
-      
-	
 	
       \section{The Architecture}
       %TODO: check to 16 i 32 czy nie jest 17 i 33
-      In this section we will describe the type of architecture which we used for experiments. All the models we have trained were convolutional neural networks with one or two convolutional rectified linear layers. Each layer had 16 or 32 output channels. The number of layers have been chosen in such a way that the learning process will not take too much time and the data size will not be reduced too much. Rectifier activation function was used because of its good properties.\\ 
+      In this section we will describe the type of architecture which we used for experiments. All the models we have trained were convolutional neural networks with one or two convolutional rectified linear layers. Each layer had 16 or 32 output channels. The number of layers have been chosen in such a way that the learning process will not take too much time and the data size will not be reduced too much. Rectifier activation function was used because of its good properties[Dutch paper].\\ 
    
-      The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$. The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$, always smaller than the convolutional window and if it only was possible (i.e. all dimensions of the convolutional window were smaller then the corresponding dimensions of the data) small enough to be able to have at least two ``windows'' in each dimension. The convolution windows width size was due to the size of the window describing binding of a certain aminoacids. We wanted the network to be able to find patterns describin connection between ... of two following aminoacids, so both ... had to be in one convolutional window.\\
+      The convolution window's values were chosen in such a way that would enable the model to find filters catching correlation between same types of interaction in two adjacent residues, what was described in section \ref{sec:data_processing}. The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$. The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$. If both convolution window size and stride had big values in the first layer, it could happen that the data size in the second layer would be too small to satisfy the conditions above. In such cases the convolution window's size and stride were reduced in such a way that the convolution window's size would always be smaller than the data size and the convolution window's stride would always be smaller than the convolutional window and, if it only was possible (i.e. all dimensions of the convolutional window were smaller then the corresponding dimensions of the data), small enough to enable existence of at least two ``windows'' in each dimension.\\
       
-      The shape of pooling windows was (1, 1), (2, 1) or (2, 2) and smaller by at least one than the data size in each dimension so moving the pooling window was always possible. Pooling stride was always equal or smaller by half than the pooling window in each dimension. Max pooling was used.\\
+      The shape of pooling windows was (1, 1), (2, 1) or (2, 2) and smaller by at least one than the data size in each dimension so moving the pooling window was always possible. Pooling stride was always equal to or smaller by half than the pooling window in each dimension. Max pooling was used.\\
       
       The last layer of the network was a softmax layer with two neurons. It was used to classify the sample based on features extracted by the convolutional part of the network.\\
       
-      \section{Hyperparameters} %TODO how many models? Five in objective functions? F1Score for measuring the performance of the models?
-      Due to many hyperparameters there are many models that fulfill our architecture restrictions so it is not possible to train and measure the performance of all of them. To perform this task we used the Tree of Parzen Estimators algorithm provided by hyperopt and let it sample <<HOW MANY>> models.\\
-      
-      The objective function choosen to measure the performance of the algorithm created five models of a given architecture, trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. The unlabeled samples were present only in the training set. Validation and test set included only labeled examples as classifying unlabeled examples would not be possible. The measure used to determine the model's preformance was F1Score because <<WHY?>>. The detailed description of the objective function used in hyperopt is in pesudo code presented as Algorithm 1.\\
-      
-      \begin{algorithm}
-      \caption{Learning}\label{euclid}
-      \begin{algorithmic}[1]
-      \Procedure{objective\_func}{sample, data\_labeled, data\_unlabeled}
-      \State
-      \State $\textit{scores} \gets \textit{empty list}$
-      \State
-      \For {$\textit{k} \in \textit{range(0,K)}$} 
-	\State $\textit{train\_set, validation\_set, test\_set} \gets \textit{split(data\_labeled, k)} $
-	\State $\textit{train\_set} \gets \textit{train\_set + data\_unlabeled}$
-	\State $\textit{model} \gets \textit{build\_model(sample)}$
-	\State $\textit{model} \gets \textit{train(model)}$
-	\State $\textit{score} \gets \textit{measure\_performance(model)}$
-	\State $\textit{scores.append(score)}$
-      \EndFor
-      \State       
-      \State
-      \Return{$\textit{mean(scores)}$}
-      \EndProcedure
-      \end{algorithmic}
-      \end{algorithm}
-      
+	\subsection{Finding best architecture} %TODO F1Score for measuring the performance of the models?
+	Due to many hyperparameters, there exist many models that fulfill our architecture restrictions and therefore it is not possible to train and measure the performance of all possible architectures. To find the best one we used the tree of Parzen estimators algorithm provided by a Python library - Hyperopt[hyperopt] and let it sample 20 models.\\
+	
+	Each architecture that was tested was choosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the objective function responsible for measuring the performance of the model.\\
+	
+	\subsubsection{Objective function for hyperopt}
+	Each time the objective function was creating five models of a given architecture and then trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. Validation and test set included only labeled examples because classifying unlabeled examples would not be possible. All the unlabeled samples were added only to the training set. The cross validation proceeded as follows: the active and inactive samples were split into five parts of even size. One part was becoming the validation set, one part was becoming the test set and the other three parts along with all the unlabeled examples were becoming the training set. The whole procedure was repeated five times.\\
+	
+	Each time after training the model its performance on testing data was measured and stored. At the end the mean value of scores of all five models was returned to the hyperopt module. The score used for measuring the performance of the model was receiver operating characteristic (ROC) with Youden's J statistic. We will cover this topic in details later in this section. Algorithm \ref{alg:cross_validation} shows pseudo code for the cross validation procedure.\\
+	
+	\begin{algorithm}
+	\caption{Cross validation}\label{alg:cross_validation}
+	\begin{algorithmic}[1]
+	\Procedure{objective\_func}{sample, data\_labeled, data\_unlabeled}
+	\State
+	\State $\textit{scores} \gets \textit{empty list}$
+	\State
+	\For {$\textit{k} \in \textit{range(0,K)}$} 
+	  \State $\textit{train\_set, validation\_set, test\_set} \gets \textit{split(data\_labeled, k)} $
+	  \State $\textit{train\_set} \gets \textit{train\_set + data\_unlabeled}$
+	  \State $\textit{model} \gets \textit{build\_model(sample)}$
+	  \State $\textit{model} \gets \textit{train(model, train\_set, validation\_set)}$
+	  \State $\textit{score} \gets \textit{measure\_performance(model), test\_set}$
+	  \State $\textit{scores.append(score)}$
+	\EndFor
+	\State       
+	\State
+	\Return{$\textit{mean(scores)}$}
+	\EndProcedure
+	\end{algorithmic}
+	\end{algorithm}
+	
+	\subsubsection{Training of the model}
+	During each iteration the model provided by the hyperopt module was trained on the data >>created<< during the iteration. After each epoch the model's performance was on validation data was measured. It the performance was best for thus mode
+	
+	
+	\subsubsection{Score used for measuring the performance of the model}
+	The measure used to determine the model's preformance was F1Score because <<WHY?>>. The detailed description of the objective function used in hyperopt is in pesudo code presented as Algorithm 1.\\
+	
+	
+	
       
       \section{The Learning Algorithm}
       For learning a variation of stochastic gradient descent algorithm was written. It enabled using unlabeled examples during the learning process. It used the SGD implementation provided in pylearn2 (version) and changed the learning phase in case of getting unlabeled example. The pseudo code of this algorithm can be found below as Algorithm 2.\\
@@ -397,8 +428,12 @@
 	  \caption{Example of the min combining function}
 	  \label{fig:combining}	%TODO referencing does not work!
 	\end{figure} 
+	
+      \section{Finding the threshold}
+      using ROC wit Youden's sth.. THIS IS VERY IMPORTANT
       
       \section{Experiments}
+      what where how many
       
       \begin{figure}[h!]
 	  \centering

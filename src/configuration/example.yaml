@@ -3,7 +3,7 @@
 
     model: %(model)s
 
-    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD{ # trainig algorithm: Batch Gradient Descent
+    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD { # trainig algorithm: Batch Gradient Descent
         batch_size: 1,  # don't change if you want to use verbessert algo! POCHA
         learning_rate: 0.01,
         learning_rule: !obj:pylearn2.training_algorithms.learning_rule.Momentum {

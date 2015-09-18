@@ -225,22 +225,8 @@
       
       \section{Goal}
       The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted.\\
-      
-      \section{Approaches to handle the unlabeled data}      
-      The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.\\
-      
-	\subsection{Naive Approach}
-	Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised but the unalabeled data could been used to improve parameters in the convolutional part of the model.\\
-	    
-	% Example: if we had the following examples: [A, B, C, D, E] along with the following labels: [act, act, inact, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C, D, D, E, E] and the labels would be [act, act, act, act, inact, inact, inact, inact, act, inact].
-	  \subsubsection{Example:} if we had the following examples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].\\
-	  
-	  The validation set included only labeled samples. The stochastic gradient descent algorithm included in pylearn2 package (include version) was used in this approach.\\
-	  
-	\subsection{Fancy Approach}
-	In training set all the samples were included only once along with their proper labels. Once again the validation set included only labeled data. The learning algorithm was *changed* in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model but had no impact on the classification part.\\
-    
-	<<GOTO: The Learning Algorithm>>\\      
+     
+	 
       
       \section{Data}
 	The dataset describes interactions between a single protein and multiple ligands. One might choose to see the dataset as a four dimensional matrix with axes dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a protein bounds with a specific ligand. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid.A single data sample is presented on figure \ref{fig:single_data_sample2}.\\
@@ -322,6 +308,13 @@
 	
 	Each architecture that was tested was choosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the objective function responsible for measuring the performance of the model.\\
 	
+	 \begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=0.6]{control_flow.png}
+	  \caption{The control flow of the experiments.}
+	  \label{fig:control_flow}	%TODO referencing does not work!
+	\end{figure} 
+	
 	\subsubsection{Objective function for hyperopt}
 	Each time the objective function was creating five models of a given architecture and then trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. Validation and test set included only labeled examples because classifying unlabeled examples would not be possible. All the unlabeled samples were added only to the training set. The cross validation proceeded as follows: the active and inactive samples were split into five parts of even size. One part was becoming the validation set, one part was becoming the test set and the other three parts along with all the unlabeled examples were becoming the training set. The whole procedure was repeated five times.\\
 	
@@ -339,7 +332,7 @@
 	  \State $\textit{train\_set} \gets \textit{train\_set + data\_unlabeled}$
 	  \State $\textit{model} \gets \textit{build\_model(sample)}$
 	  \State $\textit{model} \gets \textit{train(model, train\_set, validation\_set)}$
-	  \State $\textit{score} \gets \textit{measure\_performance(model), test\_set}$
+	  \State $\textit{score} \gets \textit{measure\_performance(model, test\_set)}$
 	  \State $\textit{scores.append(score)}$
 	\EndFor
 	\State       
@@ -350,17 +343,28 @@
 	\end{algorithm}
 	
 	\subsubsection{Training of the model}
-	During each iteration the model provided by the hyperopt module was trained on the data >>created<< during the iteration. After each epoch the model's performance was on validation data was measured. It the performance was best for thus mode
+	During each iteration the model provided by the hyperopt module was trained on the data computed during the iteration. After each epoch the optimal threshold was calculated on the validation set. All samples, which activation value was above the threshold, were then classified as active samples and those, which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set.\\
 	
+	To compute the optimal threshold the receiver operating characteristic (ROC) procedure was used. To measure the quality of the threshold the Youden's J statistic was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was stored on disk. As a result, at the end of the learning process the model's best version was stored on disk. This version was read and its performance on the testing set was measured and stored in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score.\\
+	% TODO: why do we look for optimal threshold in such a silly way? why ROC? why youden's statistic?
 	
-	\subsubsection{Score used for measuring the performance of the model}
-	The measure used to determine the model's preformance was F1Score because <<WHY?>>. The detailed description of the objective function used in hyperopt is in pesudo code presented as Algorithm 1.\\
-	
-	
+	The details of the learning algorithm are covered in section \ref{sec:learning_algorithm}.	
 	
       
-      \section{The Learning Algorithm}
-      For learning a variation of stochastic gradient descent algorithm was written. It enabled using unlabeled examples during the learning process. It used the SGD implementation provided in pylearn2 (version) and changed the learning phase in case of getting unlabeled example. The pseudo code of this algorithm can be found below as Algorithm 2.\\
+    \section{The Learning Algorithm}\label{sec:learning_algorithm} 
+    The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.\\
+    
+      \subsection{Na\"{i}ve Approach}
+      Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised while the unalabeled data could have been used to improve parameters in the convolutional part of the model.\\
+	  
+      % Example: if we had the following examples: [A, B, C, D, E] along with the following labels: [act, act, inact, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C, D, D, E, E] and the labels would be [act, act, act, act, inact, inact, inact, inact, act, inact].
+      \subsubsection{Example:}
+      If there were the following examples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].\\
+      
+      For this approach the stochastic gradient descent algorithm included in pylearn2 package (include version) was used.\\
+	  
+      \subsection{Fancy Approach}
+      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in pylearn2 (version here) was used as a base and major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model but had no impact on the classification part. The pseudo code of this algorithm can be found below as Algorithm 2.\\
       
       \begin{algorithm}
       \caption{Learning}\label{euclid}
@@ -371,11 +375,11 @@
 	\State
 	\State $\textit{SGD(sample, inactive)}$
 	\State $\textit{diff\_vec\_1} \gets \textit{current\_parameters} -\textit{parameters\_on\_enter}$
-	\State $\textit{current\_parameters} \gets \textit{parameters\_on\_load}$
+	\State $\textit{current\_parameters} \gets \textit{parameters\_on\_enter}$
 	\State
 	\State $\textit{SGD(sample, active)}$
 	\State $\textit{diff\_vec\_2} \gets \textit{current\_parameters} - \textit{parameters\_on\_enter}$
-	\State $\textit{current\_parameters} \gets \textit{parameters\_on\_load}$
+	\State $\textit{current\_parameters} \gets \textit{parameters\_on\_enter}$
 	\State
 	\State $\textit{update\_vector} = \textit{new vector of length same to difference vectors}$
 	\For {$\textit{el1, el2, up\_el} \in \textit{zip(diff\_vec\_1, diff\_vec\_2, update\_vec)}$}
@@ -401,9 +405,9 @@
       \end{algorithmic}
       \end{algorithm}
       
-      For labeled samples the learning process was performed with no changes. When the saple was unlabeled the network parameters were stored and then the sample was presented to the network as if it was labeled as inactive. During this process the network parameters were updated. The difference in the network parameters was stored and old parameters were restored. The the sample was presented to network again - this time as an active sample. The procedure was the same as before. After calculating the difference and restoring the old parameters the two vectors of differences were compared to produce to final vector of updates.\\
+      For labeled samples the learning process was performed with no changes. When the sample was unlabeled the network parameters were stored and then the sample was presented to the network as if it was labeled as inactive. During this process the network parameters were updated. The difference in the network parameters was stored and old parameters were restored. Afterwards, the sample was presented to the network again - this time as an active sample. The procedure was the same as before. After calculating the difference and restoring the old parameters the two vectors of differences were compared to produce the final vector of updates.\\
            
-      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeroes, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign then the corresponding element in the final vector was zero. ecause of that the unlabeled samples were helping the network to learn only these filters that were useful for classifying samples of both classes. If the corresponding elements in both vectors had the same sign then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
+      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeros, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign, then the corresponding element in the final vector was zero. As a result, the unlabeled samples were used by the network to learn only these filters that were useful for classifying samples of both classes. Finally, if the corresponding elements in both vectors had the same sign, then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
       
       \begin{itemize}
        \item minimum by absolute value of the two elements
@@ -415,12 +419,12 @@
        It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.\\
       \end{itemize}
       
-      Finally all parameters corresponding to the classifying part of the network were zereod, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.\\
+      Finally, all parameters corresponding to the classifying part of the network were zereod, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.\\
 	
-      Concluding: the update vector had zeroes in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions.\\
+      Concluding: the update vector had zeros in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, then the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions.\\
       
       \subsubsection{Example}
-      If the vectors of differences were: $[2.5, 1, -3, 5, 7]$ and $[-2, 3, -1, -7, -7, 7]$, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example in ilustrated in figure \ref{fig:combining}.\\
+      If the vectors of differences were: $[2.5, 1, -3, 5, 7]$ and $[-2, 3, -1, -7, -7, 7]$, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum, then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example in ilustrated in figure \ref{fig:combining}.\\
       
       \begin{figure}[h!]
 	  \centering
@@ -429,18 +433,8 @@
 	  \label{fig:combining}	%TODO referencing does not work!
 	\end{figure} 
 	
-      \section{Finding the threshold}
-      using ROC wit Youden's sth.. THIS IS VERY IMPORTANT
       
-      \section{Experiments}
-      what where how many
-      
-      \begin{figure}[h!]
-	  \centering
-	  \includegraphics[scale=0.6]{control_flow.png}
-	  \caption{The control flow of the experiments.}
-	  \label{fig:control_flow}	%TODO referencing does not work!
-	\end{figure} 
+     
 	
   \chapter{What can be improved} %TODO: napisać ten rozdział
     \section{Everything...}

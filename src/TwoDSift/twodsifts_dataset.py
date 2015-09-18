@@ -10,8 +10,8 @@ from pylearn2.utils.rng import make_np_rng
 class TwoDSiftData(DenseDesignMatrix):
 
     def __init__(self, filenames=[], y_val=[], nogap_type=True, labels=False, shuffle=True,
-                 start=None, stop=None, cv=None, normal_run=True, indices_to_delete=None, shuffle_seed=1337,
-        middle=[], middle_val=-1):
+                 start=None, stop=None, cv=None, normal_run=True, flatten=False, indices_to_delete=None,
+                 shuffle_seed=1337, middle=[], middle_val=-1):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
         :type filenames: list of data files to read
@@ -147,6 +147,11 @@ class TwoDSiftData(DenseDesignMatrix):
             print "wszedlem do normal_run"  # POCHA
             topo_view = self.preprocess_data(topo_view)
         print "WYSZEDLEM Z normal run"  # POCHA
+
+        # flattening (for multilayer perceptron)
+        if flatten:
+            size_of_sample = topo_view.shape[1]*topo_view.shape[2]*topo_view.shape[3]
+            topo_view = np.reshape(a=topo_view, newshape=(topo_view.shape[0], size_of_sample))
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))

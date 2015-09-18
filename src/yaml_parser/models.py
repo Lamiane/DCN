@@ -96,6 +96,10 @@ class RectifiedLinear(object):
         self.left_slope = 0.0
         self.kwargs = None
 
+        # this is risky inheritance
+        self.dim = None
+        self.layer_name = ''
+
 
 class ConvElemwise(object):
 
@@ -210,6 +214,9 @@ class Sigmoid(object):
         self.monitor_style = 'detection'
         self.kwargs = None
 
+        # this is risky inheritance
+        self.dim = None
+        self.layer_name = ''
 
 class Tanh(object):
     def __init__(self):

@@ -41,9 +41,20 @@ def parse_to_yaml(obj, tabulators=0):
 
 
 # TODO: it's easy to write it in more general form
+# see below below
 def parse_weight_decay(mod):
     weight_decay_coeffs = "'h0': 0.00005,"
     if len(mod.layers) == 3:
         weight_decay_coeffs += "\n'h1': 0.00005,"
     weight_decay_coeffs += "\n" + "'softmax': 0.00005"
+    return weight_decay_coeffs
+
+
+def general_parse_weight_decay(mod):
+    weight_decay_coeffs = ''
+    for layer in mod.layers:
+        weight_decay_coeffs += "'" + layer.layer_name + "': 0.00005,\n"
+
+    # remove last newline character and last comma
+    weight_decay_coeffs = weight_decay_coeffs[0:-2]
     return weight_decay_coeffs

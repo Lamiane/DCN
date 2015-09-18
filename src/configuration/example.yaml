@@ -46,29 +46,6 @@
             start: 1,
             saturate: 10,
             final_momentum: 0.99
-        }, !obj:algorithm_extensions.symmetric_threshold.SymmetricThresholdWRTF1Score {
-                save_best_model_path: "best_model_symmetric_threshold_wrt_F1Score.pkl",
-                save: No
-        }, !obj:algorithm_extensions.roc.ROC_Yoduen {
-                save_best_model_path: "best_model_roc_youden.pkl",
-                save: Yes
-        }, !obj:algorithm_extensions.statistics.StatisticsNoThreshold {
-            call_list: [
-                !obj:algorithm_extensions.no_threshold.F1Score {
-                    save: No,
-                    save_best_model_path: "best_model_no_threshold_wrt_F1Score.pkl"
-                }, !obj:algorithm_extensions.statistics.Precision { },
-                !obj:algorithm_extensions.statistics.Recall { },
-                !obj:algorithm_extensions.statistics.Accuracy { }
-            ]
-        }, !obj:algorithm_extensions.statistics.StatisticsSymmetricThreshold {
-            call_list: [
-                !obj:algorithm_extensions.statistics.Precision { },
-                !obj:algorithm_extensions.statistics.Recall { },
-                !obj:algorithm_extensions.statistics.Accuracy { }
-            ]
-         },!obj:algorithm_extensions.two_threshold.TwoThresholdWRTF1Score {
-         save: No
-         }
+        }
     ]
 }

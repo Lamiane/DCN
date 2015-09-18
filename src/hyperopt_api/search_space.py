@@ -13,37 +13,28 @@ def get_search_space():
         {
             'h0': hp.choice('first layer', [
                 {
-                    'h0 layer type': 'ConvRectifiedLinear',
-                    'h0 output channels': hp.choice('h0 output channels', [16, 32]),
-                    'h0 convolution_matrix shape width': hp.choice('h0 convolution_matrix shape width', [6, 8, 10, 12]),
-                    'h0 convolution_matrix shape height': hp.choice('h0 convolution_matrix shape height', [4, 5, 6, 7, 8]),   # TODO: moze jednak dorzucic 9 i 10
-                    'h0 convolution_matrix stride width':
-                        hp.choice('h0 convolution_matrix stride width', [2, 4, 6]),
-                    'h0 convolution_matrix stride height': hp.choice('h0 convolution_matrix stride height', [2, 3]),
-                    'h0 pool shape': hp.choice('h0 pool shape', [(1, 1), (2, 1), (2, 2)]),
-                    # choosing pool stride height equal or smaller than in pool shape
-                    'h0 pool stride height': hp.choice('h0 pool stride height', [0.5, 1]),
-                    # choosing pool stride width equal or bigger than the height
-                    'h0 pool stride width': hp.choice('h0 pool stride width', [0.5, 1]),
-
+                    'h0 layer type': hp.choice('h0 layer type', ['RectifiedLinear', 'Sigmoid', 'Tanh']),
+                    'h0 layer size multiplier': hp.choice('h0 layer size multiplier',
+                                                          [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1])
                 },
             ]),
         },
         {
             'h1': hp.choice('second layer', [
                 {
-                    'h1 layer type': 'ConvRectifiedLinear',
-                    'h1 output channels': hp.choice('h1 output channels', [16, 32]),
-                    'h1 convolution_matrix shape width': hp.choice('h1 convolution_matrix shape width', [6, 8, 10, 12]),
-                    'h1 convolution_matrix shape height': hp.choice('h1 convolution_matrix shape height', [4, 5, 6, 7, 8]),   # TODO: moze jednak dorzucic 9 i 10
-                    'h1 convolution_matrix stride width': hp.choice('h1 convolution_matrix stride width', [2, 4, 6]),
-                    'h1 convolution_matrix stride height': hp.choice('h1 convolution_matrix stride height', [2, 3]),
-                    'h1 pool shape': hp.choice('h1 pool shape', [(1, 1), (2, 1), (2, 2)]),
-                    # choosing height equal or smaller than in pool shape
-                    'h1 pool stride height': hp.choice('h1 pool stride height', [0.5, 1]),
-                    # choosing width equal or bigger than the height
-                    'h1 pool stride width': hp.choice('h1 pool stride width', [0.5, 1]),
-
+                    'h1 layer type': hp.choice('h1 layer type', ['RectifiedLinear', 'Sigmoid', 'Tanh']),
+                    'h1 layer size multiplier': hp.choice('h1 layer size multiplier',
+                                                          [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1])
+                },
+                None
+            ]),
+        },
+        {
+            'h2': hp.choice('third layer', [
+                {
+                    'h2 layer type': hp.choice('h2 layer type', ['RectifiedLinear', 'Sigmoid', 'Tanh']),
+                    'h2 layer size multiplier': hp.choice('h2 layer size multiplier',
+                                                          [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1])
                 },
                 None
             ]),
@@ -51,8 +42,3 @@ def get_search_space():
         ]
 
     return space
-
-
-
-
-

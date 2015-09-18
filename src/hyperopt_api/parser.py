@@ -158,3 +158,79 @@ def calculate_data_shape_after_convolution(data_height, data_width,
     return int(new_data_height), int(new_data_width)
 
 
+# returns object that can be parsed to yaml
+def build_multilayer(hyperopt_sample):
+    single_sample_size = 20844
+    current_data_size = single_sample_size
+
+    h0_dict = hyperopt_sample[0]['h0']
+    if h0_dict['h0 layer type'] == 'RectifiedLinear':
+        h0 = models.RectifiedLinear()
+    elif h0_dict['h0 layer type'] == 'Sigmoid':
+        h0 = models.Sigmoid()
+    elif h0_dict['h0 layer type'] == 'Tanh':
+        h0 = models.Tanh()
+    else:
+        raise ValueError('received layer type:', h0_dict['h0 layer type'], 'is not implemented')
+    h0.dim = int(current_data_size * h0_dict['h0 layer size multiplier'])
+    h0.layer_name = 'h0'
+    current_data_size *= int(h0_dict['h0 layer size multiplier'])
+
+    print t.bold_cyan('\nafter h0:'), '\ndata size:', current_data_size
+
+    h1_dict = hyperopt_sample[1]['h1']
+    if h1_dict is None:
+        h1 = None
+    else:
+        if h1_dict['h1 layer type'] == 'RectifiedLinear':
+            h1 = models.RectifiedLinear()
+        elif h1_dict['h1 layer type'] == 'Sigmoid':
+            h1 = models.Sigmoid()
+        elif h1_dict['h1 layer type'] == 'Tanh':
+            h1 = models.Tanh()
+        else:
+            raise ValueError('received layer type:', h1_dict['h1 layer type'], 'is not implemented')
+        h1.dim = int(current_data_size * h1_dict['h1 layer size multiplier'])
+        h1.layer_name = 'h1'
+        current_data_size *= int(h1_dict['h1 layer size multiplier'])
+
+    print t.bold_cyan('\nafter h1:'), '\ndata:', current_data_size
+
+    h2_dict = hyperopt_sample[2]['h2']
+    if h2_dict is None:
+        h2 = None
+    else:
+        if h2_dict['h2 layer type'] == 'RectifiedLinear':
+            h2 = models.RectifiedLinear()
+        elif h2_dict['h2 layer type'] == 'Sigmoid':
+            h2 = models.Sigmoid()
+        elif h2_dict['h2 layer type'] == 'Tanh':
+            h2 = models.Tanh()
+        else:
+            raise ValueError('received layer type:', h2_dict['h2 layer type'], 'is not implemented')
+        h2.dim = int(current_data_size * h2_dict['h2 layer size multiplier'])
+        h2.layer_name = 'h2'
+        current_data_size *= int(h2_dict['h2 layer size multiplier'])
+
+    print t.bold_cyan('\nafter h2:'), '\ndata:', current_data_size
+
+    softmax = models.Softmax()
+    softmax.n_classes = 2
+    softmax.layer_name = 'softmax'
+    softmax.irange = 0.05
+
+    layers = [h0]
+    if h1 is not None:
+        layers.append(h1)
+    if h2 is not None:
+        layers.append(h2)
+    layers.append(softmax)
+
+    # put layers into MLP
+    mlp = models.MLP()
+    mlp.batch_size = 1
+    mlp.nvis = single_sample_size
+    mlp.layers = layers
+
+    return mlp
+

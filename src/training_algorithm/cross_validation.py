@@ -8,11 +8,10 @@ from blessings import Terminal
 t = Terminal()
 import sys
 sys.path.append('..')
-from hyperopt_api.parser import build
+from hyperopt_api.parser import build_multilayer
 import configuration.model as config
 from utils.common import get_timestamp
 from yaml_parser import yaml_parser as yp
-from algorithm_extensions.value_getters import roc_score_threshold_getter
 from algorithm_extensions.get_predictions import Predictor
 
 
@@ -65,19 +64,21 @@ class CrossValidator(object):
                                                    'middle_val': []
                                                    }
 
-            mod = build(model_dictionary)   # based on description generated build an object that will fit into
-                                            # yaml_parser
+            mod = build_multilayer(model_dictionary)    # based on description generated build an object that
+                                                        #  will fit into yaml_parser
             print t.bold_cyan('SAMP'), model_dictionary
             print t.bold_blue('MODEL'), mod
 
-            # define weight decay parameters. They depend on the number of layers (there is one parameter fo each layer)
-            weight_decay_coeffs = yp.parse_weight_decay(mod)
+            # define weight decay params, which depend on the number of layers (there is one parameter for each layer)
+            weight_decay_coeffs = yp.general_parse_weight_decay(mod)
 
             # generate a filename to store the best model
             pkl_filename = join(config.path_for_storing, current_time + "_best.pkl")
 
+            multilayer = yp.parse_to_yaml(mod)[0:-1] + "'\nnvis: 20844,\n}"
+
             # create dictionary with hyper parameters
-            hyper_params = {'model': yp.parse_to_yaml(mod),
+            hyper_params = {'model': multilayer,
                             'train_data': train_data_string,
                             'validation_data': validation_data_string,
                             'weight_decay_coeffs': weight_decay_coeffs,
@@ -113,8 +114,6 @@ class CrossValidator(object):
                         test_data = yaml_parse.load(test_data_string)
                         best_model = serial.load('best_model_roc_youden.model')
 
-                        roc_score_, threshold = roc_score_threshold_getter(network)
-
                         predictor = Predictor(best_model)
                         predictions = predictor.get_predictions(test_data.X)
 
@@ -124,7 +123,7 @@ class CrossValidator(object):
                         tn = 0
 
                         for tr, pre in zip(test_data.y, predictions):
-                            if pre[0][1] > threshold:
+                            if pre[0][1] > 0.5:
                                 if tr[0] == 1:
                                     tp += 1
                                 else:
@@ -138,7 +137,6 @@ class CrossValidator(object):
                         list_of_scores.append(1-roc_score)  # we want to maximise this score, hyperopt minimises
 
                         print t.bold_red("_ROC: Best roc score for this model: "+str(roc_score))
-                        print t.bold_red("_ROC: Obtained for threshold: "+str(threshold))
                         precision = float(tp)/(tp + fp)
                         recall = float(tp)/(tp + fn)
                         f1score = 0

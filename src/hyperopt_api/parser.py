@@ -192,6 +192,9 @@ def build_multilayer(hyperopt_sample):
         else:
             raise ValueError('received layer type:', h1_dict['h1 layer type'], 'is not implemented')
         h1.dim = int(current_data_size * h1_dict['h1 layer size multiplier'])
+        print 'current_data_size', current_data_size
+        print "h1_dict['h1 layer size multiplier']", h1_dict['h1 layer size multiplier']
+        print 'h1.dim:', h1.dim
         h1.layer_name = 'h1'
         h1.irange = 0.05
         current_data_size *= int(h1_dict['h1 layer size multiplier'])

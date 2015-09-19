@@ -151,7 +151,7 @@ class TwoDSiftData(DenseDesignMatrix):
         # flattening (for multilayer perceptron)
         if flatten:
             size_of_sample = topo_view.shape[1]*topo_view.shape[2]*topo_view.shape[3]
-            topo_view = np.reshape(a=topo_view, newshape=(topo_view.shape[0], size_of_sample))
+            topo_view = np.reshape(a=topo_view, newshape=(topo_view.shape[0], size_of_sample, 1, 1))
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))

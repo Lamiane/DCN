@@ -230,7 +230,8 @@ class Tanh(object):
         self.irange = None
         self.istdev = None
         self.sparse_init = None
-        self.sparse_stdev = 1.0
+        # self.sparse_stdev = 1.0
+        self.sparse_stdev = None
         self.include_prob = 1.0
         self.init_bias = 0.0
         self.W_lr_scale = None

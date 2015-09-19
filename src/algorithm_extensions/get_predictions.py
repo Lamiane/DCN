@@ -34,6 +34,7 @@ class Predictor(object):
         pred_vec = []
 
         for index in xrange(len(x_vec)):
+            print "predictor, input_space:", self.input_space
             sample = np.reshape(x_vec[index], self.input_space)
             y = self.f(sample)
             pred_vec.append(y)

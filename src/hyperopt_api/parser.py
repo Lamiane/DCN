@@ -175,7 +175,7 @@ def build_multilayer(hyperopt_sample):
     h0.dim = int(current_data_size * h0_dict['h0 layer size multiplier'])
     h0.layer_name = 'h0'
     h0.irange = 0.05
-    current_data_size *= int(h0_dict['h0 layer size multiplier'])
+    current_data_size = int(current_data_size * h0_dict['h0 layer size multiplier'])
 
     print t.bold_cyan('\nafter h0:'), '\ndata size:', current_data_size
 
@@ -192,12 +192,9 @@ def build_multilayer(hyperopt_sample):
         else:
             raise ValueError('received layer type:', h1_dict['h1 layer type'], 'is not implemented')
         h1.dim = int(current_data_size * h1_dict['h1 layer size multiplier'])
-        print 'current_data_size', current_data_size
-        print "h1_dict['h1 layer size multiplier']", h1_dict['h1 layer size multiplier']
-        print 'h1.dim:', h1.dim
         h1.layer_name = 'h1'
         h1.irange = 0.05
-        current_data_size *= int(h1_dict['h1 layer size multiplier'])
+        current_data_size = int(current_data_size * h1_dict['h1 layer size multiplier'])
 
     print t.bold_cyan('\nafter h1:'), '\ndata:', current_data_size
 
@@ -216,7 +213,7 @@ def build_multilayer(hyperopt_sample):
         h2.dim = int(current_data_size * h2_dict['h2 layer size multiplier'])
         h2.layer_name = 'h2'
         h2.irange = 0.05
-        current_data_size *= int(h2_dict['h2 layer size multiplier'])
+        current_data_size = int(current_data_size * h2_dict['h2 layer size multiplier'])
 
     print t.bold_cyan('\nafter h2:'), '\ndata:', current_data_size
 

@@ -75,7 +75,9 @@ class CrossValidator(object):
             # generate a filename to store the best model
             pkl_filename = join(config.path_for_storing, current_time + "_best.pkl")
 
+            print "original:", multilayer
             multilayer = yp.parse_to_yaml(mod)[0:-1] + "'\nnvis: 20844,\n}"
+            print '\n\nafter changes:', multilayer
 
             # create dictionary with hyper parameters
             hyper_params = {'model': multilayer,

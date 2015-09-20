@@ -87,149 +87,165 @@
 
     \section{Convolutional Neural Networks}
       %TODO: opis w jednym zdaniu, czym to jest i do jakich danych (specyfika,nie konkrety) można je aplikować, dlaczego zwane konwolucyjnymi
-      The simplest definition of convolutional neural networks is probably: neural networks that take adventage of using the convolution operation. Usually the CNN is *conceptually* divided into two subnetworks: first subnetwork is *built from* convolutional layers and is responsible for feature extraction, the second one is a classical neural network, e.g. multilayer perceptron. Its aim is to *poprawnie* classify the examples taking as input the features extracted by the previous subnetwork.\\
+      The simplest definition of convolutional neural networks is probably: neural networks that takes adventage of using the convolution operation. CNN might be seen as a network consisting of two parts - first part is the convolutional part and it is responsible for extracting the features from the data. The second part might be a softmax layer responsible for classifying samples based on features provided by the convolutional part. This schema is shown on figure \ref{fig:con_network}.\\
       
-      \{obrazek\} \\ % jakiś typowy lenet
+     \begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=0.65]{conv_network.png}
+	  \caption{An example of convolutional neural network.}
+	  \label{fig:con_network}
+	\end{figure} 
       
-      In this section I will give motivation that stands behind using convolutional neural networks, *explain/define* what is the convolution operation, and give a detailed explanation of CNNs and its properties. Finally, I will describe what problems might arise while learning a CNN model and how to prevent them. The learning algorithm for CNNs will be given.\\
+      In this section we will give motivation that stands behind using convolutional neural networks, explain what is the convolution operation, and what is pooling. Types of activation functions that might be used in convolutional neural networks
+      will be presented as well as learning algorithm.\\
       
       \subsection{Motivation} %TODO: zmienić poniższe notatki w tekst 
 	%TODO: why are CNNs so useful, awesome and important, w czym dokonały przełomu? (citation needed? praca hoelnderska?)
-	Convolutional neural networks are *mostly* applied to image recognition, video analysis and natural language processing problems.\\ %FIXME: citation needed?
+	Convolutional neural networks take adventage data which topological order carries some information. Therefore, CNNs are often applied to image recognition, video analysis and natural language processing problems.\\ %FIXME: citation needed!
 	This attempts *are often succesful/often give better results than (any other) models*.\\ %TODO: citation needed
 	
-      \subsection{Convolution} %TODO: zmienić poniższe notatki w tekst 
-	Convolution operation takes as *operands* two functions (dziedzina? zbiór wartości?) and return a new function (dziedzina? zbiór wartości?) as a result. Mathematically, convolution is defined as: \\
+      
+      \subsection{Computation Flow}
+	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection it will be described how the data is processed within the convolutional subnetwork. Not much attention will be put to classifying subnetwork as there is a wide variety of possible approaches.\\
 	
-	$c(t) = \int\limits_{-\infty}^\infty f(x)g(t-x)dx$ \\
+	There are three elemental operations that are performed in each layer of the convolutional subnetwork. At first, the input is convoluted with a kernel matrix. The result of this operation becomes an input to the activation function, which output becomes the input to the pooling function. The output of the pooling function becomes the input to the next layer which might be another convolutional layer and the whole process will begin again. This process is schematically depicted on figure \ref{fig:con_neur} and it can be also described by the following formula:\\
 	
-	In the equation above we can see $c$ - a function returned by convolution operation, that is evaluated in point $t$. $c$ is defined as an integral over two other functions. $f$ is often called an input, while $g$ is often reffered to as a kernel.%FIXME: kernel i input nie zamienione miejscami? definicja dobra? citation needed?
-	  \\
+	$output = p(\sigma(c(input)))$,\\
 	
-	It is often useful to see kernels as feature extractors. %TODO
-	why kernels can be seen as feature extractors?\\
-	
-      \subsection{Computation Flow} %TODO zmienić poniższe notatki w tekst
-	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection I will describe how the signal is processed within the convolutional subnetwork. I will not *dig into* the classifying subnetwork as any neural network that can be used to classify objects might be used. Many such networks exist*s* and they are well described in the literature. \\ %TODO: citation needed?
-	
-	In each layer of the convolutional subnetwork there are three elemental operations are performed. Firstly, the input is convoluted with a kernel matrix. The result of this operation is an input to the activation function. If the input is a matrix *(and it usually/always is a matrix)* each element forms a single input to the activation function *(a może da się inaczej?)*. Finally, the pooling is applied to the result. \\
-	
-	może też wzorek? pooling(sigmoid(convolution(input))) \\ %TODO 
+	where $c$ is the convolution function, $\sigma$ is the activation function, and $p$ is the pooling function.\\
 	
 	\begin{figure}[h!]
 	  \centering
 	  \includegraphics[scale=0.65]{convolutional_neuron.png}
-	  \caption{The three elemental operations performed in each layer.}
-	  \label{fig:con_neur}	%TODO referencing does not work!
+	  \caption{The three elemental operations performed in each convolutional layer.}
+	  \label{fig:con_neur}
 	\end{figure} 
 	  
-	One might also imagine three consecutive seperate layers: a convolutional layer, a classical layer that applies activation function and finally, a pooling layer.\\
+	One might also imagine three consecutive seperate layers: a convolutional layer, a classical layer that applies activation function and finally a pooling layer.\\
 	
-	In the following subsections I will describe in details how each of this operation exactly works. *Szczególna uwaga zostanie zwrócona na to, jak zmieniają się wymiary danych na każdym etapie*\\
+	Each of these operations will be described in details in the following subsections.\\
+	
+	\subsection{Convolution}\label{sec:convolution}
+	Convolution operation takes as operands two functions and returns a new function as a result. Mathematically, convolution is defined as: \\
+	
+	$c(t) = \int\limits_{-\infty}^\infty f(x)g(t-x)dx$,\\
+	
+	where $c$ is a function returned by convolution operation and $t$ is a point in which function $c$ is evaluated. $c$ is defined as an integral over two other functions: $f$ is often called the input, while $g$ is often reffered to as a kernel.\\
+	
 		
-	\subsubsection{Convolution for neural networks}%TODO: zmienić poniższe notatki w tekst 
-	  The convolution operation was defined as: \\
+	\subsubsection{Convolution for neural networks}
 	  
-	  $c(t) = \int\limits_{-\infty}^\infty f(x)g(t-x)dx$ \\
-	  
-	  It is worth considering how this equation can be applied to neural networks. Real values cannot *?* be represented in *computer calculations* therefore using an integral is *not possible*. It is desirable to have the equation (*number*) in discrete form.\\
+	  It is worth considering how this equation can be applied to neural networks. Since representing real values in the computers is rather troublesome, it is desirable to express this equation in a discrete form, which is shown below:\\
 	  
 	  $\overline{c}(t) = \sum\limits_{x = -\infty}^\infty \overline{f}(x)\overline{g}(t-x)$ \\%FIXME: bengio i wikipedia używają [], dlaczego? czy ja też powinnam? 
 	  
-	  *From now on* *we/I* will call $f$ an input, $g$ a kernel and $c$ na output.\\
+	  If we want to apply this equation to neural networks we might want to think of $\overline{f}$ as a data sample. In such approach $\overline{g}$ would become a matrix that is moving around the data sample producing a single value in each place. From now on, we will call $f$ an input, $g$ a filter or a convolutional matrix and $c$ na output.\\
 	  
-	  Usually, the kernel that is used is much smaller then the input and convolution is appplied multiple times. Each time kernel is convoluted with a submatrix of input. The result of this operation is a scalar, and a result of a whole process is a matrix.\\
+	  Usually, the convolutional window is much smaller then the input and convolution is appplied multiple times. Each time a  submatrix of input is multiplied by the convolution window. The result of this operation is a scalar, and a result of a whole process is a matrix. Each layer of neural network might include multiple filters and thus each layer might produce an output of higher dimensionality than the provided input - the additional dimension is produced due to using multiple filters.\\
 	  
-	  As stated above, each kernel might be seen as a filter extracting a single feature. Usually, there is need to extract multiple features from the image. As a result, in each layer many convolutional kernels are used. It is worth noting, that kernels are different in each layer. Kernels in the next layer work on the features extracted from the previous layer. *It might be shown* (citation needed), that the features from the next layer are constructed of features from the previous layer. Therefore, in each layer features are more and more complicated.\\
+	  It is worth noting, that there are different kernels in each layer. Kernels in the next layer work on the features extracted from the previous layers. Therefore, the later the layer is in the neural network, the more complicated patterns it may discover.\\
 	  
-	  Let the input be a $I1$x$I2$ matrix and the kernel a $K1$x$K2$ matrix with a $1$x$1$ stride. Therefore the first submatrix to convolute with a kernel will be *[1:$K1$]$x$[1:$K2$]* and it will return a *single value/scalar*. The last submatrix will be *[$I1-K1+1$:$I1$]x[$I2_k2+1$:$I2$]* and it will produce a  *single value/scalar* as well. As a result the output will be a ($I1-K1+1$)x($I2-K2+1$) matrix.\\
+	  \subsubsection{Size and stride, spatial invariance}
 	  
-	  \{obrazek\} ilustrujący problem z kernelem i brzegami. Niech na nim będzie, first, second, (może third) i last submatrix\\
+	  It is worth taking a closer glance at how convolution works in details. First, we have to define two important parameters of the convolutional windows - their size and stride. The size is simply the size of the convolutional matrix. The stride defines which part of the input will be convoluted next with respect to the part of the input that is currently being convoluted. This concept is shown in figure \ref{fig:convolution_size_and_stride}.\\
 	  
-	  Itcan be observed that the values laying close to the edge of the input matrix will be underrepresented and consequently the output matrix will be of smaller size than the input matrix. There is a variety of ways to address this problem, e.g. zero-pad.\\
 	  
-	  %FIXME: cytaty do Bengia, sprawdzić nazwy i szczegóły, cytaty do matlaba?
+	  \begin{figure}[h!]
+	    \centering
+	    \includegraphics[scale=0.65]{convolution_size_and_stride.png}
+	    \caption{The figure shows three consecutive positions of a convolutional window - yellow, blue and red. The input is of size $4\times5$, the convolution window has size $2\times3$ and stride $1\times2$, which means the window can move two elements to the right or one to the bottom.}
+	    \label{fig:convolution_size_and_stride}
+	  \end{figure} 
 	  
-	  Opisać jakie rozwiązanie zostało użyte przez nas. %TODO:
+	  Three consecutive positions of a convolutional window are depicted. Each position defines which submatrix of the input will be multiplied by the convolutional matrix. Each multiplication will produce a single value - these values when combined will produce an output matrix.\\
+	  
+	  It should be noted that each time the convolution window is the same, only the part of the input that is being convoluted changes. Each filter is specialised in finding a specific pattern - because it is convoluted with many submatrices of the input it will find that pattern regardless of where the patter is on the input matrix. This property is called spatial invariance. Figure \ref{fig:spatial_invariance} shows this concept more clearly.\\
+	  	  
+	  \begin{figure}[h!]
+	    \centering
+	    \includegraphics[scale=0.65]{spatial_invariance.png}
+	    \caption{In the upper row two locations of a certain feature are shown in red. In the bottom row the location of a convolution window that will discover this feature is shown in yellow. As can be observed, by moving the convolution window it is possible to extract a certain feature regardless of its location.}
+	    \label{fig:spatial_invariance}
+	  \end{figure} 
+	  
+	  
+	  As stated above, in each layer there usually is plenty of convolution matrices - each is specialised in finding a specific pattern. Each pattern might be seen as a useful feature of the data and convolution provides us with some sort of map that shows where in the input this feature exists and where it does not. Therefore, it is often useful to see convolution windows as filters or feature extractors.\\
+	  
+	  \subsubsection{Data size reduction due to convolution operation}
+	  
+ 	  Let the input be a $I\times J$ matrix and the convolution filter a $K\times L$ matrix with a $1\times1$ stride. Therefore, the first submatrix to multiply by the convolution filter will be $[1:K]\times[1:L]$ and it will return a single value. The last submatrix will be $[I-K+1:I]\times[J-L+1:J]$ and it will also produce a  single value. As a result the output will be a $[I-K+1]\times[J-L+1]$ matrix. This process is shown on picture \ref{fig:convolution_size_reduction}.\\
+	  
+	  
+	  \begin{figure}[h!]
+	    \centering
+	    \includegraphics[scale=0.65]{convolution_size_reduction.png}
+	    \caption{On this picture $I = 3, J = 9, K$ and $L = 2$. First submatrix and the output it produces are shown in yellow, second are shown in blue and the last are shown in green. The dimensionality reduction might be observed.}
+	    \label{fig:convolution_size_reduction}
+	  \end{figure} 
+	  
+	  It can be observed that the values laying close to the edge of the input matrix will be underrepresented. The upper left corner of the input matrix will have influence on only one element of the output (the yellow one) while its right neighbour will already have influence on two elements of the output (the yellow and the blue one). The elements in the middle of the input matrix will influence four elements of the output. Such unequalities of the influence might be undesirable. There is a variety of ways to address this problem, e.g. zero-padding, but we will not cover them.\\
+	  
+	  % FIXME: cytaty do Bengia, sprawdzić nazwy i szczegóły, cytaty do matlaba?
+	  % TODO: jest przełożone do Irrelevant
+	  
+	  % TODO: Opisać jakie rozwiązanie zostało użyte przez nas.
 	
-	\subsubsection{Activation function} %TODO: zmienić poniższe notatki w tekst 
-	  różne możliwe typy\\
-	
-	\subsubsection{Pooling} %TODO: zmienić poniższe notatki w tekst 
-	  Pooling is an operation that takes as an input multiple values and returns *the statistic(s) of these values*. It is usually applied on a matrix. It takes as *an* input the submatrices and returns a single value as a result. 3 most common *(citation needed?)* types of pooling are:
+	\subsection{Activation function}
+	  There are few possible activation functions that might be used in convolutional neural networks[DUTCH PAPER].
 	  \begin{itemize}
-	   \item max pooling - the max value is returned
-	   \item average pooling - the average value is returned
-	   \item weighted average pooling - the weighted average is returned. Weights are usually *(citation needed?)* defined by the distance from *what?*
+	   \item the sigmoid activation function $\sigma(x) = \frac{1}{1 + e^-x}$
+	   \item the hyperbolic tangent activation function $tanh(x) = \frac{e^{2x} - 1}{e^{2x} + 1}$
+	   \item the rectifier linear function[BENGIO, GLOROT 2011] $rect(x) = max(0,x)$ %TODO cytat do GLorot Bengio 2011, taki jest w dokumentacji pylearna
+	   \item the maxout activation function
+	    \begin{center}
+	      $maxout_i(x) = \max_{j \in [1, k]}z_{ij}$\\
+	      $z_{ij}=x^TW..._{ij} + b_{ij} $ % TODO: wyjaśnić czym są te ijoty!
+	    \end{center}
+	  \end{itemize}
+
+	
+	\subsection{Pooling} %TODO: zmienić poniższe notatki w tekst 
+	  Pooling is an operation, usually applied on a matrix, that takes as an input multiple values and returns a single value describing the input. Typical pooling functions are[dutch, bengio book]:
+	  \begin{itemize}
+	    \item max pooling - the max value of input is returned
+	    \item average pooling - the average value of input is returned
+	    \item weighted average pooling - the weighted average is returned. Weights are usually *(citation needed?)* defined by the distance from *what?* %TODO: finish, to pewnie będzie w bengiobooku
+	    \item stochastic max pooling - one element is chosen from the input to become the result. Probability of choosing an element is proportional to its value. [Zeiler et all/za dutch]\\
 	  \end{itemize}
 	  
-	  types: Bengio, 181, pierwszy pełny akapit, pooling shape and stride $\rightarrow$ boost computational efficiency. \\
-
-	  \{obrazek\} jak wygląda max pooling \\
+	  %TODO: pisać to: types: Bengio, 181, pierwszy pełny akapit, pooling shape and stride $\rightarrow$ boost computational efficiency. \\
 	  
-	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines how many values will be taken as an input - the bigger the size of pooling, the more information is accumulated in single value. The pooling stride defines where will be the next submatrix with respect to its previous location. Fig *???* illustrates this concept. \\
+	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines, how many values will be taken as an input - the bigger the size of pooling, the more information is accumulated in a single value. The pooling stride defines, where will be the next submatrix with respect to its present location. Fig \ref{fig:max_pooling} illustrates this concept.\\
 	  
-	  \{obrazek\} pooling size and stride \\
+	  \begin{figure}[h!]
+	    \centering
+	    \includegraphics[scale=0.65]{max_pooling.png}
+	    \caption{The result of applying the max pooling of size $2\times2$ with stride $1\times1$ to the input. Yellow square is the first pooling window, blue square is the second one. The values of the output are coloured accordingly.}
+	    \label{fig:max_pooling}
+	  \end{figure} 
+  
+	  When pooling is applied on the edges of the input same problems might be encountered as with the convolutions, namely some values will be underrepresented. It is worth noting that the output of the pooling is off smaller size than the input. To address these problems same techniques might be applied.\\
 	  
-	  The same problems might be encountered with pooling on the edges as with the convolutions, namely the output of the layer will be off smaller size than the input unless some techniques avoiding it will *are/will be* applied.\\
-	  
-	   The kernel is smaller than the input. It is moved around the picture. It will find feature everywhere - we need this własność spatial invariance.\\ %FIXME: ogarnąć ten akapit
-	  
-	  \{obrazek\} dlaczego daje nam invariance
+	   
 	
-	\subsubsection{Summary} %TODO: zmienić poniższe notatki w tekst 
-	  During the convolutional subnetwork flow the features are extracted from the data. These features are then used by the classifying part of the network. *Convolution/pooling* provide us *with* spatial invariance and *this other awesome thing*. In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, activation function and pooling. \\ %FIXME: JĘZYK!
-	  
-	  $output = pooling(activation\_function(convolution(input, kernel)))$\\ %FIXME: notacja (ten sam wzorek jest w computation flow)
-	  
-	  Convolution and pooling might decrease the size of the input. This might be avoided by zero-pad or other methods. Several types of pooling and activation functions have been provided.\\ %FIXME: JĘZYK!
-	  
-      \subsection{implementationally awesome things} %FIXME: change this stupid title
+	\subsection{Summary} %TODO: zmienić poniższe notatki w tekst 
+	  In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, which provides us with spatial invariance, activation function and pooling. As a result of this processing, the features are extracted from the data. These features are then used by the classifying subnetwork.\\
+	  	  
       
-	\subsubsection{Fast computation}
-	  (spatial invariance) $\rightarrow$ temu nie musimy też mieć osobnych macierzy na feature w każdym miejscu - oszczędzamy pamięć na parametry (i efektywnośc, bo im więcej paramterów, tym wolniej się uczymy). Small kernel $=$ litlle parameters.\\
-	
-	\subsubsection{sparse interactions} %TODO: zmienić poniższe notatki w tekst 
-	  because kernel is smaller then data so it not kazdy z kazdym but some with some (sparse) $\rightarrow$ computational boost, kernel is small and moved around input - less parameters, instead of a big matrix we store a small one that runs over the data\\
-	  
-	  \{obrazek\} %TODO
-	  
-	\subsubsection{parameter sharing} %TODO: zmienić poniższe notatki w tekst 
-	  Connected to the fact thet we move the convolution kernel around \\
-	  
-	  \{obrazek\} a moze nie?
-	  
-	\subsubsection{equivariant representations} %TODO: zmienić poniższe notatki w tekst
-	  equivariance - property of *what?* meaning that if the input changes that output changes the same way. $f(g(x)) = g(f(x))$ Intuition about it: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t?\\
       
       \subsection{Learning Algorithm} %TODO: backpropagation, state that this one is best (citation needed!)
-	A *zmieniona wersja* of backpropagation algorithm has been provided to *include the changes that must be applied because of* the convolution operation and avoid the diminishing gradient flow. In this subsection the *zmienona wersja* of backpropagation is given and the problem of diminishing gradient flow is *addressed*.\\
-	
-	\subsubsection{The problems with a classical backpropagation} %TODO: notatki w tekst
-	  diminishing gradient flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.\\
-	
-	\subsubsection{Diminishing gradient flow} %TODO: zmienić poniższe notatki w tekst, sprawdzić czy w CNNach tez przypatkiem nie ma tego probloemu, bo w głębokich na pewno jest
-	  co to jest, skąd się bierze, można się wesprzeć wykładami Larochelle, on poleca dużo paperów zawsze.\\
-	  
-	\subsubsection{Backpropagation} %TODO: zmienić poniższe notatki w tekst
-	  See (Goodfellow, 2010) from Bengio\\
-	
-      \subsection{Extensions} %FIXME this title shall not last! %TODO: zmienić poniższe notatki w tekst
-	dropout/dropconnect method, activation functions for dropout, other things from the Dutch paper\\
+      Even though convolution operation and pooling might seem to introduce a lot of changes, the classical algorithms for learning neural networks, such as stochastic gradient decent, might be used.    
 	
 	
-    \section{Why was this model chosen}
-	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...\\
-	
-  \chapter{The Model} %TODO: napisac ten rozdzial
+  \chapter{The Model}
       
       \section{Goal}
-      The goal of this work was building a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted.\\
+      The goal of this work was to build a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted.\\
      
 	 
       
       \section{Data}
-	The dataset describes interactions between a single protein and multiple ligands. One might choose to see the dataset as a four dimensional matrix with axes dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a protein bounds with a specific ligand. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid.A single data sample is presented on figure \ref{fig:single_data_sample2}.\\
+	The dataset describes interactions between a single protein and multiple ligands. One might choose to see the dataset as a four dimensional matrix with axes dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a protein bounds with a specific ligand. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. A single data sample is presented on figure \ref{fig:single_data_sample2}.\\
 	
 	\begin{figure}[h!]
 	  \centering
@@ -244,7 +260,7 @@
 	
 	\begin{figure}[h!]
 	  \centering
-	  \includegraphics[scale=0.5]{original_dataset.png}
+	  \includegraphics[scale=0.6]{original_dataset.png}
 	  \caption{Data stored in the memory}
 	  \label{fig:data_original}
 	\end{figure} 
@@ -281,7 +297,7 @@
 	\subsection{Data preprocessing}\label{sec:data_processing}
 	  In order to extract most promising features, the data has been preprocessed. We decided to perform a preprocessing in such a way that the model would be able to build such patterns that could detect whether a bound of a specific kind was present in both adjacent residues. We expected that such approach might lead to discovering of interesting correlations.\\
 	  
-	  To achieve such a form of the dataset that would enable this approach, the dataset was extended in the following way: three copies of the dataset have been created and combined, each copy stored just below the previous one. Each copy was shifted in such a way that going from up to down and from left to right would preserve the order of the residues. The shift forced us to either complement each row with zeros or to cut off the residues that would stick out. We decided not to cut off any residues so each of them will be present in the whole dataset the same number of times - this way no residue will be underrepresented. As a result each sample had 18 instead of 6 rows and 18 columns more.\\
+	  To achieve such a form of the dataset that would enable this approach, the dataset was extended in the following way: three copies of the dataset have been created and combined, each copy stored just below the previous one. Each copy was shifted in such a way that going from top to bottom and from left to right would preserve the order of the residues. The shift forced us to either complement each row with zeros or to cut off the residues that would stick out. We decided not to cut off any residues so each of them will be present in the whole dataset the same number of times - this way no residue will be underrepresented. As a result each sample had 18 instead of 6 rows and 18 columns more.\\
 	  
 	  The schema of this approach is shown on figure \ref{fig:extended_data} which depicts the simple example of a protein with only three residues. It can be observed that a convolution window broader than 9 would be able to detect whether an interaction of some type is present in both adjacent residues while convolution window higher than 6 would be able to detect if two adjacent residues have same pharmacophore features.\\
 	  
@@ -303,16 +319,16 @@
       
       The last layer of the network was a softmax layer with two neurons. It was used to classify the sample based on features extracted by the convolutional part of the network.\\
       
-	\subsection{Finding best architecture} %TODO F1Score for measuring the performance of the models?
+	\subsection{Finding best architecture}
 	Due to many hyperparameters, there exist many models that fulfill our architecture restrictions and therefore it is not possible to train and measure the performance of all possible architectures. To find the best one we used the tree of Parzen estimators algorithm provided by a Python library - Hyperopt[hyperopt] and let it sample 20 models.\\
 	
-	Each architecture that was tested was choosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the objective function responsible for measuring the performance of the model.\\
+	Each architecture that was tested was chosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the objective function responsible for measuring the performance of the model.\\
 	
 	 \begin{figure}[h!]
 	  \centering
 	  \includegraphics[scale=0.6]{control_flow.png}
 	  \caption{The control flow of the experiments.}
-	  \label{fig:control_flow}	%TODO referencing does not work!
+	  \label{fig:control_flow}
 	\end{figure} 
 	
 	\subsubsection{Objective function for hyperopt}
@@ -419,18 +435,18 @@
        It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.\\
       \end{itemize}
       
-      Finally, all parameters corresponding to the classifying part of the network were zereod, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.\\
+      Finally, all parameters corresponding to the classifying part of the network were zeroed, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.\\
 	
       Concluding: the update vector had zeros in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, then the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions.\\
       
       \subsubsection{Example}
-      If the vectors of differences were: $[2.5, 1, -3, 5, 7]$ and $[-2, 3, -1, -7, -7, 7]$, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum, then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example in ilustrated in figure \ref{fig:combining}.\\
+      If the vectors of differences were: $[2.5, 1, -3, 5, 7]$ and $[-2, 3, -1, -7, -7, 7]$, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum, then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example is ilustrated in figure \ref{fig:combining}.\\
       
       \begin{figure}[h!]
 	  \centering
 	  \includegraphics[scale=0.7]{combining_min.png}
 	  \caption{Example of the min combining function}
-	  \label{fig:combining}	%TODO referencing does not work!
+	  \label{fig:combining}
 	\end{figure} 
 	
       
@@ -439,6 +455,13 @@
   \chapter{What can be improved} %TODO: napisać ten rozdział
     \section{Everything...}
       ...can be improved.\\
+      \begin{itemize}
+	   \item data in 3D not 2D - possible new filters
+	   \item new combination functions can be tested
+	   \item other ways of finding threshold
+	   \item maybe finding two thresholds and leaving some examples unlabeled? - why is this useful?
+      \end{itemize}
+      
 
   \begin{thebibliography}{99}
     \bibitem{DEEP}
@@ -461,6 +484,44 @@
       
     \section{pooling}	  
       is pooling subsampling and if yes then why is polling subsampling?\\
+      
+      \subsection{implementationally awesome things} %FIXME: change this stupid title
+      
+	\subsubsection{Fast computation}
+	  (spatial invariance) $\rightarrow$ temu nie musimy też mieć osobnych macierzy na feature w każdym miejscu - oszczędzamy pamięć na parametry (i efektywnośc, bo im więcej paramterów, tym wolniej się uczymy). Small kernel $=$ litlle parameters.\\
+	
+	\subsubsection{sparse interactions} %TODO: zmienić poniższe notatki w tekst 
+	  because kernel is smaller then data so it not kazdy z kazdym but some with some (sparse) $\rightarrow$ computational boost, kernel is small and moved around input - less parameters, instead of a big matrix we store a small one that runs over the data\\
+	  
+	  \{obrazek\} %TODO
+	  
+	\subsubsection{parameter sharing} %TODO: zmienić poniższe notatki w tekst 
+	  Connected to the fact thet we move the convolution kernel around \\
+	  
+	  \{obrazek\} a moze nie?
+	  
+	\subsubsection{equivariant representations} %TODO: zmienić poniższe notatki w tekst
+	  equivariance - property of *what?* meaning that if the input changes that output changes the same way. $f(g(x)) = g(f(x))$ Intuition about it: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t?\\
+	  
+	  \subsection{Extensions} %FIXME this title shall not last! %TODO: zmienić poniższe notatki w tekst
+	dropout/dropconnect method, activation functions for dropout, other things from the Dutch paper\\
+	
+	\subsection{Learning Algorithm} %TODO: backpropagation, state that this one is best (citation needed!)
+	
+	
+	\subsubsection{The problems with a classical backpropagation} %TODO: notatki w tekst
+	  diminishing gradient flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.\\
+	
+	\subsubsection{Diminishing gradient flow} %TODO: zmienić poniższe notatki w tekst, sprawdzić czy w CNNach tez przypatkiem nie ma tego probloemu, bo w głębokich na pewno jest
+	  co to jest, skąd się bierze, można się wesprzeć wykładami Larochelle, on poleca dużo paperów zawsze.\\
+	  
+	\subsubsection{Backpropagation} %TODO: zmienić poniższe notatki w tekst
+	  See (Goodfellow, 2010) from Bengio\\
+	
+	
+	    \section{Why was this model chosen}
+	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...\\
+	
 
     
 \end{document}          

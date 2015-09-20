@@ -172,10 +172,10 @@ def build_multilayer(hyperopt_sample):
         h0 = models.Tanh()
     else:
         raise ValueError('received layer type:', h0_dict['h0 layer type'], 'is not implemented')
-    h0.dim = int(current_data_size * h0_dict['h0 layer size multiplier'])
+    h0.dim = min(1000, int(current_data_size * h0_dict['h0 layer size multiplier']))
     h0.layer_name = 'h0'
     h0.irange = 0.05
-    current_data_size = int(current_data_size * h0_dict['h0 layer size multiplier'])
+    current_data_size = min(1000, int(current_data_size * h0_dict['h0 layer size multiplier']))
 
     print t.bold_cyan('\nafter h0:'), '\ndata size:', current_data_size
 

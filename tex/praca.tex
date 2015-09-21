@@ -28,21 +28,31 @@
     The goal of this work is to... ...drug design... This is achieved by applying (deep?) convolutional neural networks to the problem.
   \end{abstract}
   \tableofcontents
-  
-  %FIXME: napisac na samym początku co będzie po kolei, 
-  
+    
   \chapter{Introduction} %TODO: napisać ten rozdział
+    \begin{enumerate}
+     \item related work, że to ma oparcie w czymś
+     \item przejść gładko do BARDZO SKRÓTOWEGO opisania prablemu, docking, takie rzeczy, może chcę dwa punkty wyżej?
+     \item przejść do fingerprintów, napisać, że używamy 2DSifta i napisać dlaczego
+     
+     \item zwojtkować
+    \end{enumerate}
+    
+    *Jedno zdanie.* In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would classify ligands as active or inactive. Two approaches have been proposed. Moreover, we show new approach to make use of unlabeled examples during the learning process.
+
+  
     \section{related work, że to ma oparcie w czymś i o czym jest praca}
   
-  \chapter{The Problem and the Data}
+    \section{The Problem and the Data}
     %FIXME {cytowania! jak to się robi? poczatek, koniec?}
     %FIXME co z wcięciami?
     
-    \section{Terminology} %TODO: zmienić hasła na zdania   
-    One of major areas of study nowadays is \textbf{drug design}. It is a quickly developing field, facing challenging problems, such as conducting experiments which are very expensive and extremely time consuming. Therefore, computer modelling is of vital importance. Artificial intellingence and machine learning have been successfuly incorporated to this field. (citation needed?). One of the most common problems in drug design is telling whether \textbf{protein} and \textbf{ligand} will together produce an \textbf{active} or \textbf{inactive} compund.\\
+    \section{Terminology} %TODO: zmienić hasła na zdania
+     One of the problems in drug design is telling whether \textbf{protein} and \textbf{compound} will react and produce a new complex, called \textbf{ligand}. If the ligand indeed will be created, it is important to know whether this new complex will be \textbf{active} or \textbf{inactive}.\\
     
-    \textbf{Proteins} are molecules built from \textbf{amino acid residues} forming a single \textbf{chain}. The number of residues defines the length of the chain. Proteins are present in all leaving organisms.\\
+    \textbf{Proteins} are molecules built from \textbf{amino acid residues} forming a single \textbf{chain}. The number of residues defines the length of the chain and can vary from few dozen to few thousands of residues.\\
     
+        
     ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\ %TODO: dokończyć         
     \section{Fingerprints} %TODO: zmienić hasła na zdania, citations! czy to co ja używam to w ogóle fingerprinty są?
     One of the first questions that have to be answered before *any modelling task can be started* is: how will I represent my data? Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. It might seem that a natural representation of a protein will be a graph containing extra information about how the nodes are arranged in space. Unfortunately, graph algorithms are computationally expensive and it is nowadays not possible to use them (na czym się opieram?). Therefore, *we* need another representation, that will carry as much information as possible and *be computationally effective*. *For this reason* many types of fingerprints have been designed and they meet the criterions metioned.\\
@@ -54,40 +64,16 @@
     \section{Problem} %TODO: zmienić hasła na zdania
     drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.\\
     
-    \section{Datasets}
-    The data consists of multiple datasets, each describing reactions between a single protein and multiple ligands. Each dataset consists of four dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a single ligand bounds with a specific protein. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. Most of the data samples are labeled as active or nonactive, the rest is unlabeled. A single data sample is presented on figure \ref{fig:single_data_sample}.\\
+    At first, the concept of convolutional neural network will be described. In the next chapter we will present both approaches that we used to addres the problem. Finally, our results will be described. In the last chapter we will discuss possible ways to further develop our approach.
     
-    \begin{figure}[h!]
-      \centering
-      \includegraphics{single_data_sample.png}
-      \caption{A single data sample.}
-      \label{fig:single_data_sample}
-    \end{figure} 
-    
-    The 6 pharmacophore features are: hydrogen bond acceptor, hydrogen bond donor, hydrophobic, negatively charged group, positively charged group, aromatic. The 9 types of interactions with amino acid are: any, with a backbone, interaction with sidechain, polar, hydrophobic, hydrogen bond acceptor, hydrogen bond donor, charged interaction, aromatic. \\
-    
-    %TODO:Values meaning !!! nie ma tego w publikacji!
-    The values constituting the dataset are discrete, namely: 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? As stated above the labels are reperesented as ??? (not active), ??? (active), ?? (no information).\\
-    
-    %TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmakoloblabla)
-    
-    \section{Sparsity} %TODO: zmienić hasła na zdania
-    check if the data is sparse, it yes then state that it is and explain why\\
-    
-    \section{Data representation} %TODO: pewnie chcę napisać coś więcej + zmienić notatki na zdania
-    Each data sample is represented as a vector of $r*6*9$ length, where $r$ is the length of the protein. Data samples constitute a dataset. Each dataset describes a reaction/bonding between a certain protein and the ligand.\\
-    
-    why was this particular fingerprint representation chosen %TODO: napisać
-    
-    
+
   \chapter{The Model or Deep Convolutional Neural Networks}
     
     \section{Deep Neural Networks}
       DNN
 
     \section{Convolutional Neural Networks}
-      %TODO: opis w jednym zdaniu, czym to jest i do jakich danych (specyfika,nie konkrety) można je aplikować, dlaczego zwane konwolucyjnymi
-      The simplest definition of convolutional neural networks is probably: neural networks that takes adventage of using the convolution operation. CNN might be seen as a network consisting of two parts - first part is the convolutional part and it is responsible for extracting the features from the data. The second part might be a softmax layer responsible for classifying samples based on features provided by the convolutional part. This schema is shown on figure \ref{fig:con_network}.\\
+      The simplest definition of convolutional neural networks is probably: neural networks that takes advantage of using the convolution operation. CNN might be seen as a network consisting of two parts - first part is the convolutional part and it is responsible for extracting the features from the data. The second part might be a softmax layer responsible for classifying samples based on features provided by the convolutional part. This schema is shown on figure \ref{fig:con_network}.\\
       
      \begin{figure}[h!]
 	  \centering
@@ -96,19 +82,19 @@
 	  \label{fig:con_network}
 	\end{figure} 
       
-      In this section we will give motivation that stands behind using convolutional neural networks, explain what is the convolution operation, and what is pooling. Types of activation functions that might be used in convolutional neural networks
-      will be presented as well as learning algorithm.\\
+      In this section we will show what motivation stands behind using convolutional neural networks, explain what is the convolution operation, and what is pooling. Types of activation functions that might be used in convolutional neural networks
+      will be presented as well as the learning algorithm.\\
       
       \subsection{Motivation} %TODO: zmienić poniższe notatki w tekst 
 	%TODO: why are CNNs so useful, awesome and important, w czym dokonały przełomu? (citation needed? praca hoelnderska?)
-	Convolutional neural networks take adventage data which topological order carries some information. Therefore, CNNs are often applied to image recognition, video analysis and natural language processing problems.\\ %FIXME: citation needed!
-	This attempts *are often succesful/often give better results than (any other) models*.\\ %TODO: citation needed
+	Convolutional neural networks take advantage of data which topological order carries some information. Therefore, CNNs are often applied to image recognition, video analysis and natural language processing problems.\\ %FIXME: citation needed!
+	These attempts *are often succesful/often give better results than (any other) models*.\\ %TODO: citation needed
 	
       
       \subsection{Computation Flow}
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection it will be described how the data is processed within the convolutional subnetwork. Not much attention will be put to classifying subnetwork as there is a wide variety of possible approaches.\\
 	
-	There are three elemental operations that are performed in each layer of the convolutional subnetwork. At first, the input is convoluted with a kernel matrix. The result of this operation becomes an input to the activation function, which output becomes the input to the pooling function. The output of the pooling function becomes the input to the next layer which might be another convolutional layer and the whole process will begin again. This process is schematically depicted on figure \ref{fig:con_neur} and it can be also described by the following formula:\\
+	There are three elemental operations that are performed in each layer of the convolutional subnetwork. At first, the input is convoluted with a convolution matrix. The result of this operation becomes an input to the activation function, which output becomes the input to the pooling function. The output of the pooling function becomes the input to the next layer which might be another convolutional layer and the whole process will begin again. This process is schematically depicted on figure \ref{fig:con_neur} and it can be also described by the following formula:\\
 	
 	$output = p(\sigma(c(input)))$,\\
 	
@@ -130,7 +116,7 @@
 	
 	$c(t) = \int\limits_{-\infty}^\infty f(x)g(t-x)dx$,\\
 	
-	where $c$ is a function returned by convolution operation and $t$ is a point in which function $c$ is evaluated. $c$ is defined as an integral over two other functions: $f$ is often called the input, while $g$ is often reffered to as a kernel.\\
+	where $c$ is a function returned by convolution operation and $t$ is a point in which function $c$ is evaluated. $c$ is defined as an integral over two other functions: $f$ is often called the input, while $g$ is often reffered to as a weighting function.\\
 	
 		
 	\subsubsection{Convolution for neural networks}
@@ -139,25 +125,25 @@
 	  
 	  $\overline{c}(t) = \sum\limits_{x = -\infty}^\infty \overline{f}(x)\overline{g}(t-x)$ \\%FIXME: bengio i wikipedia używają [], dlaczego? czy ja też powinnam? 
 	  
-	  If we want to apply this equation to neural networks we might want to think of $\overline{f}$ as a data sample. In such approach $\overline{g}$ would become a matrix that is moving around the data sample producing a single value in each place. From now on, we will call $f$ an input, $g$ a filter or a convolutional matrix and $c$ na output.\\
+	  If we want to apply this equation to neural networks we might want to think of $\overline{f}$ as a data sample. In such approach $\overline{g}$ would become a matrix that is moving around the data sample producing a single value in each place. From now on, we will call $f$ an input, $g$ a filter or a convolution matrix or a convolution window and $c$ an output.\\
 	  
-	  Usually, the convolutional window is much smaller then the input and convolution is appplied multiple times. Each time a  submatrix of input is multiplied by the convolution window. The result of this operation is a scalar, and a result of a whole process is a matrix. Each layer of neural network might include multiple filters and thus each layer might produce an output of higher dimensionality than the provided input - the additional dimension is produced due to using multiple filters.\\
+	  Usually, the convolution window is much smaller then the input and convolution is appplied multiple times. Each time a  submatrix of input is multiplied by the convolution window. The result of this operation is a scalar, and a result of a whole process is a matrix. Each layer of neural network might include multiple filters and thus each layer might produce an output of higher dimensionality than the provided input - the additional dimension is produced due to using multiple filters.\\
 	  
-	  It is worth noting, that there are different kernels in each layer. Kernels in the next layer work on the features extracted from the previous layers. Therefore, the later the layer is in the neural network, the more complicated patterns it may discover.\\
+	  It is worth noting, that there are different filters in each layer. Filters in the next layer work on the features extracted from the previous layers. Therefore, the later the layer is in the neural network, the more complicated patterns it may discover.\\
 	  
 	  \subsubsection{Size and stride, spatial invariance}
 	  
-	  It is worth taking a closer glance at how convolution works in details. First, we have to define two important parameters of the convolutional windows - their size and stride. The size is simply the size of the convolutional matrix. The stride defines which part of the input will be convoluted next with respect to the part of the input that is currently being convoluted. This concept is shown in figure \ref{fig:convolution_size_and_stride}.\\
+	  It is worth taking a closer glance at how convolution works in details. First, we have to define two important parameters of the convolution windows - their size and stride. The size is simply the size of the convolution matrix. The stride defines which part of the input will be convoluted next with respect to the part of the input that is currently being convoluted. This concept is shown in figure \ref{fig:convolution_size_and_stride}.\\
 	  
 	  
 	  \begin{figure}[h!]
 	    \centering
 	    \includegraphics[scale=0.65]{convolution_size_and_stride.png}
-	    \caption{The figure shows three consecutive positions of a convolutional window - yellow, blue and red. The input is of size $4\times5$, the convolution window has size $2\times3$ and stride $1\times2$, which means the window can move two elements to the right or one to the bottom.}
+	    \caption{The figure shows three consecutive positions of a convolution window - yellow, blue and red. The input is of size $4\times5$, the convolution window has size $2\times3$ and stride $1\times2$, which means the window can move two elements to the right or one to the bottom.}
 	    \label{fig:convolution_size_and_stride}
 	  \end{figure} 
 	  
-	  Three consecutive positions of a convolutional window are depicted. Each position defines which submatrix of the input will be multiplied by the convolutional matrix. Each multiplication will produce a single value - these values when combined will produce an output matrix.\\
+	  Three consecutive positions of a convolution window are depicted. Each position defines which submatrix of the input will be multiplied by the convolution matrix. Each multiplication will produce a single value - these values when combined will produce an output matrix.\\
 	  
 	  It should be noted that each time the convolution window is the same, only the part of the input that is being convoluted changes. Each filter is specialised in finding a specific pattern - because it is convoluted with many submatrices of the input it will find that pattern regardless of where the patter is on the input matrix. This property is called spatial invariance. Figure \ref{fig:spatial_invariance} shows this concept more clearly.\\
 	  	  
@@ -188,10 +174,8 @@
 	  % FIXME: cytaty do Bengia, sprawdzić nazwy i szczegóły, cytaty do matlaba?
 	  % TODO: jest przełożone do Irrelevant
 	  
-	  % TODO: Opisać jakie rozwiązanie zostało użyte przez nas.
-	
 	\subsection{Activation function}
-	  There are few possible activation functions that might be used in convolutional neural networks[DUTCH PAPER].
+	  There are few possible activation functions that might be used in convolution neural networks[DUTCH PAPER].
 	  \begin{itemize}
 	   \item the sigmoid activation function $\sigma(x) = \frac{1}{1 + e^-x}$
 	   \item the hyperbolic tangent activation function $tanh(x) = \frac{e^{2x} - 1}{e^{2x} + 1}$
@@ -204,7 +188,7 @@
 	  \end{itemize}
 
 	
-	\subsection{Pooling} %TODO: zmienić poniższe notatki w tekst 
+	\subsection{Pooling}
 	  Pooling is an operation, usually applied on a matrix, that takes as an input multiple values and returns a single value describing the input. Typical pooling functions are[dutch, bengio book]:
 	  \begin{itemize}
 	    \item max pooling - the max value of input is returned
@@ -215,7 +199,7 @@
 	  
 	  %TODO: pisać to: types: Bengio, 181, pierwszy pełny akapit, pooling shape and stride $\rightarrow$ boost computational efficiency. \\
 	  
-	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines, how many values will be taken as an input - the bigger the size of pooling, the more information is accumulated in a single value. The pooling stride defines, where will be the next submatrix with respect to its present location. Fig \ref{fig:max_pooling} illustrates this concept.\\
+	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines how many values will be taken as an input - the bigger the size of pooling, the more information is accumulated in a single value. The pooling stride defines where will be the next submatrix with respect to its present location. Fig \ref{fig:max_pooling} illustrates this concept.\\
 	  
 	  \begin{figure}[h!]
 	    \centering
@@ -228,12 +212,12 @@
 	  
 	   
 	
-	\subsection{Summary} %TODO: zmienić poniższe notatki w tekst 
+	\subsection{Summary}
 	  In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, which provides us with spatial invariance, activation function and pooling. As a result of this processing, the features are extracted from the data. These features are then used by the classifying subnetwork.\\
 	  	  
       
       
-      \subsection{Learning Algorithm} %TODO: backpropagation, state that this one is best (citation needed!)
+      \subsection{Learning Algorithm}
       Even though convolution operation and pooling might seem to introduce a lot of changes, the classical algorithms for learning neural networks, such as stochastic gradient decent, might be used.    
 	
 	
@@ -306,14 +290,25 @@
 	    \includegraphics[scale=0.50]{dataset_extension.png}
 	    \caption{Data after preprocessing.}
 	    \label{fig:extended_data}
-	  \end{figure} 
+	  \end{figure}
+	  
+
+    
+    %TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmakoloblabla)
+    
+
+    
+    \section{Data representation} %TODO: pewnie chcę napisać coś więcej + zmienić notatki na zdania
+    Each data sample is represented as a vector of $r*6*9$ length, where $r$ is the length of the protein. Data samples constitute a dataset. Each dataset describes a reaction/bonding between a certain protein and the ligand.\\
+    
+    why was this particular fingerprint representation chosen %TODO: napisać
       
 	
       \section{The Architecture}
       %TODO: check to 16 i 32 czy nie jest 17 i 33
       In this section we will describe the type of architecture which we used for experiments. All the models we have trained were convolutional neural networks with one or two convolutional rectified linear layers. Each layer had 16 or 32 output channels. The number of layers have been chosen in such a way that the learning process will not take too much time and the data size will not be reduced too much. Rectifier activation function was used because of its good properties[Dutch paper].\\ 
    
-      The convolution window's values were chosen in such a way that would enable the model to find filters catching correlation between same types of interaction in two adjacent residues, what was described in section \ref{sec:data_processing}. The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$. The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$. If both convolution window size and stride had big values in the first layer, it could happen that the data size in the second layer would be too small to satisfy the conditions above. In such cases the convolution window's size and stride were reduced in such a way that the convolution window's size would always be smaller than the data size and the convolution window's stride would always be smaller than the convolutional window and, if it only was possible (i.e. all dimensions of the convolutional window were smaller then the corresponding dimensions of the data), small enough to enable existence of at least two ``windows'' in each dimension.\\
+      The convolution window's values were chosen in such a way that would enable the model to find filters catching correlation between same types of interaction in two adjacent residues, what was described in section \ref{sec:data_processing}. The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$. The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$. If both convolution window size and stride had big values in the first layer, it could happen that the data size in the second layer would be too small to satisfy the conditions above. In such cases the convolution window's size and stride were reduced in such a way that the convolution window's size would always be smaller than the data size. Moreover, the convolution window's stride would always be smaller than the convolution window and, if only it was possible (i.e. all dimensions of the convolution window were smaller then the corresponding dimensions of the data), small enough to enable existence of at least two ``windows'' in each dimension.\\
       
       The shape of pooling windows was (1, 1), (2, 1) or (2, 2) and smaller by at least one than the data size in each dimension so moving the pooling window was always possible. Pooling stride was always equal to or smaller by half than the pooling window in each dimension. Max pooling was used.\\
       
@@ -322,7 +317,7 @@
 	\subsection{Finding best architecture}
 	Due to many hyperparameters, there exist many models that fulfill our architecture restrictions and therefore it is not possible to train and measure the performance of all possible architectures. To find the best one we used the tree of Parzen estimators algorithm provided by a Python library - Hyperopt[hyperopt] and let it sample 20 models.\\
 	
-	Each architecture that was tested was chosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the objective function responsible for measuring the performance of the model.\\
+	Each architecture that was tested was chosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the function responsible for measuring the performance of the model. We will call this function an objective function.\\
 	
 	 \begin{figure}[h!]
 	  \centering
@@ -343,7 +338,7 @@
 	\State
 	\State $\textit{scores} \gets \textit{empty list}$
 	\State
-	\For {$\textit{k} \in \textit{range(0,K)}$} 
+	\For {$\textit{k} \in [0...4]$} 
 	  \State $\textit{train\_set, validation\_set, test\_set} \gets \textit{split(data\_labeled, k)} $
 	  \State $\textit{train\_set} \gets \textit{train\_set + data\_unlabeled}$
 	  \State $\textit{model} \gets \textit{build\_model(sample)}$
@@ -361,7 +356,7 @@
 	\subsubsection{Training of the model}
 	During each iteration the model provided by the hyperopt module was trained on the data computed during the iteration. After each epoch the optimal threshold was calculated on the validation set. All samples, which activation value was above the threshold, were then classified as active samples and those, which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set.\\
 	
-	To compute the optimal threshold the receiver operating characteristic (ROC) procedure was used. To measure the quality of the threshold the Youden's J statistic was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was stored on disk. As a result, at the end of the learning process the model's best version was stored on disk. This version was read and its performance on the testing set was measured and stored in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score.\\
+	To compute the optimal threshold the receiver operating characteristic (ROC) procedure was used. To measure the quality of the threshold the Youden's J statistic was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was stored on hard drive. As a result, at the end of the learning process the model's best version was stored on hard drive. This version was read and its performance on the testing set was measured and stored in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score.\\
 	% TODO: why do we look for optimal threshold in such a silly way? why ROC? why youden's statistic?
 	
 	The details of the learning algorithm are covered in section \ref{sec:learning_algorithm}.	
@@ -373,14 +368,13 @@
       \subsection{Na\"{i}ve Approach}
       Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised while the unalabeled data could have been used to improve parameters in the convolutional part of the model.\\
 	  
-      % Example: if we had the following examples: [A, B, C, D, E] along with the following labels: [act, act, inact, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C, D, D, E, E] and the labels would be [act, act, act, act, inact, inact, inact, inact, act, inact].
       \subsubsection{Example:}
-      If there were the following examples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].\\
+      If there were the following samples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].\\
       
       For this approach the stochastic gradient descent algorithm included in pylearn2 package (include version) was used.\\
 	  
       \subsection{Fancy Approach}
-      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in pylearn2 (version here) was used as a base and major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model but had no impact on the classification part. The pseudo code of this algorithm can be found below as Algorithm 2.\\
+      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in pylearn2 (version here) was used as a base. Major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model only and had no impact on the classification part. The pseudo code of this algorithm can be found below as Algorithm 2.\\
       
       \begin{algorithm}
       \caption{Learning}\label{euclid}
@@ -488,15 +482,15 @@
       \subsection{implementationally awesome things} %FIXME: change this stupid title
       
 	\subsubsection{Fast computation}
-	  (spatial invariance) $\rightarrow$ temu nie musimy też mieć osobnych macierzy na feature w każdym miejscu - oszczędzamy pamięć na parametry (i efektywnośc, bo im więcej paramterów, tym wolniej się uczymy). Small kernel $=$ litlle parameters.\\
+	  (spatial invariance) $\rightarrow$ temu nie musimy też mieć osobnych macierzy na feature w każdym miejscu - oszczędzamy pamięć na parametry (i efektywnośc, bo im więcej paramterów, tym wolniej się uczymy). Small filter $=$ litlle parameters.\\
 	
 	\subsubsection{sparse interactions} %TODO: zmienić poniższe notatki w tekst 
-	  because kernel is smaller then data so it not kazdy z kazdym but some with some (sparse) $\rightarrow$ computational boost, kernel is small and moved around input - less parameters, instead of a big matrix we store a small one that runs over the data\\
+	  because filter is smaller then data so it not kazdy z kazdym but some with some (sparse) $\rightarrow$ computational boost, filter is small and moved around input - less parameters, instead of a big matrix we store a small one that runs over the data\\
 	  
 	  \{obrazek\} %TODO
 	  
 	\subsubsection{parameter sharing} %TODO: zmienić poniższe notatki w tekst 
-	  Connected to the fact thet we move the convolution kernel around \\
+	  Connected to the fact thet we move the convolution filter around \\
 	  
 	  \{obrazek\} a moze nie?
 	  
@@ -520,7 +514,7 @@
 	
 	
 	    \section{Why was this model chosen}
-	... Having said that kernels might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...\\
+	... Having said that filter might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...\\
 	
 
     

@@ -17,7 +17,7 @@ from algorithm_extensions.get_predictions import Predictor
 
 class CrossValidator(object):
     @staticmethod
-    def run(k, model_dictionary, data_yaml_scheme_path, dataset_files, seed=1337):
+    def run(k, data_yaml_scheme_path, dataset_files, seed=1337):
         print 'CV_ENTER'
         # obtain the yaml skelton
         assert k >= 3   # we need to have at least 3 sets: train, validation, test
@@ -64,24 +64,23 @@ class CrossValidator(object):
                                                    'middle_val': []
                                                    }
 
-            mod = build_multilayer(model_dictionary)    # based on description generated build an object that
+            # mod = build_multilayer(model_dictionary)    # based on description generated build an object that
                                                         #  will fit into yaml_parser
-            print t.bold_cyan('SAMP'), model_dictionary
-            print t.bold_blue('MODEL'), mod
+            # print t.bold_cyan('SAMP'), model_dictionary
+            # print t.bold_blue('MODEL'), mod
 
             # define weight decay params, which depend on the number of layers (there is one parameter for each layer)
-            weight_decay_coeffs = yp.general_parse_weight_decay(mod)
+            # weight_decay_coeffs = yp.general_parse_weight_decay(mod)
 
             # generate a filename to store the best model
             pkl_filename = join(config.path_for_storing, current_time + "_best.pkl")
 
-            multilayer = yp.parse_to_yaml(mod)
+            # multilayer = yp.parse_to_yaml(mod)
 
             # create dictionary with hyper parameters
-            hyper_params = {'model': multilayer,
+            hyper_params = {
                             'train_data': train_data_string,
                             'validation_data': validation_data_string,
-                            'weight_decay_coeffs': weight_decay_coeffs,
                             'pkl_filename': pkl_filename
                             }
             yaml_string = default_string % hyper_params

@@ -7,6 +7,7 @@ from utils.common import get_timestamp
 import configuration.model as config
 from training_algorithm.cross_validation import CrossValidator
 
+
 def objective_function(samp):
     current_time = get_timestamp()
     k = config.number_of_cross_validation_parts

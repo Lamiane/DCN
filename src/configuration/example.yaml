@@ -1,7 +1,19 @@
 !obj:pylearn2.train.Train {
     dataset: &train %(train_data)s,
 
-    model: %(model)s
+    model: !obj:pylearn2.models.mlp.MLP {
+        layers: [ !obj:pylearn2.models.mlp.RectifiedLinear {
+                     layer_name: 'h0',
+                     dim: 800,
+                     sparse_init: 15
+                 }, !obj:pylearn2.models.mlp.Softmax {
+                     layer_name: 'y',
+                     n_classes: 10,
+                     irange: 0.
+                 }
+                ],
+        nvis: 20844,
+    },
 
     algorithm: !obj:pylearn2.training_algorithms.sgd.SGD { # trainig algorithm: Batch Gradient Descent
         batch_size: 1,  # don't change if you want to use verbessert algo! POCHA
@@ -18,9 +30,10 @@
                 !obj:pylearn2.costs.cost.MethodCost {
                     method: 'cost_from_X'
                 },
-                !obj:pylearn2.costs.mlp.WeightDecay {
+                !obj:pylearn2.costs.mlp.L1WeightDecay {
                     coeffs: {
-                        %(weight_decay_coeffs)s
+                       'h0': 0.00005,
+                       'y': 0.00005,
                     }
                 }
             ]

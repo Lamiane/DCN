@@ -26,55 +26,40 @@
 \begin{document}
   \maketitle
   \begin{abstract}
-    The goal of this work is to... ...drug design... This is achieved by applying (deep?) convolutional neural networks to the problem.
+    The goal of this work is to build a model that would classify ligands as active or inactive based on their fingerprints. Convolutional neural network are used. Two approaches are described. Two new (?) methods to include unlabeled samples in the learning procedure are presented.
   \end{abstract}
   \tableofcontents
     
-  \chapter{Introduction} %TODO: napisać ten rozdział
-    \begin{enumerate}
-     \item related work, że to ma oparcie w czymś
-     \item przejść gładko do BARDZO SKRÓTOWEGO opisania prablemu, docking, takie rzeczy, może chcę dwa punkty wyżej?
-     \item przejść do fingerprintów, napisać, że używamy 2DSifta i napisać dlaczego
-     
-     \item zwojtkować
-    \end{enumerate}
+  \chapter{Introduction}
+    \section{The goal of this paper}
     
-    *Jedno zdanie.* In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would classify ligands as active or inactive. Two approaches have been proposed. Moreover, we show new approach to make use of unlabeled examples during the learning process.
-
-  
+     Virtual screening is a part of drug design. It involves screening great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would classify ligands as active or inactive. Two approaches have been proposed. Moreover, we show new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
+    
     \section{related work, że to ma oparcie w czymś i o czym jest praca}
-  
-    \section{The Problem and the Data}
-    %FIXME {cytowania! jak to się robi? poczatek, koniec?}
-    %FIXME co z wcięciami?
+    sth sth % TODO
+
+    \section{Problem}
+    One of the problems in drug design is telling whether \emph{protein} and \emph{compound} will react and produce a new complex, called \emph{ligand}. If the ligand indeed will be created, it is important to know whether this new complex will be \emph{active} or \emph{inactive}.\\
     
-    \section{Terminology} %TODO: zmienić hasła na zdania
-     One of the problems in drug design is telling whether \textbf{protein} and \textbf{compound} will react and produce a new complex, called \textbf{ligand}. If the ligand indeed will be created, it is important to know whether this new complex will be \textbf{active} or \textbf{inactive}.\\
+    \emph{Proteins} are molecules built from \emph{amino acid residues} forming a single \emph{chain}. Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information.\\
     
-    \textbf{Proteins} are molecules built from \textbf{amino acid residues} forming a single \textbf{chain}. The number of residues defines the length of the chain and can vary from few dozen to few thousands of residues.\\
+    Our goal was to build a model that would classify the ligand as \emph{active} or \emph{inactive} based on its \emph{fingerprint}. Fingerprints are a widely used (?) representation of molecules. There are many types of fingerprint designed. They vary in length and the type of information they carry. Some of them are designed for specific tasks. (citation needed). Conventionally, fingerprints represent a molecule as a vector. Each element of this vector describes whether a specific structure is present in the molecule or not, e.g. whether the molecule has a hydrophobic group or not.\\
     
-        
-    ligand, protein-ligand docking, receptor, donor, active, not active, pharmacophore, interactions, active non/inactive protein\\ %TODO: dokończyć         
-    \section{Fingerprints} %TODO: zmienić hasła na zdania, citations! czy to co ja używam to w ogóle fingerprinty są?
-    One of the first questions that have to be answered before *any modelling task can be started* is: how will I represent my data? Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. It might seem that a natural representation of a protein will be a graph containing extra information about how the nodes are arranged in space. Unfortunately, graph algorithms are computationally expensive and it is nowadays not possible to use them (na czym się opieram?). Therefore, *we* need another representation, that will carry as much information as possible and *be computationally effective*. *For this reason* many types of fingerprints have been designed and they meet the criterions metioned.\\
+     % może tabelka ze spisem fingerprintów
     
-    Conventionally, fingerprints represent a *protein/molecule* as a binary(?) vector. Each element of this vector *tells* whether a specific structure is present in the *protein/molecule* or not, e.g. whether the *protein/molecule* has a .......... (oprzeć się na jakiejś publikacji). Vectors are widely used in machine learning as data representation as they can be *compilled* into matrices which allows to *easy computation, easy proofs, happy algebra* <<We need a simpler representation - such on which we can quickly apply many function, such that is well designed for computers, for modern algorithms>> Even though representing a protein as a vector means loosing a lot of information about it, it enables effective computation and still provides us with reasonable results.\\
+    Vectors are commonly used in machine learning as data representation because they can be stored in matrices which allows easy calculations. Even though representing a protein as a vector means loosing a lot of information about its topology, it enables effective computation and still provides us with reasonable results.\\
     
-    % może tabelka ze spisem fingerprintów
+    As already said, there are many different fingerprints designed. They vary in length and the features included. In this paper we used 2D SIFt~\cite{2DSIFT} fingerprints. % TODO why this one not the other one?
+    We used convolutional neural network because of they are eligible to work with data which topological carries information.
+     
+   
+    \section{How this paper is organised}
     
-    % TODO chcemy ieć tę sekcje 
-	    \section{Why was this model chosen}
-	... Having said that filter might be used as feature extractors it's worth considering what kinds of features might be discovered in the provided data. ...\\
-	
+    At first, the convolutional neural networks are described. We present such concepts as convolution or pooling. The properties of convolutional neural networks are given.\\
     
-    As already said, there are many different fingerprints designed. They vary in length and the features included. Some of them are designed for specific tasks. (citation needed). In this work 2D-SIFt will be used.\\
-  
-    \section{Problem} %TODO: zmienić hasła na zdania
-    drug design, innovative data representation from \cite{2DSIFT}, more details, what exactly am I trying to achieve? *Deep* Convolutional neural networks will be applied to the problem.\\
+    Chapter \ref{chap:OUR_MODEL} is the most important part of the paper. In this chapter we present the two approaches that we used to address the problem. We describe in detail the data on which we performed experiments and the preprocessing that we used to extract most interesting features from the data. A detailed explanation of the architecture that we used is given. We describe in detail both training methods that we created to tackle the problem of using unlabeled samples in the learning algorithm - the naive approach and the fancy approach.\\
     
-    At first, the concept of convolutional neural network will be described. In the next chapter we will present both approaches that we used to addres the problem. Finally, our results will be described. In the last chapter we will discuss possible ways to further develop our approach.
-    % TODO napisać że ten nasz autorski learning algorithm to najwazniejsza część pracy, można nawet dać referencję, napisać, ze to nasz wkład
-    % TODO można to też napsiać odrobinę szczególniej
+    Our results are described in the next chapter. Finally, in the last chapter we discuss possible ways to further develop our approach. At the end of this paper there is a short appendix which includes some less important concepts used in this work.
     
 
   \chapter{Convolutional Neural Networks}
@@ -82,20 +67,19 @@
       
      \begin{figure}[h!]
 	  \centering
-	  \includegraphics[scale=0.65]{conv_network.png}
-	  \caption{An example of convolutional neural network.} %TODO zmienić ten obrazek
+	  \includegraphics[width=\textwidth]{CNNArchitecture.jpg}
+	  \caption{An example of convolutional neural network. The figure was downloaded from http://parse.ele.tue.nl/cluster/2/CNNArchitecture.jpg}
 	  \label{fig:con_network}
 	\end{figure} 
       
       In this section we will show what motivation stands behind using convolutional neural networks, explain what is the convolution operation, and what is pooling. Types of activation functions that might be used in convolutional neural networks
       will be presented as well as the learning algorithm.\\
       
-      \section{Motivation} %TODO: zmienić poniższe notatki w tekst 
-	%TODO: why are CNNs so useful, awesome and important, w czym dokonały przełomu? (citation needed? praca hoelnderska?)
+      \section{Motivation}
 	Convolutional neural networks take advantage of data which topological order carries some information. Therefore, CNNs are often applied to image recognition, video analysis and natural language processing problems.\\ %FIXME: citation needed!
-	These attempts *are often succesful/often give better results than (any other) models*.\\ %TODO: citation needed
+	These attempts *are often succesful/often give better results than (any other) models*.\\ %FIXME: citation needed
+	Since the the topological order of the data we are working on carries information (due to how the proteins are built), we expect that using convolutional neural networks might bring good results.\\
 	
-      
       \section{Computation Flow}
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection it will be described how the data is processed within the convolutional subnetwork. Not much attention will be put to classifying subnetwork as there is a wide variety of possible approaches.\\
 	
@@ -131,7 +115,7 @@
 	  
 	  It is worth considering how this equation can be applied to neural networks. Since representing real values in the computers is rather troublesome, it is desirable to express this equation in a discrete form, which is shown below:\\
 	  
-	  $\overline{c}(t) = \sum\limits_{x = -\infty}^\infty \overline{f}(x)\overline{g}(t-x)$ \\%FIXME: bengio i wikipedia używają [], dlaczego? czy ja też powinnam? 
+	  $\overline{c}(t) = \sum\limits_{x = -\infty}^\infty \overline{f}(x)\overline{g}(t-x)$ \\
 	  
 	  If we want to apply this equation to neural networks we might want to think of $\overline{f}$ as a data sample. In such approach $\overline{g}$ would become a matrix that is moving around the data sample producing a single value in each place. From now on, we will call $f$ an input, $g$ a filter or a convolution matrix or a convolution window and $c$ an output.\\
 	  
@@ -177,11 +161,7 @@
 	    \label{fig:convolution_size_reduction}
 	  \end{figure} 
 	  
-	  It can be observed that the values laying close to the edge of the input matrix will be underrepresented. The upper left corner of the input matrix will have influence on only one element of the output (the yellow one) while its right neighbour will already have influence on two elements of the output (the yellow and the blue one). The elements in the middle of the input matrix will influence four elements of the output. Such unequalities of the influence might be undesirable. There is a variety of ways to address this problem, e.g. zero-padding, but we will not cover them.\\
-	  % TODO zero padding dać referencję do bengia
-	  
-	  % FIXME: cytaty do Bengia, sprawdzić nazwy i szczegóły, cytaty do matlaba?
-	  % TODO: jest przełożone do Irrelevant
+	  It can be observed that the values laying close to the edge of the input matrix will be underrepresented. The upper left corner of the input matrix will have influence on only one element of the output (the yellow one) while its right neighbour will already have influence on two elements of the output (the yellow and the blue one). The elements in the middle of the input matrix will influence four elements of the output. Such unequalities of the influence might be undesirable. There is a variety of ways to address this problem, e.g. zero-padding, but we will not cover them. More information about such methods can be found in \cite{BENGIOBOOK}.\\
 	  
 	\subsection{Activation function}\label{sec:ACTIVATION_FUNCTIONS}
 	  There are few possible activation functions that might be used in convolution neural networks~\cite{DUTCH}.
@@ -198,15 +178,12 @@
 
 	
 	\subsection{Pooling}
-	  Pooling is an operation, usually applied to a matrix, that takes as an input multiple values and returns a single value describing the input. Typical pooling functions are~\cite{BENGIOBOOK, DUTCH}:
+	  Pooling is an operation, usually applied to a matrix, that takes as an input multiple values and returns a single value describing the input. Typical pooling functions are~\cite{DUTCH}:
 	  \begin{itemize}
 	    \item max pooling - the max value of input is returned
 	    \item average pooling - the average value of input is returned
-	    \item weighted average pooling - the weighted average is returned. Weights are usually *(citation needed?)* defined by the distance from *what?* %TODO: finish, to pewnie będzie w bengiobooku
-	    \item stochastic max pooling - one element is chosen from the input to become the result. Probability of choosing an element is proportional to its value. [Zeiler et all/za dutch]\\
+	    \item stochastic max pooling - one element is chosen from the input to become the result. Probability of choosing an element is proportional to its value.~\cite{ZEILER}\\
 	  \end{itemize}
-	  
-	  %TODO: pisać to: types: Bengio, 181, pierwszy pełny akapit, pooling shape and stride $\rightarrow$ boost computational efficiency. \\
 	  
 	  Pooling is defined not only by its type but also by its size and stride. The size of pooling defines how many values will be taken as an input - the bigger the size of pooling, the more information is accumulated in a single value. The pooling stride defines where will be the next submatrix with respect to its present location. Fig \ref{fig:max_pooling} illustrates this concept.\\
 	  
@@ -219,7 +196,7 @@
   
 	  When pooling is applied on the edges of the input same problems might be encountered as with the convolutions, namely some values will be underrepresented. It is worth noting that the output of the pooling is off smaller size than the input. To address these problems same techniques might be applied.\\
 	  
-	  % TODO cel poolingu - uniezależnienie się na translacje
+	  % TODO cel poolingu - uniezależnienie się na translacje, bengiobook o tym pisze
 	  
 	\subsection{Summary}
 	  In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, which provides us with spatial invariance, activation function and pooling. As a result of this processing, the features are extracted from the data. These features are then used by the classifying subnetwork.\\
@@ -233,34 +210,31 @@
 	  % FIXME can the pattern be *discovered* by the filter?
 	  	  
       
-      
       \section{Learning Algorithm}
       Even though convolution operation and pooling might seem to introduce a lot of changes, the whole procedure remains a supervised learning problem and therefore, the classical algorithms for learning neural networks, such as stochastic gradient decent, might be used.
       
-      % TODO
-       \section{implementationally awesome things} %FIXME: change this stupid title
+       \section{Other properties of convolutional neural networks}
       
 	\subsection{Fast computation}
 	  Convolutional neural networks have properties that make the computation fast, namely \emph{parameter sharing} and \emph{sparse interactions}~\cite{BENGIOBOOK}. Both these properties are connected to using convolution.\\
 	  
 	  Parameter sharing means that the same weight is used multiple times during calculating the activation for a sample.
 	  Convolution matrices are much smaller than the input and are moved around it, so each time the same set of parameters is used to compute the output. Thanks to that, there is no need to have multiple sets of parameters that would discover the same feature in multiple places of the input - it is enough to have one filter that moves around that input. Because of that, the number of parameters is greatly reduced, and therefore the learning process speeds up.\\
-	  % FIXME czy to w ogóle da się czytać?
 	  
 	  In a typical neural network each element of input has influence on each element of the output which means that the interactions are dense. In convolutional neural networks the situation is different - the filters are much smaller than the input and discover local patterns, what leads to sparse interactions. This property again causes a reduction in the number of parameters in the model and makes the learning process much faster.\\	
 	  
 	\subsection{equivariant representations} %TODO: zmienić poniższe notatki w tekst
-	  equivariance - property of *what?* meaning that if the input changes that output changes the same way. $f(g(x)) = g(f(x))$ Intuition about it: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t?\\
+	  Equivariance is another interesting property caused by convolution. Equivariance means that if the input changes than output changes the same way. Mathematically it can be written as: $f(g(x)) = g(f(x))$. The intuition that stands behind it is: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t?\\
 	
 	
-  \chapter{The Model}
+  \chapter{The Model}\label{chap:OUR_MODEL}
       
       \section{Goal}
       The goal of this work was to build a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted.\\
      
 	 
       
-      \section{Data}
+      \section{Data}\label{sec:OUR_DATA}
 	The dataset describes interactions between a single protein and multiple ligands. One might choose to see the dataset as a four dimensional matrix with axes dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a protein bounds with a specific ligand. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. A single data sample is presented on figure \ref{fig:single_data_sample2}.\\
 	
 	\begin{figure}[h!]
@@ -346,10 +320,8 @@
       The last layer of the network was a softmax layer with two neurons. It was used to classify the sample based on features extracted by the convolutional part of the network.\\
       
 	\subsection{Finding best architecture}
-	Due to many hyperparameters, there exist many models that fulfill our architecture restrictions and therefore it is not possible to train and measure the performance of all possible architectures. To find the best one we used the tree of Parzen estimators algorithm provided by a Python library - Hyperopt[hyperopt] and let it sample 20 models.\\
-	
-	% TODO appendiks a w appendiksie tree of parzen estimators
-	
+	Due to many hyperparameters, there exist many models that fulfill our architecture restrictions and therefore it is not possible to train and measure the performance of all possible architectures. To find the best one we used the tree of Parzen estimators algorithm (see \ref{appendiks}) provided by a Python library - Hyperopt~\cite{HYPEROPT} and let it sample 20 models.\\
+		
 	Each architecture that was tested was chosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the function responsible for measuring the performance of the model. We will call this function an objective function.\\
 	
 	 \begin{figure}[h!]
@@ -386,14 +358,11 @@
 	\end{algorithmic}
 	\end{algorithm}
 	
-	\subsubsection{Training of the model} %TODO during each iteration - to zdanie jest ZŁE
-	During each iteration the model provided by the hyperopt module was trained on the data computed during the iteration. After each epoch the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set.\\
+	\subsubsection{Training the model}
+	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set.\\
 	
-	% TODO reference - literatura
-	% TODO napisać co robi youdens
-	% TODO was stored on hard drive - jakoś inaczej no i się powtarza
-	% TODO stored in cross validation procedure - napisać to zupełnie inaczej
-	To compute the optimal threshold the receiver operating characteristic (ROC) procedure was used. To measure the quality of the threshold the Youden's J statistic[REF] was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was stored on hard drive. As a result, at the end of the learning process the model's best version was stored on hard drive. This version was read and its performance on the testing set was measured and stored in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score.\\
+	% FIXME appendiks odnośniki - czemu są takie brzydkie?
+	In order to compute the optimal threshold, the receiver operating characteristic (ROC) procedure was used (see \ref{appendiks} for more information). To measure the quality of the threshold, the Youden's J statistic~\cite{YOUDEN} (see \ref{appendiks} for more information) was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score.\\
 	% TODO: why do we look for optimal threshold in such a silly way? why ROC? why youden's statistic?
 	
 	The details of the learning algorithm are covered in section \ref{sec:learning_algorithm}.	
@@ -403,8 +372,7 @@
     The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested.\\
     
       \subsection{Na\"{i}ve Approach}
-      % TODO napisać to czytelniej, przede wszystkim labeled samples were labelec correctly
-      Training set was constructed in the following way: all examples were included in the training set two times: the labeled samples were labeled correctly, the unlabeled examples were once labeled as active samples, and once labeled as inactive samples. This way the impact on classification of unlabeled data was minimised while the unalabeled data could have been used to improve parameters in the convolutional part of the model.\\
+      Training set was constructed in the following way: all examples were included in the training set two times - the labeled samples were included with their label and the unlabeled examples were included once with positive label, and once with negative label. This way the impact on classification of unlabeled data was minimised while the unalabeled data could have been used to improve parameters in the convolutional part of the model.\\
 	  
       \subsubsection{Example:}
       If there were the following samples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact].\\
@@ -456,24 +424,28 @@
       For labeled samples the learning process was performed with no changes. When the sample was unlabeled the network parameters were stored and then the sample was presented to the network as if it was labeled as inactive. During this process the network parameters were updated. The difference in the network parameters was stored and old parameters were restored. Afterwards, the sample was presented to the network again - this time as an active sample. The procedure was the same as before. After calculating the difference and restoring the old parameters the two vectors of differences were compared to produce the final vector of updates.\\
            
            
-       % TODO zrobić z tych properties liste numerowaną
-      The final vector had the following properties: the elements responsible for updating the classification part of the network were all zeros, therefore the unlabeled examples had no impact on training the classification part of the model. The elements responsible for updating the convolutional part of the model were calculated in the following way: if the corresponding elements of the two vectors had the opposite sign, then the corresponding element in the final vector was zero. As a result, the unlabeled samples were used by the network to learn only these filters that were useful for classifying samples of both classes. Finally, if the corresponding elements in both vectors had the same sign, then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
+      The final vector had the following properties:
+      \begin{enumerate}
+       \item the elements responsible for updating the classification part of the network were all zeros, therefore the unlabeled examples had only impact on learning parameter of the convolutional subnetwork and did not influence the classification part of the network.\\
+       \item the elements responsible for updating the convolutional part of the model were calculated in the following way:
+	\begin{itemize}
+	 \item if the corresponding elements of the two vectors had the opposite sign, then the corresponding element in the final vector was zero. As a result, the unlabeled samples were used by the network to learn only these filters that were useful for classifying samples of both classes
+	  \item if the corresponding elements in both vectors had the same sign, then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
+	  \begin{itemize}
+	    \item minimum by absolute value of the two elements
+	    \item maximum by absolute value of the two elements
+	    \item mean of the two elements
+	    \item softmax mean of the two elements, i.e. having $x, y \in \mathbb{R}$ the softmax mean $\sigma$ is equal to $x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$.
+	    
+	    \subsubsection{Remark}
+	      It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.\\
+	  \end{itemize}
+	\end{itemize}
+      \end{enumerate}
+
       
       % TODO, gdzieś to dac referencję do figure która jest póxniej, żeby była wiadomo że ten example będzie
-      
-      \begin{itemize}
-       \item minimum by absolute value of the two elements
-       \item maximum by absolute value of the two elements
-       \item mean of the two elements
-       \item softmax mean of the two elements, i.e. having $x, y \in \mathbb{R}$ the softmax mean $\sigma$ is equal to $x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$.
-       
-       \subsubsection{Remark}
-       It can be observed that $\frac{e^x}{e^x + e^y} \in [0, 1]$ for any $x$, $y \in \mathbb{R}$ and that $\frac{e^x}{e^x + e^y} + \frac{e^y}{e^x + e^y} = 1$, therefore $\sigma = x \cdot \frac{e^x}{e^x + e^y} + y \cdot \frac{e^y}{e^x + e^y}$ is a convex combination of $x$ and $y$, so $\sigma$ will be between $x$ and $y$.\\
-      \end{itemize}
-      
-      % TODO bardzo dobre zdanie ale nie tylko filters tylko wszystko co było w konwolucyjnej
-      Finally, all parameters corresponding to the classifying part of the network were zeroed, therefore the unlabeled examples had only impact on learning filters of the network and did not influence the classification part of the network.\\
-	
+      	
       Concluding, the update vector had zeros in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, then the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions.\\
       
       \subsubsection{Example}
@@ -486,28 +458,40 @@
 	  \label{fig:combining}
 	\end{figure} 
 	
-      
+   \chapter{Results} % TODO napisać ten rozdział
+    \section{not yet}
      
 	
-  \chapter{Discussion} %TODO: napisać ten rozdział
+  \chapter{Discussion}
+    \section{napisać co się udało}
   % TODO napisać też co się udało
-    \section{Everything...}
-      ...can be improved.\\
-      \begin{itemize}
-	   \item data in 3D not 2D - possible new filters
-	   \item new combination functions can be tested
-	   \item other ways of finding threshold
-	   \item maybe finding two thresholds and leaving some examples unlabeled? - why is this useful?
-	   \item te nasze trzy rzędy są chyba nadmiarowe, moze dwa wybrane
-      \end{itemize}
+    \section{Future work}
+      There are still many ways to improve the proposed method.\\
       
-        \subsection{Extensions} %FIXME this title shall not last! %TODO: zmienić poniższe notatki w tekst
-	dropout/dropconnect method, activation functions for dropout, other things from the Dutch paper\\
-	 %TODO: to chcemy sprawdzić dla naszych danych
-	 
-	 ``ulepszenie modelu danych''
+      It is important to investigate if representing the data in the memory in a 4-dimensional instead of 3-dimensional form can improve the performance of the model (see \ref{sec:OUR_DATA} for details). Using another form of representing the data in the memory might lead to discovering other patterns which can be more relevant for this data.\\
       
+      Moreover, new combination functions might be tested, e. g. ...\\ % FIXME no właśnie, jakie?
+      
+      % FIXME reference to a non existing paragraph
+      Further, it is interesting to explore new methods of finding the optimal threshold for classification. In particular, we would like to investigate the approach which would enable finding two thresholds. Note that the model that created the dataset also used two thresholds so the new approach will lead to a greater resemblance (see the paragraph that doesn't yet exist for more information).\\
+      
+      The two-threshold model will leave some samples unlabeled. It is important to explore what error functions can be used in such approach.\\
+      
+      During the experiments we realised that creating three copies of the data during preprocessing (see \ref{sec:OUR_DATA} for details) might be redundant. We want to inspect if having only two copies would cause a big difference in performance. Reducing the size of data will also lead to shorter time of learning pahse.
+      
+      Finally, there exist some techniques for deep and convolutional neural networks that might further improve the performance of our model, i.e dropout and dropconnect methods~\cite{DUTCH}.
 
+   \begin{appendices}
+    \chapter{Dictionary}\label{appendiks}
+      % TODO: napisac własnymi słowami
+      from: http://optunity.readthedocs.org/en/latest/user/solvers/TPE.html\\
+      
+      The Tree-structured Parzen Estimator (TPE) is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model.\\
+      
+      \emph{Receiver Operating Characteristic} (ROC) measures ratio of false positive rate ($FPR$) to true positive rate ($TPR$). $FPR = \frac{FP}{FP + TN}$, where $FP$ is the number of false positive examples and $TN$ is the number of true negative examples. $TPR = \frac{TP}{TP + FN}$, where $TP$ is the number of true positive examples and $FN$ is the number of false negative examples. When the threshold defining the classification moves the way the samples are classified changes. The goal is to find such a threshold that the score will be most optimal. There are plenty of ways for measuring the score. \emph{Youden J Statistic} is one of such methods. It measures the difference between the point on ROC curve and corresponding point on ROC curve for random classifier. The picture \ref{that does not exist yet} shows this concept.
+      
+  \end{appendices}
+      
   \begin{thebibliography}{99}
     \bibitem{BENGIOBOOK}
       Yoshua Bengio, Ian J. Goodfellow, Aaron Courville - \emph{Deep Learning}
@@ -517,18 +501,17 @@
       Joost van Doorn - \emph{Analysis of Deep Convolutional Neural Network Architectures}
     \bibitem{GLOROT_BENGIO}
       Yoshua Bengio, Antoine Bordes, Xavier Glorot - \emph{Deep Sparse Rectifier Neural Networks}
-    
-    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, cool staff from Ph.D, numpy, scipy?, hyperopt, the dutch paper, sklearn metrics for f12 score, latex, draw, io
+    \bibitem{YOUDEN}
+     William John Youden - \emph{Index for rating diagnostic tests}
+    \bibitem{HYPEROPT}
+      James Bergstra, Dan Yamins, David D. Cox - \emph{Hyperopt: A Python Library for Optimizing the Hyperparameters of Machine Learning Algorithms}
+    \bibitem{ZEILER}
+       M. D. Zeiler, R. Fergus - \emph{Stochastic pooling for regularization of deep convolutional neural networks}
+    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, numpy, scipy?, sklearn metrics for f12 score, latex, draw.io
     
   \end{thebibliography}
   
-  \begin{appendices}
-    \chapter{Dictionary}
-      % TODO: napisac własnymi słowami
-      from: http://optunity.readthedocs.org/en/latest/user/solvers/TPE.html\\
-      
-      The Tree-structured Parzen Estimator (TPE) is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model.
-  \end{appendices}
+
     
   \chapter{Irrelevant} %TODO: wywalić na końcu
     \section{zero-pad methods in detail}
@@ -540,15 +523,7 @@
 	  
       \{obrazek\} ilustrujący te przykłady 
       
-    \section{pooling}	  
-      is pooling subsampling and if yes then why is polling subsampling?\\
-      
-     
-	  
-	
-	\subsection{Learning Algorithm} %TODO: backpropagation, state that this one is best (citation needed!)
-	
-	
+  
 	\subsubsection{The problems with a classical backpropagation} %TODO: notatki w tekst
 	  diminishing gradient flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich.\\
 	

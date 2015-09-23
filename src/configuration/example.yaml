@@ -8,7 +8,7 @@
                      sparse_init: 15
                  }, !obj:pylearn2.models.mlp.Softmax {
                      layer_name: 'y',
-                     n_classes: 10,
+                     n_classes: 2,
                      irange: 0.
                  }
                 ],

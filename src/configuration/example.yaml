@@ -7,7 +7,7 @@
                      dim: 800,
                      sparse_init: 15
                  }, !obj:pylearn2.models.mlp.Softmax {
-                     layer_name: 'y',
+                     layer_name: 'softmax',
                      n_classes: 2,
                      irange: 0.
                  }
@@ -33,7 +33,7 @@
                 !obj:pylearn2.costs.mlp.L1WeightDecay {
                     coeffs: {
                        'h0': 0.00005,
-                       'y': 0.00005,
+                       'softmax': 0.00005,
                     }
                 }
             ]

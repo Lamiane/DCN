@@ -31,9 +31,12 @@
 \begin{document}
   \begin{center}
     % Title Page
-    Uniwersytet Jagielloński 
-    Wydział Matematyki i Informatyki 
-    INSTYTUT INFORMATYKI i MATEMATYKI KOMPUTEROWEJ 
+    Uniwersytet Jagielloński
+    
+    Wydział Matematyki i Informatyki
+    
+    INSTYTUT INFORMATYKI i MATEMATYKI KOMPUTEROWEJ
+    
     Studia stacjonarne 
   \end{center}
   \vspace{\stretch{1}}
@@ -41,12 +44,14 @@
   
   \begin{center}
    Agnieszka Pocha 
-   \vspace{\stretch{1}}
+   \vspace{\stretch{0.1}}
+   
    \large Tutuł 
   \end{center}
   \vspace{\stretch{1}}
   \begin{flushright}
-    Opiekun pracy magisterskiej: 
+    Opiekun pracy magisterskiej:
+    
     Prof. dr hab. Igor Podolak 
   \end{flushright}
 
@@ -90,31 +95,35 @@
     
     One of the problems in drug design is telling whether \emph{protein} and \emph{compound} will react and produce a new complex, called \emph{ligand}. If the ligand indeed will be created, it is important to know whether this new complex will be \emph{active} or \emph{inactive}. 
     
-    \todo[inline]{obrazek z zadokowanym ligandem}
+    \begin{figure}[h!] % FIXME cytowanie śmierdzi
+	  \centering
+	  \includegraphics[scale=0.2]{docked.png}
+	  \caption{A molecule (blue) with a docked ligand(orange)~\ref{URL:docked}.}
+	  \label{PIC:docked}
+    \end{figure} 
     
     \emph{Proteins} are molecules built from \emph{amino acid residues} forming a single \emph{chain}. Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. 
     
     Our goal was to build a model that would classify the ligand as \emph{active} or \emph{inactive} based on its \emph{fingerprint}. Fingerprints are a widely used (?) representation of molecules. There are many types of fingerprint designed. They vary in length and the type of information they carry. Some of them are designed for specific tasks. (citation needed). Conventionally, fingerprints represent a molecule as a vector. Each element of this vector describes whether a specific structure is present in the molecule or not, e.g. whether the molecule has a hydrophobic group or not. 
     
-     % może tabelka ze spisem fingerprintów
+     % TODO może tabelka ze spisem fingerprintów
     
     Vectors are commonly used in machine learning as data representation because they can be stored in matrices which allows easy calculations. Even though representing a protein as a vector means loosing a lot of information about its topology, it enables effective computation and still provides us with reasonable results. 
     
-    As already said, there are many different fingerprints designed. They vary in length and the features included. In this paper we used 2D SIFt~\cite{2DSIFT} fingerprints. % TODO why this one not the other one?
-    We used convolutional neural network because of they are eligible to work with data which topological carries information.
+    As already said, there are many different fingerprints designed. They vary in length and the features included. In this paper we used 2D-SIFt~\cite{2DSIFT} fingerprints. We used convolutional neural networks because they are eligible to work with data which topological order carries information.
      
      
     \igor{
-    \section{2D-SIFt fingerprints}
+    \section{2D-SIFt fingerprints} % todo przerobić tę sekcję stylistycznie, bo tego się nie da czytać
     In this work the so called 2D-SIFt fingerprints are used~\cite{Mordalski2011, cos-jeszcze}, which are a composition of Structural Interaction Fingerprints (SIFt)~\cite{Singh2006} together with the pharmacophore model. SIFts code information from the view of the receptor conveying \textit{how} a molecule interacts with the protein, not \textit{what} interacts. A single block codes information in a nine element long binary vector
     \begin{align*}
-    [\text{any contact},&\text{backbone},\text{sidechain},\text{polar},\text{hydrophobic}, 
+    [\text{any contact},&\text{backbone},\text{sidechain},\text{polar},\text{hydrophobic}, \\
     &\text{H-bond acceptor},\text{H-bond donor},\text{aromatic},\text{charged}
     ].
     \end{align*}
     These are informations about the single points of contact between the target protein and the molecule. Additionaly there is a pharmacophore model of the molecule added. A pharmacophore is a\todo{opis farmakoforów}. Each pharmacophore point is described using a six element vector
     \begin{align*}
-    [\text{H-bond donor},&\text{H-bond acceptor},\text{hydrophobic}, 
+    [\text{H-bond donor},&\text{H-bond acceptor},\text{hydrophobic}, \\
     &\text{negatively charged},\text{positively charged},\text{aromatic}].
     \end{align*}
     }
@@ -138,10 +147,10 @@
   
       The simplest definition of convolutional neural networks is probably: neural networks that take advantage of using the convolution operation. CNN might be seen as a network consisting of two parts - first part is the convolutional part and it is responsible for extracting the features from the data. The second part might be a softmax layer responsible for classifying samples based on features provided by the convolutional part. This schema is shown on figure \ref{fig:con_network}. 
       
-     \begin{figure}[h!]
+     \begin{figure}[h!] % FIXME coś odnośniki nie działają
 	  \centering
 	  \includegraphics[width=\textwidth]{CNNArchitecture.jpg}
-	  \caption{An example of convolutional neural network. The figure was downloaded from http://parse.ele.tue.nl/education/cluster2} %TODO poprawić link!
+	  \caption{An example of convolutional neural network~\ref{PIC:CONV_NET}.}
 	  \label{fig:con_network}
 	\end{figure} 
       
@@ -170,6 +179,13 @@
 	  \includegraphics[width=\textwidth]{convolutional_neuron.png}
 	  \caption{The three elemental operations performed in each convolutional layer.}
 	  \label{fig:con_neur}
+	\end{figure} 
+	
+	\begin{figure}[h!] %FIXME znów cytowanie śmierdzi
+	  \centering
+	  \includegraphics[width=\textwidth]{mylenet.png}
+	  \caption{An example of a whole neural network with stages of convolution and polling marked~\ref{URL:con_neur_INT}.}
+	  \label{fig:con_neur_INT}
 	\end{figure} 
 	
 	% TODO dorzucić drugi obrazek z sieci
@@ -239,7 +255,7 @@
 	    \label{fig:convolution_size_reduction}
 	  \end{figure} 
 	  
-	  It can be observed that the values laying close to the edge of the input matrix will be underrepresented. The upper left corner of the input matrix will have influence on only one element of the output (the yellow one) while its right neighbour will already have influence on two elements of the output (the yellow and the blue one). The elements in the middle of the input matrix will influence four elements of the output. Such unequalities of the influence might be undesirable. There is a variety of ways to address this problem, e.g. zero-padding, but we will not cover them. More information about such methods can be found in \cite{BENGIOBOOK}. 
+	  It can be observed that the values laying close to the edge of the input matrix will be underrepresented. The upper left corner of the input matrix will have influence on only one element of the output (the yellow one) while its right neighbour will already have influence on two elements of the output (the yellow and the blue one). The elements in the middle of the input matrix will influence four elements of the output. Such unequalities of the influence might be undesirable. There is a variety of ways to address this problem, e.g. zero-padding, but we will not cover them. More information about such methods can be found in \cite{Bengio}. 
 	  
 	\subsection{Activation function}\label{sec:ACTIVATION_FUNCTIONS}
 	  There are few possible activation functions that might be used in convolution neural networks~\cite{DUTCH}.
@@ -279,14 +295,12 @@
 	\subsection{Summary}
 	  In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, which provides us with spatial invariance, activation function and pooling. As a result of this processing, the features are extracted from the data. These features are then used by the classifying subnetwork. 
 	  
-	  Convolution provides us with spatial invariance and is responsible for extracting features. Each layer of the convolutional part of the network has its own filters. These filters take advantage of the features that were already extracted in the previous layers. Therefore, the later in the network, the more complicated pattern the filter may discover. It is worth noting that the patterns discovered by the filter are local - the filters are smaller than the input and find patterns that are also smaller than the input, which may appear few times in each sample. 
+	  Convolution provides us with spatial invariance and is responsible for extracting features. Each layer of the convolutional part of the network has its own filters. These filters take advantage of the features that were already extracted in the previous layers. Therefore, the later in the network, the more complicated pattern the filter may discover. It is worth noting that the patterns recognised by the filter are local - the filters are smaller than the input and find patterns that are also smaller than the input, which may appear few times in each sample. 
 	  
-	  Pooling ***
+	  Pooling *** w skrócie bo jest wyże \ powinno byc
 	  
 	  % TODO: jakie jest zadanie konwolucji a jakie poolingu || konwolucja - spatial invariance, filters - feature extraction
-	  % pooling? uniezależnienie na translacje?
-	  % FIXME can the pattern be *discovered* by the filter? recognise?
-	  	  
+	  % pooling? uniezależnienie na translacje?	  	  
       
       \section{Learning Algorithm}
       % ten paragraf jest taki se, jakoś go ogarnąć, żeby był bardziej zrozumiały
@@ -296,7 +310,7 @@
        \section{Other properties of convolutional neural networks}
       
 	\subsection{Fast computation}
-	  Convolutional neural networks have properties that make the computation fast, namely \emph{parameter sharing} and \emph{sparse interactions}~\cite{BENGIOBOOK}. Both these properties are connected to using convolution. 
+	  Convolutional neural networks have properties that make the computation fast, namely \emph{parameter sharing} and \emph{sparse interactions}~\cite{Bengio}. Both these properties are connected to using convolution. 
 	  
 	  Parameter sharing means that the same weight is used multiple times during calculating the activation for a sample.
 	  Convolution matrices are much smaller than the input and are moved around it, so each time the same set of parameters is used to compute the output. Thanks to that, there is no need to have multiple sets of parameters that would discover the same feature in multiple places of the input - it is enough to have one filter that moves around that input. Because of that, the number of parameters is greatly reduced, and therefore the learning process speeds up. 
@@ -335,8 +349,7 @@
 	  \label{fig:data_original}
 	\end{figure} 
 	
-	%TODO:Values meaning !!! nie ma tego w publikacji!
-	The values constituting the dataset are discrete numbers in range 0 to 9. 0 means there is no interaction of specific kind. 1 and 2? The data was very sparse - more than 99\% of all values were zeros. 
+	The values constituting the dataset are discrete numbers in range 0 to 9. They describe how many interactions of a specific kind there is in a certain residue. The data was very sparse - more than 99\% of all values were zeros. 
 	
 	The dataset was stored in 3 files - each file contained samples of only one type: active, inactive, middle (not labled). Out of 5844 samples 2655 were labeled as active, 1945 was labeled as inactive and there were also 1244 unlabeled examples. 
 	
@@ -441,7 +454,7 @@
 	\subsubsection{Training the model}
 	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set. 
 	
-	In order to compute the optimal threshold, the receiver operating characteristic (ROC) procedure was used (see appendix \ref{appendiks} for more information). To measure the quality of the threshold, the Youden's J statistic~\cite{YOUDEN} (see appendix \ref{appendiks} for more information) was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score. 
+	In order to compute the optimal threshold, the receiver operating characteristic (ROC) procedure was used (see appendix \ref{appendiks} for more information). To measure the quality of the threshold the Youden's J statistic~\cite{YOUDEN} (see appendix \ref{appendiks} for more information) was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score. 
 	% TODO: why do we look for optimal threshold in such a silly way? why ROC? why youden's statistic?
 	% because someone said so
 	
@@ -524,8 +537,8 @@
       \end{enumerate}
 
       
-      % TODO, gdzieś to dac referencję do figure która jest póxniej, żeby była wiadomo że ten example będzie
-      	
+      Please, see the example below to understand this concept more clearly.
+            	
       Concluding, the update vector had zeros in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, then the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions. 
       
       \subsubsection{Example}
@@ -575,12 +588,9 @@
   \end{appendices}
       
   \begin{thebibliography}{99}
-    \bibitem{BENGIOBOOK}
-      Yoshua Bengio, Ian J. Goodfellow, Aaron Courville - \emph{Deep Learning}
-    \bibitem{2DSIFT} %FIXME jak się robi przypisy? w sensie formalnym, nie latexowym
-      Stefan Mordalski, Igor Podolak, Andrzej J. Bojarski - \emph{2D SIFt - a matrix of ligand-receptor interactions}
+  % TODO poprawic bibliografie
     \bibitem{DUTCH}
-      Joost van Doorn - \emph{Analysis of Deep Convolutional Neural Network Architectures}
+      J. van Doorn - \emph{Analysis of Deep Convolutional Neural Network Architectures}
     \bibitem{GLOROT_BENGIO}
       Yoshua Bengio, Antoine Bordes, Xavier Glorot - \emph{Deep Sparse Rectifier Neural Networks}
     \bibitem{YOUDEN}
@@ -639,7 +649,16 @@
       \bibitem{PIC:CONV_NET}
       website of Parallel Architecture Research Eindhoven
       \url{http://parse.ele.tue.nl/education/cluster2}
-    %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, numpy, scipy?, sklearn metrics for f12 score, latex, draw.io
+
+      \bibitem{URL:docked}
+      Ligand (biochemistry) - wikipedia article
+      \url{https://en.wikipedia.org/wiki/Ligand_%28biochemistry%29}
+     
+      \bibitem{URL:con_neur_INT}
+      Deep Learning - Convolutional Neural Networks (LeNet)
+      \url{http://deeplearning.net/tutorial/lenet.html}
+      
+      %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, numpy, scipy?, sklearn metrics for f12 score, latex, draw.io
     
   \end{thebibliography}
   

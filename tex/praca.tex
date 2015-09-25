@@ -2,15 +2,12 @@
 %ANG: jak się wstawia przecinki w zdaniach, synonimy do usually
 %ANG: kiedy przed ed podwaja się spółgłoskę?
 %ANG: synonyms do ``as stated above'' ?
-%TODO: liczba enterów wszędzie.
 
 \documentclass[a4paper,10pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools}
-%\usepackage{polski} %FIXME: może na końcu wywalić, chyba, ze ktoś z przypisów ma polskie nazwisko, o te nazwiska wcześniej zapytać
 \usepackage[T1]{fontenc}
 \usepackage{amsfonts}
-%\usepackage[sorting=nyt,style=apa]{biblatex}
 \usepackage{amsmath}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -69,31 +66,25 @@
   \tableofcontents
     
   \chapter{Introduction}
-      \igor{There is a constant need for novel drugs to be designed, either because new diseases are found, old drugs proove to be ineffective, there are patents on current drugs, \textit{etc}. This might be a lengthy and very costly process, even if high-throughput methods of \textit{in vitro} (using cultures of cells) screening are used~\cite{Breda2008}. An alternative is the \textit{virtual screening} (frequently called \textit{in silico} screening, \textit{i.e.} screening conducted within a computer chip). The approach is to check, using computer methods, if a small chemical molecule (a ligand) is \textit{active} with a given protein, \textit{i.e.} it either activates or prohibits its functioning, that is connected with some disease. Molecules found to be particularly likely to be active are then passed to wet-laboratory tests. This forms a pipeline filtering out most of possible molecules (the chemical space size is in the range of $10^{60}$!) leaving just a few. In usual applications starting from a million of molecules, the virtual screening (together with some toxicity checking and drug-likeliness expert's methods) ends up in less than 10 molecules to test in a laboratory (\textit{e.g.}~\cite{Pethukov2006}).
-      }
+      There is a constant need for novel drugs to be designed, either because new diseases are found, old drugs proove to be ineffective, there are patents on current drugs, \textit{etc}. This might be a lengthy and very costly process, even if high-throughput methods of \textit{in vitro} (using cultures of cells) screening are used~\cite{Breda2008}. An alternative is the \textit{virtual screening} (frequently called \textit{in silico} screening, \textit{i.e.} screening conducted within a computer chip). The approach is to check, using computer methods, if a small chemical molecule (a ligand) is \textit{active} with a given protein, \textit{i.e.} it either activates or prohibits its functioning, that is connected with some disease. Molecules found to be particularly likely to be active are then passed to wet-laboratory tests. This forms a pipeline filtering out most of possible molecules (the chemical space size is in the range of $10^{60}$!) leaving just a few. In usual applications starting from a million of molecules, the virtual screening (together with some toxicity checking and drug-likeliness expert's methods) ends up in less than 10 molecules to test in a laboratory (\textit{e.g.}~\cite{Pethukov2006}).
 
-      \igor{
 	  The virtual screening might be done in, basically, two ways~\cite{Geppert2010,Varnek2012}
 	  \begin{itemize}
       \item target- (or structure- or protein-) based screening when the structure of a protein is known and methods of \textit{docking} might be used to predict the activity,
       \item ligand-based screening if protein structure is \textit{not} known, but there is a knowledge about some molecules that are active; then the task is to find molecules similar to those active (following a Johnson-Maggiora rule that similar compounds should have similar properties~\cite{Varnek2012}).
       \end{itemize}
-      }
   
     \section{The goal of this paper}
     
-     Virtual screening involves checking great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would \todo[inline]{classify ligands as active or inactive. || czy na pewno?} and we proposed two approaches to tackle this problem. Moreover, we present new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
+     Virtual screening involves checking great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would and we proposed two approaches to tackle this problem. Moreover, we present new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
     
     \section{related work, że to ma oparcie w czymś i o czym jest praca}
     sth sth % TODO
 
-    \section{Problem}
-    \igor{
-    The task to be solved here is a kind of target-based virtual screening. Protein-molecule interactions are given together with information which of the pairs result in activation\todo{przepisać zdanie}. The data is obtained with a docking approach which results in a score function values. The machine learning task is to predict molecules which \todo[inline]{which molecules} activate (or prohibit) the protein.
-    }
+    \section{Problem}\label{sec:PROBLEM}
+    The task to be solved here is a kind of target-based virtual screening. Protein-molecule interactions are given along with labels describing which of these pairs result in activation. The data is obtained with a docking approach.
     
-    
-    One of the problems in drug design is telling whether \emph{protein} and \emph{compound} will react and produce a new complex, called \emph{ligand}. If the ligand indeed will be created, it is important to know whether this new complex will be \emph{active} or \emph{inactive}. 
+    First the molecules are docked in a protein and then the molecules' pharmacophore features are calculated. Based on the docking adjustment the score is calculated for each molecule. If the score is above a certain threshold, the complex is classified as active. There is also another threshold, below which the complex is classified as inactive. If the score for a molecule is in between these two thresholds, the molecule is classified as middle (or unclassified). The machine learning task is to predict which molecules activate (or prohibit) the protein.
     
     \begin{figure}[h!] % FIXME cytowanie śmierdzi
 	  \centering
@@ -104,33 +95,35 @@
     
     \emph{Proteins} are molecules built from \emph{amino acid residues} forming a single \emph{chain}. Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. 
     
-    Our goal was to build a model that would classify the ligand as \emph{active} or \emph{inactive} based on its \emph{fingerprint}. Fingerprints are a widely used (?) representation of molecules. There are many types of fingerprint designed. They vary in length and the type of information they carry. Some of them are designed for specific tasks. (citation needed). Conventionally, fingerprints represent a molecule as a vector. Each element of this vector describes whether a specific structure is present in the molecule or not, e.g. whether the molecule has a hydrophobic group or not. 
-    
-     % TODO może tabelka ze spisem fingerprintów
-    
+    Our goal was to build a model that would classify the complex as \emph{active} or \emph{inactive} based on its \emph{fingerprint}. Fingerprints are a widely used representation of molecules. There are many types of fingerprints designed. They vary in length and the type of information they carry. Some of them are designed for specific tasks. (citation needed). Conventionally, fingerprints represent a molecule as a vector. Each element of this vector describes whether a specific structure is present in the molecule or not, e.g. whether the molecule has a hydrophobic group or not. 
+        
     Vectors are commonly used in machine learning as data representation because they can be stored in matrices which allows easy calculations. Even though representing a protein as a vector means loosing a lot of information about its topology, it enables effective computation and still provides us with reasonable results. 
     
     As already said, there are many different fingerprints designed. They vary in length and the features included. In this paper we used 2D-SIFt~\cite{2DSIFT} fingerprints. We used convolutional neural networks because they are eligible to work with data which topological order carries information.
      
      
-    \igor{
-    \section{2D-SIFt fingerprints} % todo przerobić tę sekcję stylistycznie, bo tego się nie da czytać
-    In this work the so called 2D-SIFt fingerprints are used~\cite{Mordalski2011, cos-jeszcze}, which are a composition of Structural Interaction Fingerprints (SIFt)~\cite{Singh2006} together with the pharmacophore model. SIFts code information from the view of the receptor conveying \textit{how} a molecule interacts with the protein, not \textit{what} interacts. A single block codes information in a nine element long binary vector
+    \section{2D-SIFt fingerprints}
+    In this work the 2D-SIFt fingerprints are used~\cite{Mordalski2011, cos-jeszcze}. They are a composition of Structural Interaction Fingerprints (SIFt)~\cite{Singh2006} together with the pharmacophore model. SIFts code information from the point of view of the receptor conveying \textit{how} a molecule interacts with the protein, not \textit{what} interacts. A single block codes information in a nine element long binary vector:
     \begin{align*}
     [\text{any contact},&\text{backbone},\text{sidechain},\text{polar},\text{hydrophobic}, \\
     &\text{H-bond acceptor},\text{H-bond donor},\text{aromatic},\text{charged}
     ].
     \end{align*}
-    These are informations about the single points of contact between the target protein and the molecule. Additionaly, there is a pharmacophore model of the molecule added. A pharmacophore is a\todo{opis farmakoforów}. Each pharmacophore point is described using a six element vector
+    These are informations about the single points of contact between the target protein and the molecule.
+    
+    Additionaly, there is a pharmacophore model of the molecule added. A pharmacophore is a set of sferic and electronic features that is necessary to ensure the optimal supramolecular binding with a protein (or another specific biological target structure) and to trigger (or to block) its biological response~\ref{GLOSSARY}.
+    
+    One can see pharmacophore features as a way to perform the virtual screening in a half way between protein- and ligand-based approach. The docking needs to be performed for plenty but not all of the molecules. At first, the pharmacophore features of the docked molecules are computed. Afterwards, a big data set of molecules with known pharmacophore features can be screened in order to find molecules most similar to those which were docked and classified as active.
+    
+    In 2D-SIFt each pharmacophore point is described using a six element vector:
     \begin{align*}
     [\text{H-bond donor},&\text{H-bond acceptor},\text{hydrophobic}, \\
     &\text{negatively charged},\text{positively charged},\text{aromatic}].
     \end{align*}
-    }
 
-    \igor{
-    These two models combined result in a $6\times{}9$ matrix for each possible point of contact. The model shall now be called 2D-SIFts~\cite{Mordalski2011}. For a given protein and given molecule this results in a string of $6\times{}9$ arrays glued together. We can say, that this representation resembles and image, on which patterns shall be looked after. This explains why a convolutional network is used in this work.
-	}
+
+
+    These two models combined result in a $6\times{}9$ matrix for each possible point of contact. The model shall now be called 2D-SIFt~\cite{Mordalski2011}. For a given protein and given molecule this results in a string of $n$ of $6\times{}9$ arrays glued together, where $n$ describes the number of residues of a given protein. We can say, that this representation resembles and image, on which patterns shall be looked after. This explains why a convolutional network is used in this work.
       
    
     \section{How this paper is organised}
@@ -158,9 +151,7 @@
       will be presented as well as the learning algorithm. 
       
       \section{Motivation}
-	Convolutional neural networks take advantage of data which topological order carries some information. Therefore, CNNs are often applied to image recognition, video analysis and natural language processing problems.  %FIXME: citation needed!
-	These attempts *are often succesful/often give better results than (any other) models*.  %FIXME: citation needed
-	Since the the topological order of the data we are working on carries information (due to how the proteins are built), we expect that using convolutional neural networks might bring good results. 
+	Convolutional neural networks take advantage of data which topological order carries some information. Therefore, CNNs are often applied to image recognition or natural language processing problems and achieve state-of-the-art results~\ref{ImageNet, CONV_NLP}. Since the the topological order of the data we are working on carries information (due to how the proteins are built), we expect that using convolutional neural networks might bring good results. 
 	
       \section{Computation Flow}
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection it will be described how the data is processed within the convolutional subnetwork. Not much attention will be put to classifying subnetwork as there is a wide variety of possible approaches. 
@@ -260,11 +251,6 @@
 	   \item the sigmoid activation function $\sigma(x) = \frac{1}{1 + e^{-x}}$
 	   \item the hyperbolic tangent activation function $tanh(x) = \frac{e^{2x} - 1}{e^{2x} + 1}$
 	   \item the rectifier linear function~\cite{GLOROT_BENGIO} $rect(x) = max(0,x)$
-	   \item the maxout activation function
-	    \begin{center}
-	      $maxout_i(x) = \max_{j \in [1, k]}z_{ij}$ 
-	      $z_{ij}=x^TW..._{ij} + b_{ij} $ % TODO: wyjaśnić czym są te ijoty!
-	    \end{center}
 	  \end{itemize}
 
 	
@@ -283,47 +269,39 @@
 	    \includegraphics[scale=0.65]{max_pooling.png}
 	    \caption{The result of applying the max pooling of size $2\times2$ with stride $1\times1$ to the input. Yellow square is the first pooling window, blue square is the second one. The values of the output are coloured accordingly.}
 	    \label{fig:max_pooling}
-	  \end{figure} 
+	  \end{figure}
+	  
+	  Thanks to pooling the network is not affected by small changes of the patterns location. If only the pattern location is not in another window, the output of the network will not change at all. And even if the location of pattern has changed enough for it to be in another window, then the pooling will make this difference in distance smaller by being applied to submatrices not to single values.
   
 	  When pooling is applied on the edges of the input same problems might be encountered as with the convolutions, namely some values will be underrepresented. It is worth noting that the output of the pooling is off smaller size than the input. To address these problems same techniques might be applied. 
-	  
-	  % TODO cel poolingu - uniezależnienie się na translacje, bengiobook o tym pisze
-	  
+	  	  
 	\subsection{Summary}
 	  In the convolutional subnetwork each layer applies three operations to the input, namely: convolution, which provides us with spatial invariance, activation function and pooling. As a result of this processing, the features are extracted from the data. These features are then used by the classifying subnetwork. 
 	  
-	  Convolution provides us with spatial invariance and is responsible for extracting features. Each layer of the convolutional part of the network has its own filters. These filters take advantage of the features that were already extracted in the previous layers. Therefore, the later in the network, the more complicated pattern the filter may discover. It is worth noting that the patterns recognised by the filter are local - the filters are smaller than the input and find patterns that are also smaller than the input, which may appear few times in each sample. 
+	  Convolution provides us with spatial invariance and is responsible for extracting features. Each layer of the convolutional part of the network has its own filters. These filters take advantage of the features that were already extracted in the previous layers. Therefore, the later in the network, the more complicated pattern the filter may recognise. It is worth noting that the patterns recognised by the filter are local - the filters are smaller than the input and find patterns that are also smaller than the input, which may appear few times in each sample. 
 	  
-	  Pooling *** w skrócie bo jest wyże \ powinno byc
-	  
-	  % TODO: jakie jest zadanie konwolucji a jakie poolingu || konwolucja - spatial invariance, filters - feature extraction
-	  % pooling? uniezależnienie na translacje?	  	  
+	  Pooling provides us with resistance to small changes in patterns location.
+  	  
       
       \section{Learning Algorithm}
-      % ten paragraf jest taki se, jakoś go ogarnąć, żeby był bardziej zrozumiały
-      Even though convolution operation and pooling might seem to introduce a lot of changes, the whole procedure remains a supervised learning problem and therefore, the classical algorithms for learning neural networks, such as stochastic gradient decent, might be used.
-      %  TODO jakis ogólny paragraf, że back i forward propagation
+      One might assume that, due to using convolution and pooling, the learning algorithm will also need to undergo a lot of changes. Luckily, it is enough to compute the partial derivatives for both these functions and include them in the learning algorithm which then will be ready to use.
       
-       \section{Other properties of convolutional neural networks}
+      The learning algorithm proceeds the same way as any other learning algorithm for neural networks. At first the forward propagation is used to obtain the activation of the network for the data samples. Knowing the activation values it is possible to calculate the error in the activation function. This error is then used during backpropagation, when the updates to the network are calculated based on the error and the derivatives of the functions used for calculating the activation. The whole procedure is repeated until the performance of the network is satisfactory - the error in activation function in acceptably small.
       
-	\subsection{Fast computation}
-	  Convolutional neural networks have properties that make the computation fast, namely \emph{parameter sharing} and \emph{sparse interactions}~\cite{Bengio}. Both these properties are connected to using convolution. 
+       \section{Computation properties of convolutional neural networks}
+      	  Convolutional neural networks have properties that make the computation fast, namely \emph{parameter sharing} and \emph{sparse interactions}~\cite{Bengio}. Both these properties are connected to using convolution. 
 	  
 	  Parameter sharing means that the same weight is used multiple times during calculating the activation for a sample.
 	  Convolution matrices are much smaller than the input and are moved around it, so each time the same set of parameters is used to compute the output. Thanks to that, there is no need to have multiple sets of parameters that would discover the same feature in multiple places of the input - it is enough to have one filter that moves around that input. Because of that, the number of parameters is greatly reduced, and therefore the learning process speeds up. 
 	  
-	  In a typical neural network each element of input has influence on each element of the output which means that the interactions are dense. In convolutional neural networks the situation is different - the filters are much smaller than the input and discover local patterns, what leads to sparse interactions. This property again causes a reduction in the number of parameters in the model and makes the learning process much faster. 	
-	  
-	\subsection{equivariant representations} %TODO: zmienić poniższe notatki w tekst
-	  Equivariance is another interesting property caused by convolution. Equivariance means that if the input changes than output changes the same way. Mathematically it can be written as: $f(g(x)) = g(f(x))$. The intuition that stands behind it is: detecting feature in a particuler place - feature elsewhere - we find it elsewhere. To what types of transformation is convolution equivariant and to which transformations it isn`t? 
+	  In a typical neural network each element of input has influence on each element of the output which means that the interactions are dense. In convolutional neural networks the situation is different - the filters are much smaller than the input and discover local patterns, what leads to sparse interactions. This property again causes a reduction in the number of parameters in the model and makes the learning process much faster.
 	
 	
   \chapter{The Model}\label{chap:OUR_MODEL}
+     In this chapter we will present the approach that have been used to tackle the problem of classification the provided data. First, the data itself will be described in detail. Afterwards, we will present both approach that we investigated during our experiments. The detailed description of the experiments will be given.
       
       \section{Goal}
       The goal of this work was to build a model that will well perform the task of classification of the provided data. To complete this task multiple obstacles had to be overcomed, i.e. small data size, missing labels, a big number of hyperparameters that had to be adjusted. 
-     
-	 
       
       \section{Data}\label{sec:OUR_DATA}
 	The dataset describes interactions between a single protein and multiple ligands. One might choose to see the dataset as a four dimensional matrix with axes dimensions described by: the number of ligands, length of the protein, 6 standard pharmacophore features of ligand and 9 types of interactions with amino acid\cite{2DSIFT}. One data sample can be seen as a 3-dimensional matrix that describes how a protein bounds with a specific ligand. The 3 dimensions are: the length of the protein (number of its residues), 6 standard pharmacophore features and 9 types of interactions with amino acid. A single data sample is presented on figure \ref{fig:single_data_sample2}. 
@@ -349,9 +327,6 @@
 	The values constituting the dataset are discrete numbers in range 0 to 9. They describe how many interactions of a specific kind there is in a certain residue. The data was very sparse - more than 99\% of all values were zeros. 
 	
 	The dataset was stored in 3 files - each file contained samples of only one type: active, inactive, middle (not labled). Out of 5844 samples 2655 were labeled as active, 1945 was labeled as inactive and there were also 1244 unlabeled examples. 
-	
-	%TODO: jaki model wygenerował dane, co to znaczy, że są middle, dlaczego tak jest (jakieś farmak
-
 	
 	%2RH1_middle_2dfp.dat
 	%    ||   0:   25795857.0   ||   1:   126528.0   ||   2:   58546.0  ||    3:   21098.0   ||   4:    6490.0   ||
@@ -399,9 +374,7 @@
       \section{The Architecture}
       In this section we will describe the type of architecture which we used for experiments. All the models we have trained were convolutional neural networks with one or two convolutional rectified linear layers (those are layers that use as activation function the rectifier linear function, see \ref{sec:ACTIVATION_FUNCTIONS}). Each layer had 16 or 32 output channels that correspond to number of filters created in each layer. The number of layers have been chosen in such a way that the learning process will not take too much time and the data size will not be reduced too much. Rectifier activation function was used because of its eligible properties~\cite{DUTCH}.  
    
-      The convolution window's values were chosen in a way that would enable the model to find filters catching correlation between same types of interaction in two adjacent residues, what was described in section \ref{sec:data_processing}. 
-      
-      The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$.The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$. 
+      The possible convolution window's sizes were chosen in a way that would enable the model to find filters catching correlation between same types of interaction in two adjacent residues, what was described in section \ref{sec:data_processing}. The convolution windows were of size $(width, height) \in \{6, 8, 10, 12\} \times \{4, 5, 6, 7, 8\}$.The convolution window's strides were of size $(width, height) \in \{2, 4, 6\} \times \{2, 3\}$. 
       
       If both convolution window size and stride had big values in the first layer, it could happen that the data size in the second layer would be too small to satisfy the conditions above. In such cases the convolution window's size and stride in the second layer were reduced in such a way that the convolution window's size would always be smaller than the data size. Moreover, the convolution window's stride would always be smaller than the convolution window and, if only it was possible (i.e. all dimensions of the convolution window were smaller then the corresponding dimensions of the data), small enough to enable existence of at least two ``windows'' in each dimension. 
       
@@ -449,11 +422,10 @@
 	\end{algorithm}
 	
 	\subsubsection{Training the model}
-	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set. 
+	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set. % TODO tutaj powołac sie na to, ze nalezy tak robic
 	
 	In order to compute the optimal threshold, the receiver operating characteristic (ROC) procedure was used (see appendix \ref{appendiks} for more information). To measure the quality of the threshold the Youden's J statistic~\cite{YOUDEN} (see appendix \ref{appendiks} for more information) was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score. 
-	% TODO: why do we look for optimal threshold in such a silly way? why ROC? why youden's statistic?
-	% because someone said so
+	
 	
 	The details of the learning algorithm are covered in section \ref{sec:learning_algorithm}.	
 	
@@ -467,10 +439,10 @@
       \subsubsection{Example:}
       If there were the following samples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact]. 
       
-      For this approach the stochastic gradient descent algorithm included in pylearn2 package (include version) was used. 
+      For this approach the stochastic gradient descent algorithm included in Pylearn2 Python library was used. 
 	  
       \subsection{Fancy Approach}
-      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in pylearn2 (version here) was used as a base. Major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model only and had no impact on the classification part. The pseudo-code of this algorithm can be found below as Algorithm 2. 
+      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in Pylearn2 was used as a base. Major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model only and had no impact on the classification part. The pseudo-code of this algorithm can be found below as Algorithm 2. 
       
       \begin{algorithm}
       \caption{Learning}\label{euclid}
@@ -556,22 +528,29 @@
     \section{napisać co się udało}
   % TODO napisać też co się udało
     \section{Future work}
-      There are still many ways to improve the proposed method. 
+      There are still many ways to improve and further investigate the proposed method.
       
-      It is important to investigate if representing the data in the memory in a 4-dimensional instead of 3-dimensional form can improve the performance of the model (see \ref{sec:OUR_DATA} for details). Using another form of representing the data in the memory might lead to discovering other patterns which can be more relevant for this data. 
+      All experiments should be conducted on a bigger set of data which is important for relevance of the results.
       
-      Moreover, new combination functions might be tested, e. g. ...  % FIXME no właśnie, jakie?
+      The emphasis should be put on investigating how the combination functions affect the networks ability to learn. There is a need to further look for new possible combination functions.
       
-      % FIXME reference to a non existing paragraph
-      Further, it is interesting to explore new methods of finding the optimal threshold for classification. In particular, we would like to investigate the approach which would enable finding two thresholds. Note that the model that created the dataset also used two thresholds so the new approach will lead to a greater resemblance (see the paragraph that doesn't yet exist for more information). 
+      As the experiments have shown, there is a need to enlarge the set of architectures that are being explored - the number of possible convolutional layers should be increased.
       
-      The two-threshold model will leave some samples unlabeled. It is important to explore what error functions can be used in such approach. 
+      Further, it is interesting to explore new methods of finding the optimal threshold for classification. In particular, we would like to investigate the approach which would enable finding two thresholds. Note that the model that created the dataset also used two thresholds so the new approach will lead to a greater resemblance (see section \ref{sec:PROBLEM} for more information). 
+      
+      The two-threshold model will leave some samples unlabeled. It is of vital importance to explore what error functions can be used in such approach.
+
+      Moreover, tt is important to investigate if representing the data in the memory in a 4-dimensional instead of 3-dimensional form can improve the performance of the model (see \ref{sec:OUR_DATA} for details). Using another form of representing the data in the memory might lead to discovering other patterns which can be more relevant for this data.
       
       During the experiments we realised that creating three copies of the data during preprocessing (see \ref{sec:OUR_DATA} for details) might be redundant. We want to inspect if having only two copies would cause a big difference in performance. Reducing the size of data will also lead to shorter time of learning pahse.
       
+      It very important to note, that this work is only the first attempt to aprroach this problem. In reality, the goal is not only to classify molecules as active or inactive but also provide a ranking of those which are most likely to be active. This is because conducting wet-laboratory tests is very expensive and it is desirable to choose only few molecules to test but such that will likely give expected results. Testing all the molecules which are classified as active is not possible. In the future a model that provides not only classification but also ranking shall be proposed.
+      
+      Since the docking is a stochastic process that is not fully repetitive, it is a common procedure to dock the same molecule multiple times and each time calculate score for this docking. In the data provided each pair protein-molecule was provided only once with its class (active, inactive, middle). In the future it is recommended to use a dataset in which all docking trials are included with the score for each (not the class).
+      
       Finally, there exist some techniques for deep and convolutional neural networks that might further improve the performance of our model, i.e dropout and dropconnect methods~\cite{DUTCH}.
       
-      bedroc, enrichment factor, bo problem farmakologiczny jest inny, zatem chcemy w przyszłości zrobić ranking nie klasyfikację
+      bedroc, enrichment factor, bo problem farmakologiczny jest inny
 
    \begin{appendices}
     \chapter{Dictionary}\label{appendiks}
@@ -585,18 +564,36 @@
   \end{appendices}
       
   \begin{thebibliography}{99}
-  % TODO poprawic bibliografie
     \bibitem{DUTCH}
-      J. van Doorn - \emph{Analysis of Deep Convolutional Neural Network Architectures}
+      J.~van Doorn,
+      \emph{Analysis of Deep Convolutional Neural Network Architectures},
+      21th Twente Student Conference on IT,
+      (2014).
+      
     \bibitem{GLOROT_BENGIO}
-      Yoshua Bengio, Antoine Bordes, Xavier Glorot - \emph{Deep Sparse Rectifier Neural Networks}
+      Y.~Bengio, A.~Bordes, X.~Glorot,
+      \emph{Deep Sparse Rectifier Neural Networks},
+      International Conference on Artificial Intelligence and Statistics,
+      (2011).
+      
     \bibitem{YOUDEN}
-     William John Youden - \emph{Index for rating diagnostic tests}
+     W.~J.~Youden,
+     \emph{Index for rating diagnostic tests},
+     Cancer, 3.1, 32--35,
+     (1950).
+     
     \bibitem{HYPEROPT}
-      James Bergstra, Dan Yamins, David D. Cox - \emph{Hyperopt: A Python Library for Optimizing the Hyperparameters of Machine Learning Algorithms}
+     J.~Bergstra, D.~Yamins, D.~D.~Cox,
+     \emph{Hyperopt: A Python Library for Optimizing the Hyperparameters of Machine Learning Algorithms},
+     Proceedings of the 12th Python in Science Conference, 13--20,
+     (2013).
+      
     \bibitem{ZEILER}
-       M. D. Zeiler, R. Fergus - \emph{Stochastic pooling for regularization of deep convolutional neural networks}
-       
+      M.~D.~Zeiler, R.~Fergus,
+      \emph{Stochastic pooling for regularization of deep convolutional neural networks},
+      arXiv preprint arXiv:1301.3557,
+      (2013).
+      
      \bibitem{Bengio}
       Y.~Bengio, I.~Goodfellow, A.~Courville,
       \textit{Deep Learning},
@@ -643,46 +640,49 @@
       Chemical Biology Drug Design, 67, 5--12,
       (2006).
       
+      \bibitem{ImageNet}
+      A.~Krizhevsky, I.~Sutskever, G.~E.~Hinton
+      \textit{ImageNet Classification with Deep Convolutional Neural Networks},
+      Advances in Neural Information Processing Systems 25,
+      (2012).
+
+      \bibitem{CONV_NLP}
+      R.~Collobert, J.~Weston
+      \textit{A Unified Architecture for Natural Language Processing: Deep Neural Networks with Multitask Learning},
+      Proceedings of the 25th International Conference on Machine Learning,
+      (2008).
+      
+      \bibitem{GLOSSARY}
+      C.~G.~Wermuth, C.~R.~Ganellin, P.~Lindberg, L.~A.~Mitscher,
+      \textit{Glossary of terms used in medicinal chemistry},
+      Pure and Applied Chemistry, Volume 70, Issue 5, 1129-–1143,
+      (1998).
+      
       \bibitem{CONV_NET}
-      website of Parallel Architecture Research Eindhoven
+      \textit{website of Parallel Architecture Research Eindhoven},
       \url{http://parse.ele.tue.nl/education/cluster2}
 
       \bibitem{docked}
-      Ligand (biochemistry) - wikipedia article
+      \textit{Ligand (biochemistry) - wikipedia article},
       \url{https://en.wikipedia.org/wiki/Ligand_%28biochemistry%29}
      
       \bibitem{con_neur_INT}
-      Deep Learning - Convolutional Neural Networks (LeNet)
+      \textit{Deep Learning - Convolutional Neural Networks (LeNet)},
       \url{http://deeplearning.net/tutorial/lenet.html}
+
       
-      %TODO: pylearn2, Fingerprints, Bengio/... Deep NNs?, numpy, scipy?, sklearn metrics for f12 score, latex, draw.io
+      \bibitem{con_neur_INT}
+      - IJ.~Goodfellow, D.~Warde-Farley, P.~Lamblin, V.~Dumoulin, M.~Mirza, R.~Pascanu, J.~Bergstra, F.~Bastien, Y.~Bengio,
+      \textit{"Pylearn2: a machine learning research library"},
+     arXiv preprint arXiv:1308.4214,
+     (2013)
+  
+
+      
+      %TODO: numpy, scipy?, sklearn metrics for f12 score, latex, draw.io
     
   \end{thebibliography}
   
-
-    
-  \chapter{Irrelevant} %TODO: wywalić na końcu
-    \section{zero-pad methods in detail}
-      The easiest way is to let these values stay underrepresented (in MATLAB *citation?* this methodology is called valid), another one is to enlarge the input matrix by adding zeros *at the edges* - this is called zero-pad. One can either add enough zeros for each element of the original matrix to be convoluted exactly the same number of times (in MATLAB *citation?* this methodology is called full) or take only enough zeros for the output matrix to have the same size as the input matrix (in MATLAB *citation?* this methodology is called same). 
-	  
-      \{obrazek\} ilustrujący te przykłady  
-	  
-      One can question *legitimacy* of such approach. Adding zeros invites new information into the matrix and might cause additional noise. Instead of adding zeros one might try to change a matrix into torus or instead of zeros use the values that already are present in the original matrix. The added values might be symmetrical *lustrzane odbicie.* 
-	  
-      \{obrazek\} ilustrujący te przykłady 
-      
-  
-	\subsubsection{The problems with a classical backpropagation} %TODO: notatki w tekst
-	  diminishing gradient flow, niedouczanie się, przeuczanie się, obczaić co o tym mówił Larochelle, on to chyba jednak mówił o głębokich. Wtedy to i tak napisać i przerzucić do głębokich. 
-	
-	\subsubsection{Diminishing gradient flow} %TODO: zmienić poniższe notatki w tekst, sprawdzić czy w CNNach tez przypatkiem nie ma tego probloemu, bo w głębokich na pewno jest
-	  co to jest, skąd się bierze, można się wesprzeć wykładami Larochelle, on poleca dużo paperów zawsze. 
-	  
-	\subsubsection{Backpropagation} %TODO: zmienić poniższe notatki w tekst
-	  See (Goodfellow, 2010) from Bengio 
-	
-	
-
     
 \end{document}          
 

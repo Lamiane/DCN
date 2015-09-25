@@ -141,6 +141,10 @@ class CrossValidator(object):
                         f1score = 0
                         if precision+recall != 0:
                             f1score = 2*precision*recall/(precision+recall)
+                        print 'tp:', tp
+                        print 'fn:', fn
+                        print 'fp:', fp
+                        print 'tn:', tn
                         print 'precision:', precision
                         print "recall:", recall
                         print "f1score", f1score

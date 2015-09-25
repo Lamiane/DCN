@@ -52,7 +52,7 @@
   \begin{flushright}
     Opiekun pracy magisterskiej:
     
-    Prof. dr hab. Igor Podolak 
+    dr hab. Igor Podolak 
   \end{flushright}
 
   \begin{bottompar}
@@ -69,7 +69,7 @@
   \tableofcontents
     
   \chapter{Introduction}
-      \igor{There is a constant need for novel drugs to be designed, either because new diseases are found, old drugs proove to be ineffective, there are patents on current drugs, \textit{etc}. This might be a lengthy and very costly process, even if high-throughput methods of \textit{in vitro} (using cultures of cells) screening are used~\cite{Breda2008}. An alternative is the \textit{virtual screening} (frequently called \textit{in silico} screening, \textit{i.e.} screening conducted within a computer chip). The approach is to check, using computer methods, if a small chemical molecule (a ligand) is \textit{active} with a given protein, \textit{i.e.} it either activates or prohibits its functioning, that is connected with some disease. Molecules found to be particularly likely to be active are then passed to wet-laboratory tests. This forms a pipeline filtering out most of possible molecules (the chemical space size is in the range of $2^{60}$!) leaving just a few. In usual applications starting from a million of molecules, the visrtual screening (together with some toxicity checking and drug-likeliness expert's methods) ands up in less than 10 to test in a laboratory (\textit{e.g.}~\cite{Pethukov2006}).
+      \igor{There is a constant need for novel drugs to be designed, either because new diseases are found, old drugs proove to be ineffective, there are patents on current drugs, \textit{etc}. This might be a lengthy and very costly process, even if high-throughput methods of \textit{in vitro} (using cultures of cells) screening are used~\cite{Breda2008}. An alternative is the \textit{virtual screening} (frequently called \textit{in silico} screening, \textit{i.e.} screening conducted within a computer chip). The approach is to check, using computer methods, if a small chemical molecule (a ligand) is \textit{active} with a given protein, \textit{i.e.} it either activates or prohibits its functioning, that is connected with some disease. Molecules found to be particularly likely to be active are then passed to wet-laboratory tests. This forms a pipeline filtering out most of possible molecules (the chemical space size is in the range of $10^{60}$!) leaving just a few. In usual applications starting from a million of molecules, the virtual screening (together with some toxicity checking and drug-likeliness expert's methods) ends up in less than 10 molecules to test in a laboratory (\textit{e.g.}~\cite{Pethukov2006}).
       }
 
       \igor{
@@ -82,14 +82,14 @@
   
     \section{The goal of this paper}
     
-     Virtual screening is a part of drug design. It involves screening great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would classify ligands as active or inactive. Two approaches have been proposed. Moreover, we show new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
+     Virtual screening involves checking great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would \todo[inline]{classify ligands as active or inactive. || czy na pewno?} and we proposed two approaches to tackle this problem. Moreover, we present new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
     
     \section{related work, że to ma oparcie w czymś i o czym jest praca}
     sth sth % TODO
 
     \section{Problem}
     \igor{
-    The task to be solved here is a kind of target-based virtual screening. Protein-molecule interactions are given together with information which of the pairs result in activation\todo{przepisać zdanie}. The data are obtained with a docking approach which results in a score function values. The machine learning task is to predict molecules which activate (or prohibit) the protein.
+    The task to be solved here is a kind of target-based virtual screening. Protein-molecule interactions are given together with information which of the pairs result in activation\todo{przepisać zdanie}. The data is obtained with a docking approach which results in a score function values. The machine learning task is to predict molecules which \todo[inline]{which molecules} activate (or prohibit) the protein.
     }
     
     
@@ -98,7 +98,7 @@
     \begin{figure}[h!] % FIXME cytowanie śmierdzi
 	  \centering
 	  \includegraphics[scale=0.2]{docked.png}
-	  \caption{A molecule (blue) with a docked ligand(orange)~\ref{URL:docked}.}
+	  \caption{A molecule (blue) with a docked ligand(orange)~\ref{docked}.}
 	  \label{PIC:docked}
     \end{figure} 
     
@@ -121,7 +121,7 @@
     &\text{H-bond acceptor},\text{H-bond donor},\text{aromatic},\text{charged}
     ].
     \end{align*}
-    These are informations about the single points of contact between the target protein and the molecule. Additionaly there is a pharmacophore model of the molecule added. A pharmacophore is a\todo{opis farmakoforów}. Each pharmacophore point is described using a six element vector
+    These are informations about the single points of contact between the target protein and the molecule. Additionaly, there is a pharmacophore model of the molecule added. A pharmacophore is a\todo{opis farmakoforów}. Each pharmacophore point is described using a six element vector
     \begin{align*}
     [\text{H-bond donor},&\text{H-bond acceptor},\text{hydrophobic}, \\
     &\text{negatively charged},\text{positively charged},\text{aromatic}].
@@ -129,7 +129,7 @@
     }
 
     \igor{
-    These two models added result in a $6\times{}9$ matrix for each possible point of contact. The model shall now be called 2D-SIFts~\cite{Mordalski2011}. For a given protein and given molecule this results in a string of $6\times{}9$ arrays glued together. We can say, that this representation resembles and image, where patterns shall be looked after. This explains why a convolutional network is used in this work.
+    These two models combined result in a $6\times{}9$ matrix for each possible point of contact. The model shall now be called 2D-SIFts~\cite{Mordalski2011}. For a given protein and given molecule this results in a string of $6\times{}9$ arrays glued together. We can say, that this representation resembles and image, on which patterns shall be looked after. This explains why a convolutional network is used in this work.
 	}
       
    
@@ -150,7 +150,7 @@
      \begin{figure}[h!] % FIXME coś odnośniki nie działają
 	  \centering
 	  \includegraphics[width=\textwidth]{CNNArchitecture.jpg}
-	  \caption{An example of convolutional neural network~\ref{PIC:CONV_NET}.}
+	  \caption{An example of convolutional neural network~\ref{ONV_NET}.}
 	  \label{fig:con_network}
 	\end{figure} 
       
@@ -184,12 +184,9 @@
 	\begin{figure}[h!] %FIXME znów cytowanie śmierdzi
 	  \centering
 	  \includegraphics[width=\textwidth]{mylenet.png}
-	  \caption{An example of a whole neural network with stages of convolution and polling marked~\ref{URL:con_neur_INT}.}
+	  \caption{An example of a whole neural network with stages of convolution and polling marked~\ref{con_neur_INT}.}
 	  \label{fig:con_neur_INT}
 	\end{figure} 
-	
-	% TODO dorzucić drugi obrazek z sieci
-	  
 	One might also imagine three consecutive seperate layers: a convolutional layer, a classical layer that applies activation function and finally a pooling layer. 
 	
 	Each of these operations will be described in details in the following subsections. 
@@ -646,15 +643,15 @@
       Chemical Biology Drug Design, 67, 5--12,
       (2006).
       
-      \bibitem{PIC:CONV_NET}
+      \bibitem{CONV_NET}
       website of Parallel Architecture Research Eindhoven
       \url{http://parse.ele.tue.nl/education/cluster2}
 
-      \bibitem{URL:docked}
+      \bibitem{docked}
       Ligand (biochemistry) - wikipedia article
       \url{https://en.wikipedia.org/wiki/Ligand_%28biochemistry%29}
      
-      \bibitem{URL:con_neur_INT}
+      \bibitem{con_neur_INT}
       Deep Learning - Convolutional Neural Networks (LeNet)
       \url{http://deeplearning.net/tutorial/lenet.html}
       

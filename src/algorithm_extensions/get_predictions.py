@@ -39,4 +39,3 @@ class Predictor(object):
             pred_vec.append(y)
 
         return pred_vec
-

@@ -52,6 +52,8 @@ def turn_into_structure(filename):
     with open(filename) as my_file:
         content = my_file.read()
 
+    print 'content length', len(content)
+
     import re
     content = re.sub('f1score', 'fonescore', content)
     content = re.sub('1-ROC', 'ONE-ROC', content)
@@ -266,6 +268,7 @@ def run_global_zusammen(filename_list, legend_list, filename_save):
         structures_list.append(turn_into_structure(filename))
     import matplotlib.pyplot as plt
     for hyp_dict in structures_list:
+        print 'd.keys', hyp_dict.keys()
         add_cv_dict_mean_score_to_plot(hyp_dict, plt)
     plt.legend(legend_list, loc='upper right')
     plt.xlabel('hyperopt iterations')

@@ -111,7 +111,7 @@ class CrossValidator(object):
                         from numpy import argmax
                         # run predictions to obtain score for this model
                         test_data = yaml_parse.load(test_data_string)
-                        best_model = serial.load('best_model_roc_youden.model')
+                        best_model = serial.load(pkl_filename)
 
                         predictor = Predictor(best_model)
                         predictions = predictor.get_predictions(test_data.X)

@@ -16,6 +16,9 @@ class Predictor(object):
         self.f = theano.function([self.X], self.Y)
 
         in_space = model.get_input_space()
+
+        print 'in space', in_space
+
         if in_space.axes == ('c', 0, 1, 'b'):
             self.input_space = (in_space.num_channels, in_space.shape[0], in_space.shape[1], 1)
         elif in_space.axes == ('b', 0, 1, 'c'):
@@ -32,6 +35,8 @@ class Predictor(object):
     def get_predictions(self, x_vec):
         import numpy as np
         pred_vec = []
+
+        print 'self in put space', self.input_space
 
         for index in xrange(len(x_vec)):
             print "predictor, input_space:", self.input_space

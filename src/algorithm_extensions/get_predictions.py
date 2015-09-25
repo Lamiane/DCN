@@ -39,3 +39,13 @@ class Predictor(object):
             pred_vec.append(y)
 
         return pred_vec
+
+
+
+examples: 2338
+classes: 2
+in space Conv2DSpace(shape=(18, 3492), num_channels=1, axes=('c', 0, 1, 'b'), dtype=float64)
+self in put space (1, 18, 3492, 1)
+predictor, input_space: (1, 18, 3492, 1)
+M_02: roc score error for this model: 0
+y.shape (11688, 1)

@@ -25,6 +25,7 @@
 \title{Praca Magisterska}
 \author{Agnieszka Pocha}
 
+\pagenumbering{gobble}
 \begin{document}
   \begin{center}
     % Title Page
@@ -43,7 +44,7 @@
    Agnieszka Pocha 
    \vspace{\stretch{0.1}}
    
-   \large Tutuł 
+   \large Convolutional Neural Networks for Drug Design 
   \end{center}
   \vspace{\stretch{1}}
   \begin{flushright}
@@ -63,8 +64,14 @@
   \begin{abstract}
     The goal of this work is to build a model that would classify ligands as active or inactive based on their fingerprints. Convolutional neural network are used. Two approaches are described. Two new (?) methods to include unlabeled samples in the learning procedure are presented.
   \end{abstract}
-  \tableofcontents
+  
+%  \frontmatter
+  \pagenumbering{roman}
+  \tableofcontents\vfill\eject
     
+  
+%  \mainmatter
+  \pagenumbering{arabic}
   \chapter{Introduction}
       There is a constant need for novel drugs to be designed, either because new diseases are found, old drugs proove to be ineffective, there are patents on current drugs, \textit{etc}. This might be a lengthy and very costly process, even if high-throughput methods of \textit{in vitro} (using cultures of cells) screening are used~\cite{Breda2008}. An alternative is the \textit{virtual screening} (frequently called \textit{in silico} screening, \textit{i.e.} screening conducted within a computer chip). The approach is to check, using computer methods, if a small chemical molecule (a ligand) is \textit{active} with a given protein, \textit{i.e.} it either activates or prohibits its functioning, that is connected with some disease. Molecules found to be particularly likely to be active are then passed to wet-laboratory tests. This forms a pipeline filtering out most of possible molecules (the chemical space size is in the range of $10^{60}$!) leaving just a few. In usual applications starting from a million of molecules, the virtual screening (together with some toxicity checking and drug-likeliness expert's methods) ends up in less than 10 molecules to test in a laboratory (\textit{e.g.}~\cite{Pethukov2006}).
 
@@ -78,19 +85,20 @@
     
      Virtual screening involves checking great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would and we proposed two approaches to tackle this problem. Moreover, we present new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
     
-    \section{related work, że to ma oparcie w czymś i o czym jest praca}
-    sth sth % TODO
+    \section{Related work}
+    % TODO
+    During last few years research was conducted in the area on incorporating machine learning methods to address the problem of virtual screening~\cite{kernel_biology, evaluation2007, MLforINSilicio}. Such methods as support vector machines~\cite{SVM}, binary kernel disctimination~\cite{BKD} or neural networks~\cite{NN_VS} have been successfully used to address this problem. In this paper we show that using convolutional neural networks is also a promising approach.
 
     \section{Problem}\label{sec:PROBLEM}
     The task to be solved here is a kind of target-based virtual screening. Protein-molecule interactions are given along with labels describing which of these pairs result in activation. The data is obtained with a docking approach.
     
     First the molecules are docked in a protein and then the molecules' pharmacophore features are calculated. Based on the docking adjustment the score is calculated for each molecule. If the score is above a certain threshold, the complex is classified as active. There is also another threshold, below which the complex is classified as inactive. If the score for a molecule is in between these two thresholds, the molecule is classified as middle (or unclassified). The machine learning task is to predict which molecules activate (or prohibit) the protein.
     
-    \begin{figure}[h!] % FIXME cytowanie śmierdzi
+    \begin{figure}[h!]
 	  \centering
 	  \includegraphics[scale=0.2]{docked.png}
 	  \caption{A molecule (blue) with a docked ligand(orange)~\ref{docked}.}
-	  \label{PIC:docked}
+	  \label{docked}
     \end{figure} 
     
     \emph{Proteins} are molecules built from \emph{amino acid residues} forming a single \emph{chain}. Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. 
@@ -111,7 +119,7 @@
     \end{align*}
     These are informations about the single points of contact between the target protein and the molecule.
     
-    Additionaly, there is a pharmacophore model of the molecule added. A pharmacophore is a set of sferic and electronic features that is necessary to ensure the optimal supramolecular binding with a protein (or another specific biological target structure) and to trigger (or to block) its biological response~\ref{GLOSSARY}.
+    Additionaly, there is a pharmacophore model of the molecule added. A pharmacophore is a set of sferic and electronic features that is necessary to ensure the optimal supramolecular binding with a protein (or another specific biological target structure) and to trigger (or to block) its biological response~\cite{GLOSSARY}.
     
     One can see pharmacophore features as a way to perform the virtual screening in a half way between protein- and ligand-based approach. The docking needs to be performed for plenty but not all of the molecules. At first, the pharmacophore features of the docked molecules are computed. Afterwards, a big data set of molecules with known pharmacophore features can be screened in order to find molecules most similar to those which were docked and classified as active. The protein itself is used only at the beginning during the process of docking. Later it might be dismissed as the whole method relies on pharmacophore features.
     
@@ -136,14 +144,14 @@
     
 
   \chapter{Convolutional Neural Networks}
-  \igor{In this chapter the Convolutional Neural Network (CNN) model shall be described.}
+  In this chapter the Convolutional Neural Network (CNN) model shall be described.
   
-      The simplest definition of convolutional neural networks is probably: neural networks that take advantage of using the convolution operation. CNN might be seen as a network consisting of two parts - first part is the convolutional part and it is responsible for extracting the features from the data. The second part might be a softmax layer responsible for classifying samples based on features provided by the convolutional part. This schema is shown on figure \ref{fig:con_network}. 
+      The definition of a convolutional neural network is: a neural network that takes advantage of using the convolution operation. CNN might be seen as a network consisting of two parts - first part is the convolutional part and it is responsible for extracting the features from the data. The second part might be a softmax layer responsible for classifying samples based on features provided by the convolutional part. This schema is shown on figure \ref{fig:con_network}. 
       
-     \begin{figure}[h!] % FIXME coś odnośniki nie działają
+     \begin{figure}[h!]
 	  \centering
 	  \includegraphics[width=\textwidth]{CNNArchitecture.jpg}
-	  \caption{An example of convolutional neural network~\ref{ONV_NET}.}
+	  \caption{An example of convolutional neural network~\cite{CONV_NET}.}
 	  \label{fig:con_network}
 	\end{figure} 
       
@@ -151,7 +159,7 @@
       will be presented as well as the learning algorithm. 
       
       \section{Motivation}
-	Convolutional neural networks take advantage of data which topological order carries some information. Therefore, CNNs are often applied to image recognition or natural language processing problems and achieve state-of-the-art results~\ref{ImageNet, CONV_NLP}. Since the the topological order of the data we are working on carries information (due to how the proteins are built), we expect that using convolutional neural networks might bring good results. 
+	Convolutional neural networks take advantage of data which topological order carries some information. Therefore, CNNs are often applied to image recognition or natural language processing problems and achieve state-of-the-art results~\cite{ImageNet, CONV_NLP}. Since the the topological order of the data we are working on carries information (due to how the proteins are built), we expect that using convolutional neural networks might bring good results. 
 	
       \section{Computation Flow}
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection it will be described how the data is processed within the convolutional subnetwork. Not much attention will be put to classifying subnetwork as there is a wide variety of possible approaches. 
@@ -172,11 +180,11 @@
 	  \label{fig:con_neur}
 	\end{figure} 
 	
-	\begin{figure}[h!] %FIXME znów cytowanie śmierdzi
+	\begin{figure}[h!]
 	  \centering
 	  \includegraphics[width=\textwidth]{mylenet.png}
-	  \caption{An example of a whole neural network with stages of convolution and polling marked~\ref{con_neur_INT}.}
-	  \label{fig:con_neur_INT}
+	  \caption{An example of a whole neural network with stages of convolution and polling marked~\cite{con_neur_INT}.}
+	  \label{fig:con_neur_PIC}
 	\end{figure} 
 	One might also imagine three consecutive seperate layers: a convolutional layer, a classical layer that applies activation function and finally a pooling layer. 
 	
@@ -422,9 +430,9 @@
 	\end{algorithm}
 	
 	\subsubsection{Training the model}
-	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set. % TODO tutaj powołac sie na to, ze nalezy tak robic
+	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set.
 	
-	In order to compute the optimal threshold, the receiver operating characteristic (ROC) procedure was used (see appendix \ref{appendiks} for more information). To measure the quality of the threshold the Youden's J statistic~\cite{YOUDEN} (see appendix \ref{appendiks} for more information) was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score. 
+	In order to compute the optimal threshold, we used the receiver operating characteristic (ROC) - a method that is widely used in such problems~\cite{ROC_1, ROC_EF} (see appendix \ref{appendiks} for more information about ROC). To measure the quality of the threshold the Youden's J statistic~\cite{YOUDEN} (see appendix \ref{appendiks} for more information) was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score. 
 	
 	
 	The details of the learning algorithm are covered in section \ref{sec:learning_algorithm}.	
@@ -439,10 +447,10 @@
       \subsubsection{Example:}
       If there were the following samples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact]. 
       
-      For this approach the stochastic gradient descent algorithm included in Pylearn2 Python library was used. 
+    For this approach the stochastic gradient descent algorithm included in Pylearn2 Python library was used~\cite{Pylearn2}. 
 	  
       \subsection{Fancy Approach}
-      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in Pylearn2 was used as a base. Major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model only and had no impact on the classification part. The pseudo-code of this algorithm can be found below as Algorithm 2. 
+      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in Pylearn2 was used as a base~\cite{Pylearn2}. Major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model only and had no impact on the classification part. The pseudo-code of this algorithm can be found below as Algorithm 2. 
       
       \begin{algorithm}
       \caption{Learning}\label{euclid}
@@ -536,7 +544,7 @@
       
       As the experiments have shown, there is a need to enlarge the set of architectures that are being explored - the number of possible convolutional layers should be increased.
       
-      Further, it is interesting to explore new methods of finding the optimal threshold for classification. In particular, we would like to investigate the approach which would enable finding two thresholds. Note that the model that created the dataset also used two thresholds so the new approach will lead to a greater resemblance (see section \ref{sec:PROBLEM} for more information). 
+      Further, it is interesting to test other methods of evaluation the model and explore new methods of finding the optimal threshold for classification. In particular, we would like to investigate the approach which would enable finding two thresholds. Note that the model that created the dataset also used two thresholds so the new approach will lead to a greater resemblance (see section \ref{sec:PROBLEM} for more information). For evaluation the model such metrics as enrichment factor~\cite{ROC_EF, EF_BEDROC} or BEDROC~\cite{EF_BEDROC} can be used.
       
       The two-threshold model will leave some samples unlabeled. It is of vital importance to explore what error functions can be used in such approach.
 
@@ -554,12 +562,44 @@
 
    \begin{appendices}
     \chapter{Dictionary}\label{appendiks}
-      % TODO: napisac własnymi słowami
-      from: http://optunity.readthedocs.org/en/latest/user/solvers/TPE.html 
+      \emph{The tree of Parzen estimators algorithm} or \emph{the tree-structured Parzen estimator} is a method of finding the best hyperparameters of the network. The algorithm runs sequentially - a model is build and its performance is measured. Based on this knowledge another model is chosen and and the whole procedure is repeated.
       
-      The Tree-structured Parzen Estimator (TPE) is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model. 
       
-      \emph{Receiver Operating Characteristic} (ROC) measures ratio of false positive rate ($FPR$) to true positive rate ($TPR$). $FPR = \frac{FP}{FP + TN}$, where $FP$ is the number of false positive examples and $TN$ is the number of true negative examples. $TPR = \frac{TP}{TP + FN}$, where $TP$ is the number of true positive examples and $FN$ is the number of false negative examples. When the threshold defining the classification moves the way the samples are classified changes. The goal is to find such a threshold that the score will be most optimal. There are plenty of ways for measuring the score. \emph{Youden J Statistic} is one of such methods. It measures the difference between the point on ROC curve and corresponding point on ROC curve for random classifier. The picture \ref{that does not exist yet} shows this concept.
+      \emph{Receiver Operating Characteristic} (ROC) is a plot that measures ratio of false positive rate ($FPR$) to true positive rate ($TPR$). $FPR = \frac{FP}{FP + TN}$, where $FP$ is the number of false positive examples and $TN$ is the number of true negative examples. $TPR = \frac{TP}{TP + FN}$, where $TP$ is the number of true positive examples and $FN$ is the number of false negative examples. The example plot is presented on figure \ref{fig:ROC}.
+      
+      \begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=2]{Roccurves.png}
+	  \caption{Example of four ROC curves. The dashed line is the ROC curve of a random classifier. The other curves are ROC curves of three binary classifiers\cite{bibROC}.}
+	  \label{fig:ROC}
+      \end{figure} 
+      
+      The ROC is used to measure the performance of a binary classifier. The bigger the value of true positive rate and the smaller the value of the false positive rate, the better the model. Therefore, a classifier that would lay in point ${(0, 1)}$ is the best possible model - one that classifies all labels correctly. For each model that returns score for a sample we might decide  what should be the threshold above which the model will classify samples as positive. All samples with the score below this threshold will be classified as negative. For a given model we might move this threshold along the axis and plot the performance of the model for each threshold. This way the ROC-curve will be created. There are several methods to score the points along the ROC curve in order to nominate the best threshold for a given model.
+      
+      \emph{Youden's J statistic} is one of the methods to score the points along the ROC curve. Mathematically it is described by the following equation:
+      
+      \begin{center}
+      $J = sensitivity + specifity - 1$,
+      \end{center}
+
+      
+      where
+      \begin{center}
+      $sensitivity = TPR = \frac{TP}{TP + FN}$
+       
+      $specifity = 1 - FPR = \frac{TN}{TN + FP}$.
+      \end{center}
+      
+      The intuition is that the farer the point is from the line which depicts the ROC curve of a random classifier, the better is the model which generated that point. Note, that in this context 'model' means all model's parameters \emph{and} its threshold. Again, point $(0,1)$ is the one that is the farthest away from the ROC curve of a binary classifier. On figure \ref{fig:YOUDEN} a sample ROC curve with best classifier with respect to Youden's J statistic is shown.
+      
+      \begin{figure}[h!]
+	  \centering
+	  \includegraphics[scale=0.15]{ROC_Curve_Youden_J.png}
+	  \caption{A ROC curve of a sample classifier. The best point according to the Youden's J statistic is shown with its distance to the ROC curve of a random classifier~\cite{bibYOUDEN}.}
+	  \label{fig:YOUDEN}
+      \end{figure} 
+      
+      
       
   \end{appendices}
       
@@ -606,7 +646,7 @@
       (w przygotowaniu).
 
       \bibitem{Breda2008}
-      A.~Breda, L.~A.~Basso, D>~S.~Santos, W.~F.~de~Azevado~Jr., 
+      A.~Breda, L.~A.~Basso, D.~S.~Santos, W.~F.~de~Azevado~Jr., 
       \textit{Virtual screening for drugs: score functions, docking, and drug design},
       Current Computer-Aided Drug Design, 4, 265--272,
       (2008).
@@ -663,7 +703,7 @@
       \url{http://parse.ele.tue.nl/education/cluster2}
 
       \bibitem{docked}
-      \textit{Ligand (biochemistry) - wikipedia article},
+      \textit{Ligand (biochemistry) - Wikipedia article},
       \url{https://en.wikipedia.org/wiki/Ligand_%28biochemistry%29}
      
       \bibitem{con_neur_INT}
@@ -671,14 +711,75 @@
       \url{http://deeplearning.net/tutorial/lenet.html}
 
       
-      \bibitem{con_neur_INT}
+      \bibitem{Pylearn2}
       - IJ.~Goodfellow, D.~Warde-Farley, P.~Lamblin, V.~Dumoulin, M.~Mirza, R.~Pascanu, J.~Bergstra, F.~Bastien, Y.~Bengio,
       \textit{"Pylearn2: a machine learning research library"},
      arXiv preprint arXiv:1308.4214,
-     (2013)
-  
+     (2013).
 
-      
+     \bibitem{bibROC}
+     \textit{Receiver operating characteristic - Wikipedia article},
+     \url{https://en.wikipedia.org/wiki/Receiver_operating_characteristic}
+     
+     \bibitem{bibYOUDEN}
+     \textit{Youden's J Statistic - Wikipedia article},
+     \url{https://en.wikipedia.org/wiki/Youden%27s_J_statistic}
+     
+     \bibitem{kernel_biology}
+     B.~Sch{\"o}lkopf, K.~Tsuda, J.~P.~Vert,
+     \textit{Kernel Methods in Computational Biology},
+     Cambridge, MA: MIT Press,
+     (2004).
+
+     \bibitem{evaluation2007}
+     B.~Chen, R.~F.~Harrison, G.~Papadatos, P.~Willett, D.~J~ Wood, X.~Q.~Lewell, P.~Greenidge, N.~Stiefl,
+     \textit{Evaluation of machine-learning methods for ligand-based virtual screening},
+     Journal of Computer-Aided Molecular Design, Volume 21, Issue 1, 53--62
+     (2007).
+     
+     \bibitem{SVM}
+     R.~N.~Jorissen, M.~K.~Gilson,
+     \textit{Virtual Screening of Molecular Databases Using a Support Vector Machine},
+     Journal of chemical information and modeling, Volume 45, Issue 3, 549--561,
+     (2005).
+     
+     \bibitem{BKD}
+     B.~Chen, R.~F.~Harrison, K.~Pasupa, P.~Willett, D.~J.~Wilton, D.~J~ Wood, X.~Q.~Lewell,
+     \textit{Virtual Screening Using Binary Kernel Discrimination: Effect of Noisy Training Data and the Optimization of Performance},
+     Journal of chemical information and modeling, Volume 46, Issue 2, 478--486,
+     (2006).
+     
+     \bibitem{MLforINSilicio}
+     J.-P.~Vert, L.~Jacob,
+     \textit{Machine Learning for In Silico Virtual Screening and Chemical Genomics: New Strategies},
+     Combinatorial Chemistry \& High Throughput Screening, Volume 11, Issue 8, 677-–685,
+     (2008).
+     
+     \bibitem{NN_VS}
+     L.~ Moln\'{a}r, G.~M.~Keser\H{u},
+     \textit{A Neural Network Based Virtual Screening of Cytochrome P450 3A4 Inhibitors},
+     Bioorganic \& Medicinal Chemistry Letters, 12, 419--421,
+     (2002).
+     
+    \bibitem{ROC_1}
+    T.~Unterthiner, A.~Mayr, G.~Klambauer, M.~Steijaert, J.~Wegner, H.~Ceulemans, S.~Hochreiter,
+    \textit{Deep Learning as an Opportunity in Virtual Screening},
+    Deep Learning and Representation Learning Workshop, NIPS,
+    (2014).
+    
+    \bibitem{ROC_EF}
+    H.~Geppert, M.~Vogt, J.~Bajorath,
+    \textit{Current Trends in Ligand-Based Virtual Screening: Molecular Representations, Data Mining Methods, New Application Areas, and Performance Evaluation},
+    Journal of chemical information and modeling, Volume 50, Issue 2, 205--2016,
+    (2010).
+    
+    \bibitem{EF_BEDROC}
+    V.~Venkatraman, P.~R.~Chakravarthy, D.~Kihara
+    \textit{Application of 3D Zernike descriptors to shape-based ligand similarity searching}
+    Journal of Cheminforminformatics, Volume 1, Issue 19, 
+    (2009)
+    
+     
       %TODO: numpy, scipy?, sklearn metrics for f12 score, latex, draw.io
     
   \end{thebibliography}

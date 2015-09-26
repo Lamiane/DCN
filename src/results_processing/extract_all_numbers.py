@@ -277,16 +277,20 @@ def run_global_zusammen(filename_list, legend_list, filename_save):
     plt.savefig(filename_save+'.pdf')
 
 
-def analyse_1(hyp_dict_MINIMUM):
-    cv_dic_list = hyp_dict_MINIMUM['all_models']
+def analyse_1(hyp_dict):
+    cv_dic_list = hyp_dict['all_models']
 
     # minimum
     # upper = [1, 2, 4, 5, 9, 10, 12, 19]
     # lower = [0, 3, 6, 7, 11, 13, 14, 15, 16, 17, 18]
 
     # softmax
-    upper = [6, 7, 8, 9, 10, 11, 12]
-    lower = [0, 1, 2, 3, 4, 5, 13, 14, 15, 16, 16, 17, 18, 19]
+    # upper = [6, 7, 8, 9, 10, 11, 12]
+    # lower = [0, 1, 2, 3, 4, 5, 13, 14, 15, 16, 16, 17, 18, 19]
+
+    # mean
+    upper = [0, 4, 5, 8, 9, 10, 14, 16, 17, 18]
+    lower = [1, 2, 3, 6, 7, 11, 12, 13, 15, 19]
 
     import ast
     upper_architectures = []
@@ -305,16 +309,20 @@ def analyse_1(hyp_dict_MINIMUM):
     print 'lower h1', [dic_tup[1]['h1'] is None for dic_tup in lower_architectures]
 
 
-def analyse_2(hyp_dict_MINIMUM):
-    cv_dic_list = hyp_dict_MINIMUM['all_models']
+def analyse_2(hyp_dict):
+    cv_dic_list = hyp_dict['all_models']
 
     # minimum
-    upper = [1, 2, 4, 5, 9, 10, 12, 19]
-    lower = [0, 3, 6, 7, 11, 13, 14, 15, 16, 17, 18]
+    # upper = [1, 2, 4, 5, 9, 10, 12, 19]
+    # lower = [0, 3, 6, 7, 11, 13, 14, 15, 16, 17, 18]
 
     # softmax
     # upper = [6, 7, 8, 9, 10, 11, 12]
     # lower = [0, 1, 2, 3, 4, 5, 13, 14, 15, 16, 16, 17, 18, 19]
+
+    # mean
+    upper = [0, 4, 5, 8, 9, 10, 14, 16, 17, 18]
+    lower = [1, 2, 3, 6, 7, 11, 12, 13, 15, 19]
 
     from numpy import mean
     upper_besties = []
@@ -350,7 +358,7 @@ def analyse_2(hyp_dict_MINIMUM):
     print 'lower besties mean', mean(lower_besties)
 
 
-def add_models_bests_scores_to_plot(hyp_dict, plt, change_color):
+def add_models_bests_scores_to_plot(hyp_dict, plt, change_color, ch_c2):
     from copy import deepcopy
 
     x_axis = []
@@ -370,22 +378,33 @@ def add_models_bests_scores_to_plot(hyp_dict, plt, change_color):
             pc.set_facecolor('blue')
             pc.set_color('blue')
             pc.set_edgecolor('blue')
+    if ch_c2:
+        for pc in a['bodies']:
+            pc.set_facecolor('red')
+            pc.set_color('red')
+            pc.set_edgecolor('red')
 
 
-def variance_zusammen(filename_list, legend_list, filename_save):
+def variance_zusammen(filename_list, filename_save):
     structures_list = []
     for filename in filename_list:
         structures_list.append(turn_into_structure(filename))
     import matplotlib.pyplot as plt
     once = True
+    second = False
     for hyp_dict in structures_list:
-        add_models_bests_scores_to_plot(hyp_dict, plt, once)
-        once = False
+        add_models_bests_scores_to_plot(hyp_dict, plt, once, second)
+        if second:
+            second = False
+        if once:
+            once = False
+            second = True
 
     import matplotlib.patches as mpatches
     min_patch = mpatches.Patch(color='blue', label='minimum')
     softmax_patch = mpatches.Patch(color='yellow', label='softmax')
-    plt.legend(handles=[min_patch, softmax_patch], loc='upper right')
+    mean_patch = mpatches.Patch(color='red', label='mean')
+    plt.legend(handles=[min_patch, softmax_patch, mean_patch], loc='lower right')
 
     plt.xlabel('hyperopt iterations')
     plt.ylabel('best scores for given architecture')

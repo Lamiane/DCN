@@ -402,8 +402,8 @@ def variance_zusammen(filename_list, filename_save):
 
     import matplotlib.patches as mpatches
     min_patch = mpatches.Patch(color='blue', label='minimum')
-    softmax_patch = mpatches.Patch(color='yellow', label='softmax')
-    mean_patch = mpatches.Patch(color='red', label='mean')
+    softmax_patch = mpatches.Patch(color='red', label='softmax')
+    mean_patch = mpatches.Patch(color='yellow', label='mean')
     plt.legend(handles=[min_patch, softmax_patch, mean_patch], loc='lower right')
 
     plt.xlabel('hyperopt iterations')
@@ -454,7 +454,19 @@ def plot_max_in_epoch(hyp_dict, plt):
             epoch_score = [epoch['Youden_score'] for epoch in model_dict['epochs']]
             from numpy import argmax
             best_epoch.append(argmax(epoch_score))
-    plt.hist(best_epoch, len(set(best_epoch)))
+
+    from collections import Counter
+    dic = dict(Counter(best_epoch))
+
+    values = []
+    for key in sorted(dic.keys()):
+        values.append(dic[key])
+
+    import numpy as np
+    ind = np.arange(len(dic.keys()))
+    width = 0.9       # the width of the bars: can also be len(x) sequence
+    plt.bar(ind, values, width)
+    plt.xticks(ind+width/2., sorted(dic.keys()))
 
 
 def max_in_epoch(filename, filename_save, title):
@@ -477,7 +489,19 @@ def plot_number_of_epochs(hyp_dict, plt):
     for cv_dict in cv_dict_list:
         for model_dict in cv_dict['models']:
             number_of_epochs.append(len(model_dict['epochs'])-1)
-    plt.hist(number_of_epochs, len(set(number_of_epochs)))
+
+    from collections import Counter
+    dic = dict(Counter(number_of_epochs))
+
+    values = []
+    for key in sorted(dic.keys()):
+        values.append(dic[key])
+
+    import numpy as np
+    ind = np.arange(len(dic.keys()))
+    width = 0.9       # the width of the bars: can also be len(x) sequence
+    plt.bar(ind, values, width)
+    plt.xticks(ind+width/2., sorted(dic.keys()))
 
 
 def number_of_epochs(filename, filename_save, title):
@@ -490,3 +514,50 @@ def number_of_epochs(filename, filename_save, title):
     plt.ylabel('number of models that finished')
     plt.savefig(filename_save+'.png')
     plt.savefig(filename_save+'.pdf')
+
+
+def add_score_layers(hyp_dict, plt):
+    cv_dict_list = hyp_dict['all_models']
+    plt.clf()
+
+    # finding best architecture
+    idx_best_score_tuple = (-1, 0)
+
+    # # lower
+    lower_scores = []
+    # for i in indices_lower:
+    #     lower_scores.append(cv_dict_list[i]['mean_score'])
+    #
+    # # upper
+    upper_scores = []
+    # for i in indices_upper:
+    #     upper_scores.append(cv_dict_list[i]['mean_score'])
+
+    import ast
+    for cv_dict in cv_dict_list:
+        architecture_string = cv_dict['architecture']
+        dictios_tuple = ast.literal_eval(architecture_string)
+        if dictios_tuple[1]['h1'] is None:
+            lower_scores.append(cv_dict['mean_score'])
+        else:
+            upper_scores.append(cv_dict['mean_score'])
+
+    # plotting
+    plt.plot([1 for i in range(len(upper_scores))], upper_scores, 'o')
+    plt.plot([1 for i in range(len(lower_scores))], lower_scores, 'o')
+
+    # plt.axes.get_xaxis().set_visible(False)
+    plt.xticks([])
+    plt.legend(['two layers', 'one layer'], loc='upper right')
+
+
+def score_layers(filename, filename_save, title):
+    structured = turn_into_structure(filename)
+    import matplotlib.pyplot as plt
+    plt.clf()
+    add_score_layers(structured, plt)
+    plt.title(title)
+    plt.ylabel('score on testing set')
+    plt.savefig(filename_save+'.png')
+    plt.savefig(filename_save+'.pdf')
+

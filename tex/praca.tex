@@ -524,14 +524,125 @@
       \begin{figure}[h!]
 	  \centering
 	  \includegraphics[scale=0.7]{combining_min.png}
-	  \caption{Example of the min combining function}
+	  \caption{Example of the min combining function.}
 	  \label{fig:combining}
 	\end{figure} 
 	
    \chapter{Results} % TODO napisać ten rozdział
-    \section{not yet}
+    In this chapter the results we obtained during the experiments shall be described.
+   
+   \section{Hyperopt}
+   
+    The figure \ref{GLOBAL} presents the mean score for each architecture chosen by hyperopt module in each iteration for all the combination functions we investigated. As already said, the mean value has been obtained by averaging the performance of a given architecture trained on five different train sets in cross validation procedure. The score used for measuring the performance of the model was $1-\frac{TP}{TP + FN} - \frac{FP}{FP + FN}$. The goal of the hyperopt module was to minimise that score.
+    
+    As can be seen, these scores do not reduce their values with consecutive iterations of hyperopt. It suggests that 20 iterations might not be enough for hyperopt to scan the search space with so many parameters well. In the future experiments it is desirable to let the hyperopt sample much more models.
+    
+    \begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.5]{GLOBAL.pdf}
+	\caption{Mean score for given architecture in each hyperopt iteration.}
+	\label{GLOBAL}
+    \end{figure} 
+
+
+    It can be observed that the plots for models that were using the minimum or the mean combination function and the plot for models that were using the softmax combination function are very different. The mean scores of models that used the softmax combination function have much lower variance and, in general, higher values than the mean scores of model that used the minimum or the mean combination function. This suggests that the combination function that is used has a strong influence on the learning process of the model. It is of vital importance to closely investigate how each combination function affects the learning process of the model.
+
+    \section{Architecture}
+    
+    After close investigation it turned out that each architecture that had a poor mean score in cross validation procedure had only one convolutional layer. This was true for each combination function. This is depicted on figures \ref{Fig:MEAN_LAYERS_SCORE}, \ref{Fig:MIN_LAYERS_SCORE} and \ref{Fig:SOFT_LAYERS_SCORE}. It suggests that one convolutional layer is not enough to perform the classification on this data with good results. It shows that it will be a good approach to use more convolutional layers in the future. Moreover, it suggests that the patterns in this data are rather complicated.
+    
+    \begin{figure}[!htb]\centering
+      \begin {minipage}{\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MEAN_LAYERS_SCORE.pdf}}
+	\caption{Score of the network and number of convolutional layers.}\label{Fig:MEAN_LAYERS_SCORE}
+      \end{minipage}
+      
+      \begin{minipage}{\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MIN_LAYERS_SCORE.pdf}}
+	\caption{Score of the network and number of convolutional layers.}\label{Fig:MIN_LAYERS_SCORE}
+      \end{minipage}
+     \end{figure}
      
+     \begin{figure}
+      \begin {minipage}{\textwidth}
+	\frame{\includegraphics[width=\linewidth]{SOFT_LAYERS_SCORE.pdf}}
+	\caption{Score of the network and number of convolutional layers.}\label{Fig:SOFT_LAYERS_SCORE}
+      \end{minipage}
+    \end{figure}
+    
+
+    As already said, each architecture sampled by the hyperopt module was trained five times during the cross validation procedure. It is interesting to see how big were the differences between the best scores of these five models. This data is presented on figure \ref{VARIANCE}. As one can see, the variance of performance of architectures that used the minimum or the mean combination function is much bigger than the variance of performance of architectures that used softmax as combination functions. It is another argument that the combination function influences the learning procedure strongly. Due to the big variance it can be considered in the future to split the dataset into more parts in the cross validation procedure.
+
+      \begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{VARIANCE.pdf}
+	\caption{Best scores for given architecture in each hyperopt iteration.}
+	\label{VARIANCE}
+      \end{figure}
+      
+    \section{Learning process}
+
+    We have chosen the best architecture using specific combination function and plotted its learning process for all models created during the cross validation procedure. These plots are presented on figures \ref{Fig:SOFT_LEARNING}, \ref{Fig:MIN_LEARNING} and \ref{Fig:MEAN_LEARNING}. It can be seen that the initial performances of the networks were rather poor and their values had big variance. This is due to the fact that the initial parameters of the model were chosen randomly. It can be observed that there is not any strong correlation between the initial parameters of the network and its later performance. 
+    
+    \begin{figure}[!htb]\centering
+      \begin {minipage}{\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MEAN_LEARNING.pdf}}
+	\caption{Performance of the model with respect to epochs seen.}\label{Fig:MEAN_LEARNING}
+      \end{minipage}
+      
+      \begin{minipage}{0.49\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MIN_LEARNING.pdf}}
+	\caption{Performance of the model with respect to epochs seen.}\label{Fig:MIN_LEARNING}
+      \end{minipage}
+      \begin {minipage}{0.49\textwidth}
+	\frame{\includegraphics[width=\linewidth]{SOFT_LEARNING.pdf}}
+	\caption{Performance of the model with respect to epochs seen.}\label{Fig:SOFT_LEARNING}
+      \end{minipage}
+    \end{figure}
+    
+    One can be notice that the biggest improvement in performance was done during the first epoch of the learning process, afterwards the networks were reaching a plateau and finally, their performance was dropping probably due to the overfitting.
+
+    One can notice that the performance of architecture that used mean as the combination function was more stable and started dropping later than the performance of architectures that used minimum or softmax as the comination function. It suggests that architectures using mean as combination function might be more resistant to overfitting but it need further investigation.
+
+    \begin{figure}[!htb]\centering
+      \begin{minipage}{0.9\textwidth}
+	\frame{\includegraphics[width=\linewidth]{SOFT_MAX_IN_EPOCH.pdf}}
+	\caption{Number of models that reached its best score in each epoch.}\label{Fig:SOFT_MAX}
+      \end{minipage}
+      
+      \begin {minipage}{0.49\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MIN_MAX_IN_EPOCH.pdf}}
+	\caption{Number of models that reached its best score in each epoch.}\label{Fig:MIN_MAX}
+      \end{minipage}
+      \begin {minipage}{0.49\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MEAN_MAX_IN_EPOCH.pdf}}
+	\caption{Number of models that reached its best score in each epoch.}\label{Fig:MEAN_MAX}
+      \end{minipage}
+    \end{figure}
+    
+    On figures \ref{Fig:MIN_MAX}, \ref{Fig:SOFT_MAX} and \ref{Fig:MEAN_MAX} there is presented how many models reached its best performance in each epoch. Regardless of the combination function that the network uses, it usually reaches it best performance between second and fifth epoch. Again there is a significant difference between models that were using different combination fucntions. Those that used mean tend to reach its best performance faster. Those models that use softmax as combination function usually reach its best performance between second and fifth epoch but it might happen that it would happen later. 
+
+    On figures \ref{MIN_KILL}, \ref{SOFT_KILL} and \ref{MEAN_KILL} there is presented how many models finished learning after specific epoch. One can see that models that used minimum or mean as activation function were usuall finishing learning after either ninth or tenth epoch. Models that as activation function used softmax tend to finish learning after ninth epoch.
+    
+    \begin{figure}[!htb]\centering
+      \begin{minipage}{\textwidth}
+	\frame{\includegraphics[width=\linewidth]{SOFT_N_EPOCHS.pdf}}
+	\caption{Number of models that reached its best score in each epoch.}\label{SOFT_KILL}
+      \end{minipage}
+      
+      \begin {minipage}{0.49\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MIN_N_EPOCHS.pdf}}
+	\caption{Number of models that reached its best score in each epoch.}\label{MIN_KILL}
+      \end{minipage}
+      \begin {minipage}{0.49\textwidth}
+	\frame{\includegraphics[width=\linewidth]{MEAN_N_EPOCHS.pdf}}
+	\caption{Number of models that reached its best score in each epoch.}\label{MEAN_KILL}
+      \end{minipage}
+    \end{figure}
+
+    \section{Performance depending on combination function}
 	
+	    
   \chapter{Discussion}
     \section{napisać co się udało}
   % TODO napisać też co się udało

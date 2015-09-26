@@ -561,3 +561,76 @@ def score_layers(filename, filename_save, title):
     plt.savefig(filename_save+'.png')
     plt.savefig(filename_save+'.pdf')
 
+
+def plot_prec_rec_score_combination_function(hyp_dict_list, plt, legend_list):
+    youden_score_list = []
+    precision_list = []
+    recall_list = []
+    f1score_list = []
+
+    for hyp_dict in hyp_dict_list:
+        youden_score = 0
+        precision = 0
+        recall = 0
+        f1score = 0
+        n_of_models = 0
+        for cv_dict in hyp_dict['all_models']:
+            for model_dict in cv_dict['models']:
+                if 'precision' in model_dict and 'recall' in model_dict and 'f1score' in model_dict:
+                    youden_score += model_dict['best_score']
+                    precision += model_dict['precision']
+                    recall += model_dict['recall']
+                    f1score += model_dict['f1score']
+                    n_of_models += 1
+        # normalization
+        print 'number of models:', n_of_models
+        youden_score = float(youden_score)/n_of_models
+        precision = float(precision)/n_of_models
+        recall = float(recall)/n_of_models
+        f1score = float(f1score)/n_of_models
+        youden_score_list.append(youden_score)
+        precision_list.append(precision)
+        recall_list.append(recall)
+        f1score_list.append(f1score)
+
+    zipped = zip(precision_list, recall_list, f1score_list, youden_score_list)
+    minimum = zipped[0]
+    softmax = zipped[1]
+    mean = zipped[2]
+
+    print 'minimum', minimum
+    print 'softmax', softmax
+    print 'mean', mean
+
+    import numpy as np
+    N = 4
+    ind = np.arange(N)
+    width = 0.3
+    fig, ax = plt.subplots()
+
+    print 'precision lenght', len(precision_list)
+
+    rects1 = ax.bar(ind, minimum, width, color='r')
+    rects2 = ax.bar(ind+width, softmax, width, color='y')
+    rects3 = ax.bar(ind+2*width, mean, width, color='g')
+
+    ax.set_ylabel('Scores')
+    ax.set_title('Scores by combination function')
+    ax.set_xticks(ind+width)
+    ax.set_xticklabels(('Precision', 'Recall', 'F1score', 'Youden score'))
+
+    ax.legend((rects1[0], rects2[0], rects3[0]), legend_list)
+
+
+def prec_rec_score_combination_function(files_list, legend_list, filename_save):
+    structured = []
+    for filename in files_list:
+        structured.append(turn_into_structure(filename))
+
+    import matplotlib.pyplot as plt
+    plt.clf()
+    plot_prec_rec_score_combination_function(structured, plt, legend_list)
+    plt.ylabel('score')
+    plt.legend(legend_list, loc='upper right')
+    plt.savefig(filename_save+'.png')
+    plt.savefig(filename_save+'.pdf')

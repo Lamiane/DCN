@@ -62,7 +62,7 @@
   
   %\maketitle
   \begin{abstract}
-    The goal of this work is to build a model that would classify ligands as active or inactive based on their fingerprints. Convolutional neural network are used. Two approaches are described. Two new (?) methods to include unlabeled samples in the learning procedure are presented.
+    The goal of this work is to address the problem of virtual screening by building a model that would classify ligands as active or inactive based on their fingerprints. Convolutional neural network are used. Two approaches are described. Two new methods to include unlabeled samples in the learning procedure are presented.
   \end{abstract}
   
 %  \frontmatter
@@ -86,7 +86,6 @@
      Virtual screening involves checking great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would and we proposed two approaches to tackle this problem. Moreover, we present new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
     
     \section{Related work}
-    % TODO
     During last few years research was conducted in the area on incorporating machine learning methods to address the problem of virtual screening~\cite{kernel_biology, evaluation2007, MLforINSilicio}. Such methods as support vector machines~\cite{SVM}, binary kernel disctimination~\cite{BKD} or neural networks~\cite{NN_VS} have been successfully used to address this problem. In this paper we show that using convolutional neural networks is also a promising approach.
 
     \section{Problem}\label{sec:PROBLEM}
@@ -97,7 +96,7 @@
     \begin{figure}[h!]
 	  \centering
 	  \includegraphics[scale=0.2]{docked.png}
-	  \caption{A molecule (blue) with a docked ligand(orange)~\ref{docked}.}
+	  \caption{A molecule (blue) with a docked ligand(orange)~\cite{docked}.}
 	  \label{docked}
     \end{figure} 
     
@@ -528,14 +527,12 @@
 	  \label{fig:combining}
 	\end{figure} 
 	
-   \chapter{Results} % TODO napisać ten rozdział
+   \chapter{Results}
     In this chapter the results we obtained during the experiments shall be described.
    
    \section{Hyperopt}
    
     The figure \ref{GLOBAL} presents the mean score for each architecture chosen by hyperopt module in each iteration for all the combination functions we investigated. As already said, the mean value has been obtained by averaging the performance of a given architecture trained on five different train sets in cross validation procedure. The score used for measuring the performance of the model was $1-\frac{TP}{TP + FN} - \frac{FP}{FP + FN}$. The goal of the hyperopt module was to minimise that score.
-    
-    As can be seen, these scores do not reduce their values with consecutive iterations of hyperopt. It suggests that 20 iterations might not be enough for hyperopt to scan the search space with so many parameters well. In the future experiments it is desirable to let the hyperopt sample much more models.
     
     \begin{figure}[h!]
 	\centering
@@ -543,7 +540,8 @@
 	\caption{Mean score for given architecture in each hyperopt iteration.}
 	\label{GLOBAL}
     \end{figure} 
-
+    
+    As can be seen, these scores do not reduce their values with consecutive iterations of hyperopt. It suggests that 20 iterations might not be enough for hyperopt to scan the search space with so many parameters well. In the future experiments it is desirable to let the hyperopt sample much more models.
 
     It can be observed that the plots for models that were using the minimum or the mean combination function and the plot for models that were using the softmax combination function are very different. The mean scores of models that used the softmax combination function have much lower variance and, in general, higher values than the mean scores of model that used the minimum or the mean combination function. This suggests that the combination function that is used has a strong influence on the learning process of the model. It is of vital importance to closely investigate how each combination function affects the learning process of the model.
 
@@ -556,7 +554,9 @@
 	\frame{\includegraphics[width=\linewidth]{MEAN_LAYERS_SCORE.pdf}}
 	\caption{Score of the network and number of convolutional layers.}\label{Fig:MEAN_LAYERS_SCORE}
       \end{minipage}
-      
+     \end{figure}
+     
+     \begin{figure}
       \begin{minipage}{\textwidth}
 	\frame{\includegraphics[width=\linewidth]{MIN_LAYERS_SCORE.pdf}}
 	\caption{Score of the network and number of convolutional layers.}\label{Fig:MIN_LAYERS_SCORE}
@@ -641,11 +641,41 @@
     \end{figure}
 
     \section{Performance depending on combination function}
-	
+      It was already mentioned that combination function used by model has strong influence on its performance. Figure \ref{SCORE_BY_COMB} depicts how different metrics vary when different combination functions are used. The mean value over all models was calculated for each metric. It can be notices that no matter the metric used models that use softmax function perform best and the difference is significant. Models that used the minimum or the mean combination function had a comparable performance event though models that used the minimum combination function performed slightly better.
+      
+      The models that used the softmax combination function achieved over 0.8 of precision, recall and F1Score. This shows that our approach is promising and should be developed in the future.
+    
+       \begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{SCORE_BY_COMB.pdf}
+	\caption{Comparison of model's performance with regards to the combination function used.}
+	\label{SCORE_BY_COMB}
+      \end{figure}
 	    
   \chapter{Discussion}
-    \section{napisać co się udało}
-  % TODO napisać też co się udało
+    In this chapter the short summary shall be given and possiblities for future development discussed.
+  
+    \section{Summary}
+    We have proposed an innovative method that addresses the problem of virtual screening. Our models achieved a satisfactory performance which is shown in table \ref{performance}. It can be noticed that models taht used softmax combination function performed best. It is important to further test the abilities of such models.
+    %		precision		recall		F1Score			Youden
+    % softmax 	(0.8856172499811313, 0.8272631035655252, 0.8544779296784442, 0.6802390558660102)
+    % mean 	(0.8323140207919117, 0.6500225001690332, 0.6946473619604562, 0.5145779241958454)
+    % minimum 	(0.8432657266708066, 0.6841930968104375, 0.7257190251067805, 0.5639553464547893)
+    
+    \begin{tabular}{lrrr}
+    \hline
+             & Precision  & Recall   & F1Score  \\
+    \hline
+    Softmax  & 0.886      & 0.827    & 0.854   \\
+    Mean     & 0.832      & 0.650    & 0.695   \\
+    Minimum  & 0.843      & 0.684    & 0.726   \\
+    \hline
+    \end{tabular}\label{performance}
+    
+    We have shown (see figures \ref{Fig:MEAN_LAYERS_SCORE}, \ref{Fig:MIN_LAYERS_SCORE} and \ref{Fig:SOFT_LAYERS_SCORE}) that one convoluional layer is not enough for such data.
+    
+    Moreover, we have proposed the Fancy Approach to use unlabeled examples can be used during learning process of convolutional neural networks. 
+  
     \section{Future work}
       There are still many ways to improve and further investigate the proposed method.
       
@@ -715,138 +745,46 @@
   \end{appendices}
       
   \begin{thebibliography}{99}
-    \bibitem{DUTCH}
-      J.~van Doorn,
-      \emph{Analysis of Deep Convolutional Neural Network Architectures},
-      21th Twente Student Conference on IT,
-      (2014).
-      
-    \bibitem{GLOROT_BENGIO}
-      Y.~Bengio, A.~Bordes, X.~Glorot,
-      \emph{Deep Sparse Rectifier Neural Networks},
-      International Conference on Artificial Intelligence and Statistics,
-      (2011).
-      
-    \bibitem{YOUDEN}
-     W.~J.~Youden,
-     \emph{Index for rating diagnostic tests},
-     Cancer, 3.1, 32--35,
-     (1950).
-     
-    \bibitem{HYPEROPT}
-     J.~Bergstra, D.~Yamins, D.~D.~Cox,
-     \emph{Hyperopt: A Python Library for Optimizing the Hyperparameters of Machine Learning Algorithms},
-     Proceedings of the 12th Python in Science Conference, 13--20,
-     (2013).
-      
-    \bibitem{ZEILER}
-      M.~D.~Zeiler, R.~Fergus,
-      \emph{Stochastic pooling for regularization of deep convolutional neural networks},
-      arXiv preprint arXiv:1301.3557,
-      (2013).
-      
-     \bibitem{Bengio}
-      Y.~Bengio, I.~Goodfellow, A.~Courville,
-      \textit{Deep Learning},
-      MIT (w przygotowaniu),
-      \url{www.iro.umontreal.ca/~bengioy/dlbook}.
-
-      \bibitem{2DSIFT}
-      S.~Mordalski, I.~T.~Podolak, A.~J.~Bojarski,
-      \textit{2D SIFt - a matrix of ligand-receptor interactions},
-      (w przygotowaniu).
-
       \bibitem{Breda2008}
       A.~Breda, L.~A.~Basso, D.~S.~Santos, W.~F.~de~Azevado~Jr., 
       \textit{Virtual screening for drugs: score functions, docking, and drug design},
       Current Computer-Aided Drug Design, 4, 265--272,
       (2008).
-
-      \bibitem{Varnek2012}
-      A.~Varnek, I.~Baskin,
-      \textit{Machine learning methods in property prediction in cheminformatics: Quo Vadis?}
-      J. of Chemical Information and Modelling, 52, 1413--1437,
-      (2012).
+      
+      \bibitem{Pethukov2006}
+      P.~Pethukov, M.~Brunsteiner, R.~Uddin,
+      \textit{Panthothenate synthetase: new inhibitors for tuberculosis target from a hierarchical virtual screening campaign},
+      ACS'2006.
 
       \bibitem{Geppert2010}
       H.~Geppert, M.~Vogt, J.~Bajorath,
       \textit{Current trends in ligand-based virtual screening: molecular representations, data mining methods, new application areas, and performance evaluation},
       J. of Chemical Information Modelling, 50, 205--216,
       (2010).
-
-      \bibitem{Pethukov2006}
-      P.~Pethukov, M.~Brunsteiner, R.~Uddin,
-      \textit{Panthothenate synthetase: new inhibitors for tuberculosis target from a hierarchical virtual screening campaign},
-      ACS'2006.
-
-      \bibitem{Mordalski2011}
-      S.~Mordalski, T.~Kosciołek, K.~Kristensen. I.~Sylte, A.~J.~Bojarski,
-      \textit{Protein binding site analysis by means of structural interaction fingerprint patterns},
-      Bioorganic \& Medicinal Chemistry Letters, 21, 6816--6819,
-      (2011).
-
-      \bibitem{Singh2006}
-      J.~Singh, Z.~Deng, G.~Narale, C.~Chuaqui,
-      \textit{Structural Interaction Fingerprints: a new approach to organizing, mining, analyzing, and designing protein-small molecule complexes},
-      Chemical Biology Drug Design, 67, 5--12,
-      (2006).
       
-      \bibitem{ImageNet}
-      A.~Krizhevsky, I.~Sutskever, G.~E.~Hinton
-      \textit{ImageNet Classification with Deep Convolutional Neural Networks},
-      Advances in Neural Information Processing Systems 25,
+      \bibitem{Varnek2012}
+      A.~Varnek, I.~Baskin,
+      \textit{Machine learning methods in property prediction in cheminformatics: Quo Vadis?}
+      J. of Chemical Information and Modelling, 52, 1413--1437,
       (2012).
-
-      \bibitem{CONV_NLP}
-      R.~Collobert, J.~Weston
-      \textit{A Unified Architecture for Natural Language Processing: Deep Neural Networks with Multitask Learning},
-      Proceedings of the 25th International Conference on Machine Learning,
-      (2008).
       
-      \bibitem{GLOSSARY}
-      C.~G.~Wermuth, C.~R.~Ganellin, P.~Lindberg, L.~A.~Mitscher,
-      \textit{Glossary of terms used in medicinal chemistry},
-      Pure and Applied Chemistry, Volume 70, Issue 5, 1129-–1143,
-      (1998).
-      
-      \bibitem{CONV_NET}
-      \textit{website of Parallel Architecture Research Eindhoven},
-      \url{http://parse.ele.tue.nl/education/cluster2}
-
-      \bibitem{docked}
-      \textit{Ligand (biochemistry) - Wikipedia article},
-      \url{https://en.wikipedia.org/wiki/Ligand_%28biochemistry%29}
-     
-      \bibitem{con_neur_INT}
-      \textit{Deep Learning - Convolutional Neural Networks (LeNet)},
-      \url{http://deeplearning.net/tutorial/lenet.html}
-
-      
-      \bibitem{Pylearn2}
-      - IJ.~Goodfellow, D.~Warde-Farley, P.~Lamblin, V.~Dumoulin, M.~Mirza, R.~Pascanu, J.~Bergstra, F.~Bastien, Y.~Bengio,
-      \textit{"Pylearn2: a machine learning research library"},
-     arXiv preprint arXiv:1308.4214,
-     (2013).
-
-     \bibitem{bibROC}
-     \textit{Receiver operating characteristic - Wikipedia article},
-     \url{https://en.wikipedia.org/wiki/Receiver_operating_characteristic}
-     
-     \bibitem{bibYOUDEN}
-     \textit{Youden's J Statistic - Wikipedia article},
-     \url{https://en.wikipedia.org/wiki/Youden%27s_J_statistic}
-     
-     \bibitem{kernel_biology}
+       \bibitem{kernel_biology}
      B.~Sch{\"o}lkopf, K.~Tsuda, J.~P.~Vert,
      \textit{Kernel Methods in Computational Biology},
      Cambridge, MA: MIT Press,
      (2004).
-
-     \bibitem{evaluation2007}
+      
+      \bibitem{evaluation2007}
      B.~Chen, R.~F.~Harrison, G.~Papadatos, P.~Willett, D.~J~ Wood, X.~Q.~Lewell, P.~Greenidge, N.~Stiefl,
      \textit{Evaluation of machine-learning methods for ligand-based virtual screening},
      Journal of Computer-Aided Molecular Design, Volume 21, Issue 1, 53--62
      (2007).
+     
+     \bibitem{MLforINSilicio}
+     J.-P.~Vert, L.~Jacob,
+     \textit{Machine Learning for In Silico Virtual Screening and Chemical Genomics: New Strategies},
+     Combinatorial Chemistry \& High Throughput Screening, Volume 11, Issue 8, 677-–685,
+     (2008).
      
      \bibitem{SVM}
      R.~N.~Jorissen, M.~K.~Gilson,
@@ -860,19 +798,88 @@
      Journal of chemical information and modeling, Volume 46, Issue 2, 478--486,
      (2006).
      
-     \bibitem{MLforINSilicio}
-     J.-P.~Vert, L.~Jacob,
-     \textit{Machine Learning for In Silico Virtual Screening and Chemical Genomics: New Strategies},
-     Combinatorial Chemistry \& High Throughput Screening, Volume 11, Issue 8, 677-–685,
-     (2008).
-     
      \bibitem{NN_VS}
      L.~ Moln\'{a}r, G.~M.~Keser\H{u},
      \textit{A Neural Network Based Virtual Screening of Cytochrome P450 3A4 Inhibitors},
      Bioorganic \& Medicinal Chemistry Letters, 12, 419--421,
      (2002).
      
-    \bibitem{ROC_1}
+     \bibitem{docked}
+     \textit{Ligand (biochemistry) - Wikipedia article},
+     \url{https://en.wikipedia.org/wiki/Ligand_%28biochemistry%29} 
+
+     \bibitem{2DSIFT}
+     S.~Mordalski, I.~T.~Podolak, A.~J.~Bojarski,
+     \textit{2D SIFt - a matrix of ligand-receptor interactions},
+     (w przygotowaniu).
+
+     
+     \bibitem{Mordalski2011}
+     S.~Mordalski, T.~Kosciołek, K.~Kristensen. I.~Sylte, A.~J.~Bojarski,
+     \textit{Protein binding site analysis by means of structural interaction fingerprint patterns},
+     Bioorganic \& Medicinal Chemistry Letters, 21, 6816--6819,
+     (2011).
+      
+      \bibitem{Singh2006}
+      J.~Singh, Z.~Deng, G.~Narale, C.~Chuaqui,
+      \textit{Structural Interaction Fingerprints: a new approach to organizing, mining, analyzing, and designing protein-small molecule complexes},
+      Chemical Biology Drug Design, 67, 5--12,
+      (2006).
+
+      \bibitem{GLOSSARY}
+      C.~G.~Wermuth, C.~R.~Ganellin, P.~Lindberg, L.~A.~Mitscher,
+      \textit{Glossary of terms used in medicinal chemistry},
+      Pure and Applied Chemistry, Volume 70, Issue 5, 1129-–1143,
+      (1998).
+      
+      \bibitem{CONV_NET}
+      \textit{website of Parallel Architecture Research Eindhoven},
+      \url{http://parse.ele.tue.nl/education/cluster2}
+      
+      \bibitem{ImageNet}
+      A.~Krizhevsky, I.~Sutskever, G.~E.~Hinton
+      \textit{ImageNet Classification with Deep Convolutional Neural Networks},
+      Advances in Neural Information Processing Systems 25,
+      (2012).
+
+      \bibitem{CONV_NLP}
+      R.~Collobert, J.~Weston
+      \textit{A Unified Architecture for Natural Language Processing: Deep Neural Networks with Multitask Learning},
+      Proceedings of the 25th International Conference on Machine Learning,
+      (2008).
+      
+      \bibitem{Bengio}
+      Y.~Bengio, I.~Goodfellow, A.~Courville,
+      \textit{Deep Learning},
+      MIT (w przygotowaniu),
+      \url{www.iro.umontreal.ca/~bengioy/dlbook}.
+
+    \bibitem{DUTCH}
+      J.~van Doorn,
+      \emph{Analysis of Deep Convolutional Neural Network Architectures},
+      21th Twente Student Conference on IT,
+      (2014).
+      
+      \bibitem{GLOROT_BENGIO}
+      Y.~Bengio, A.~Bordes, X.~Glorot,
+      \emph{Deep Sparse Rectifier Neural Networks},
+      International Conference on Artificial Intelligence and Statistics,
+      (2011).
+      
+      \bibitem{ZEILER}
+      M.~D.~Zeiler, R.~Fergus,
+      \emph{Stochastic pooling for regularization of deep convolutional neural networks},
+      arXiv preprint arXiv:1301.3557,
+      (2013).
+      
+     
+    \bibitem{HYPEROPT}
+     J.~Bergstra, D.~Yamins, D.~D.~Cox,
+     \emph{Hyperopt: A Python Library for Optimizing the Hyperparameters of Machine Learning Algorithms},
+     Proceedings of the 12th Python in Science Conference, 13--20,
+     (2013).
+      
+     \bibitem{ROC_1}
     T.~Unterthiner, A.~Mayr, G.~Klambauer, M.~Steijaert, J.~Wegner, H.~Ceulemans, S.~Hochreiter,
     \textit{Deep Learning as an Opportunity in Virtual Screening},
     Deep Learning and Representation Learning Workshop, NIPS,
@@ -883,12 +890,43 @@
     \textit{Current Trends in Ligand-Based Virtual Screening: Molecular Representations, Data Mining Methods, New Application Areas, and Performance Evaluation},
     Journal of chemical information and modeling, Volume 50, Issue 2, 205--2016,
     (2010).
-    
-    \bibitem{EF_BEDROC}
+
+    \bibitem{YOUDEN}
+     W.~J.~Youden,
+     \emph{Index for rating diagnostic tests},
+     Cancer, 3.1, 32--35,
+     (1950).
+
+      \bibitem{Pylearn2}
+      I.~J.~Goodfellow, D.~Warde-Farley, P.~Lamblin, V.~Dumoulin, M.~Mirza, R.~Pascanu, J.~Bergstra, F.~Bastien, Y.~Bengio,
+      \textit{"Pylearn2: a machine learning research library"},
+     arXiv preprint arXiv:1308.4214,
+     (2013).
+      
+         \bibitem{EF_BEDROC}
     V.~Venkatraman, P.~R.~Chakravarthy, D.~Kihara
     \textit{Application of 3D Zernike descriptors to shape-based ligand similarity searching}
     Journal of Cheminforminformatics, Volume 1, Issue 19, 
     (2009)
+      
+
+      \bibitem{con_neur_INT}
+      \textit{Deep Learning - Convolutional Neural Networks (LeNet)},
+      \url{http://deeplearning.net/tutorial/lenet.html}
+
+     \bibitem{bibROC}
+     \textit{Receiver operating characteristic - Wikipedia article},
+     \url{https://en.wikipedia.org/wiki/Receiver_operating_characteristic}
+     
+     \bibitem{bibYOUDEN}
+     \textit{Youden's J Statistic - Wikipedia article},
+     \url{https://en.wikipedia.org/wiki/Youden%27s_J_statistic}
+     
+     
+     
+
+    
+
     
      
       %TODO: numpy, scipy?, sklearn metrics for f12 score, latex, draw.io

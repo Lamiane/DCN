@@ -516,47 +516,64 @@ def number_of_epochs(filename, filename_save, title):
     plt.savefig(filename_save+'.pdf')
 
 
-def add_score_layers(hyp_dict, plt):
-    cv_dict_list = hyp_dict['all_models']
+def add_score_layers(hyp_dict_list, plt, x_ticks):
     plt.clf()
+    fig, ax = plt.subplots()
 
-    # finding best architecture
-    idx_best_score_tuple = (-1, 0)
+    list_of_cv_dict_list = []
+    for hyp_dict in hyp_dict_list:
+        list_of_cv_dict_list.append(hyp_dict['all_models'])
 
-    # # lower
     lower_scores = []
-    # for i in indices_lower:
-    #     lower_scores.append(cv_dict_list[i]['mean_score'])
-    #
-    # # upper
     upper_scores = []
-    # for i in indices_upper:
-    #     upper_scores.append(cv_dict_list[i]['mean_score'])
-
     import ast
-    for cv_dict in cv_dict_list:
-        architecture_string = cv_dict['architecture']
-        dictios_tuple = ast.literal_eval(architecture_string)
-        if dictios_tuple[1]['h1'] is None:
-            lower_scores.append(cv_dict['mean_score'])
-        else:
-            upper_scores.append(cv_dict['mean_score'])
+
+    for cv_dict_list in list_of_cv_dict_list:
+        lower_temp = []
+        upper_temp = []
+        for cv_dict in cv_dict_list:
+            architecture_string = cv_dict['architecture']
+            dictios_tuple = ast.literal_eval(architecture_string)
+            if dictios_tuple[1]['h1'] is None:
+                lower_temp.append([cv_dict['mean_score']])
+            else:
+                upper_temp.append([cv_dict['mean_score']])
+        lower_scores.append(lower_temp)
+        upper_scores.append(upper_temp)
+
+    x_lower = []
+    x_upper = []
+    y_lower = []
+    y_upper = []
+
+    for idx, el in enumerate(lower_scores):
+        x_lower.extend([idx for i in range(len(lower_scores[idx]))])
+        y_lower.extend(lower_scores[idx])
+
+    for idx, el in enumerate(upper_scores):
+        x_upper.extend([idx for i in range(len(upper_scores[idx]))])
+        y_upper.extend(upper_scores[idx])
 
     # plotting
-    plt.plot([1 for i in range(len(upper_scores))], upper_scores, 'o')
-    plt.plot([1 for i in range(len(lower_scores))], lower_scores, 'o')
+    plt.plot(x_upper, y_upper, 'o')
+    plt.plot(x_lower, y_lower, 'o')
 
-    # plt.axes.get_xaxis().set_visible(False)
-    plt.xticks([])
+    plt.xlim([-0.5, 2.5])
+
+    # plt.xticks(x_ticks)
+    ax.set_xticks(list(set(x_upper)))
+    ax.set_xticklabels(x_ticks)
+
     plt.legend(['two layers', 'one layer'], loc='upper right')
 
 
-def score_layers(filename, filename_save, title):
-    structured = turn_into_structure(filename)
+def score_layers(filename_list, filename_save, xticks):
+    structured = []
+    for filename in filename_list:
+        structured.append(turn_into_structure(filename))
     import matplotlib.pyplot as plt
     plt.clf()
-    add_score_layers(structured, plt)
-    plt.title(title)
+    add_score_layers(structured, plt, xticks)
     plt.ylabel('score on testing set')
     plt.savefig(filename_save+'.png')
     plt.savefig(filename_save+'.pdf')

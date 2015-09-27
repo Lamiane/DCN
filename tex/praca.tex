@@ -62,7 +62,7 @@
   
   %\maketitle
   \begin{abstract}
-    The goal of this work is to address the problem of virtual screening by building a model that would classify ligands as active or inactive based on their fingerprints. Convolutional neural network are used. Two approaches are described. Two new methods to include unlabeled samples in the learning procedure are presented.
+    The goal of this work is to address the problem of virtual screening by building a model that would classify ligands as active or inactive based on their fingerprints. Convolutional neural networks are used. Two approaches are described. Two new methods to include unlabelled samples in the learning procedure are presented.
   \end{abstract}
   
 %  \frontmatter
@@ -78,12 +78,12 @@
 	  The virtual screening might be done in, basically, two ways~\cite{Geppert2010,Varnek2012}
 	  \begin{itemize}
       \item target- (or structure- or protein-) based screening when the structure of a protein is known and methods of \textit{docking} might be used to predict the activity,
-      \item ligand-based screening if protein structure is \textit{not} known, but there is a knowledge about some molecules that are active; then the task is to find molecules similar to those active (following a Johnson-Maggiora rule that similar compounds should have similar properties~\cite{Varnek2012}).
+      \item ligand-based screening if protein structure is \textit{not} known, but there is a knowledge about some molecules that are active; then the task is to find molecules similar to those active (following the Johnson-Maggiora rule that similar compounds should have similar properties~\cite{Varnek2012}).
       \end{itemize}
   
     \section{The goal of this paper}
     
-     Virtual screening involves checking great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would and we proposed two approaches to tackle this problem. Moreover, we present new approach to make use of unlabeled examples during the learning process of convolutional neural networks.
+     Virtual screening involves checking great amounts of molecules in order to find those which have interesting features. In this paper we describe how convolutional neural networks can be used to approach this problem. Our goal was to build a model that would and we proposed two approaches to tackle this problem. Moreover, we present new approach to make use of unlabelled examples during the learning process of convolutional neural networks.
     
     \section{Related work}
     During last few years research was conducted in the area on incorporating machine learning methods to address the problem of virtual screening~\cite{kernel_biology, evaluation2007, MLforINSilicio}. Such methods as support vector machines~\cite{SVM}, binary kernel disctimination~\cite{BKD} or neural networks~\cite{NN_VS} have been successfully used to address this problem. In this paper we show that using convolutional neural networks is also a promising approach.
@@ -102,7 +102,7 @@
     
     \emph{Proteins} are molecules built from \emph{amino acid residues} forming a single \emph{chain}. Some proteins have less than 100 residues while others might have even few thousands of them. The order of amino acids in the chain and their spatial arrangement carry a lot of information. 
     
-    Our goal was to build a model that would classify the complex as \emph{active} or \emph{inactive} based on its \emph{fingerprint}. Fingerprints are a widely used representation of molecules. There are many types of fingerprints designed. They vary in length and the type of information they carry. Some of them are designed for specific tasks. (citation needed). Conventionally, fingerprints represent a molecule as a vector. Each element of this vector describes whether a specific structure is present in the molecule or not, e.g. whether the molecule has a hydrophobic group or not. 
+    Our goal is to build a model that would classify the complex as \emph{active} or \emph{inactive} based on its \emph{fingerprint}. Fingerprints are a widely used representation of molecules. There are many types of fingerprints designed. They vary in length and the type of information they carry. Some of them are designed for specific tasks. (citation needed). Conventionally, fingerprints represent a molecule as a vector. Each element of this vector describes whether a specific structure is present in the molecule or not, e.g. whether the molecule has a hydrophobic group or not. 
         
     Vectors are commonly used in machine learning as data representation because they can be stored in matrices which allows easy calculations. Even though representing a protein as a vector means loosing a lot of information about its topology, it enables effective computation and still provides us with reasonable results. 
     
@@ -110,7 +110,7 @@
      
      
     \section{2D-SIFt fingerprints}
-    In this work the 2D-SIFt fingerprints are used~\cite{Mordalski2011, cos-jeszcze}. They are a composition of Structural Interaction Fingerprints (SIFt)~\cite{Singh2006} together with the pharmacophore model. SIFts code information from the point of view of the receptor conveying \textit{how} a molecule interacts with the protein, not \textit{what} interacts. A single block codes information in a nine element long binary vector:
+    In this work the 2D-SIFt fingerprints are used~\cite{2DSIFT, Mordalski2011}. They are a composition of Structural Interaction Fingerprints (SIFt)~\cite{Singh2006} together with the pharmacophore model. SIFts code information from the point of view of the receptor conveying \textit{how} a molecule interacts with the protein, not \textit{what} interacts. A single block codes information in a nine element long binary vector:
     \begin{align*}
     [\text{any contact},&\text{backbone},\text{sidechain},\text{polar},\text{hydrophobic}, \\
     &\text{H-bond acceptor},\text{H-bond donor},\text{aromatic},\text{charged}
@@ -137,9 +137,9 @@
     
     At first, the convolutional neural networks are described. We present such concepts as convolution or pooling. The properties of convolutional neural networks are given. 
     
-    Chapter \ref{chap:OUR_MODEL} is the most important part of the paper. In this chapter we present the two approaches that we used to address the problem. We describe in detail the data on which we performed experiments and the preprocessing that we used to extract most interesting features from the data. A detailed explanation of the architecture that we used is given. We describe in detail both training methods that we created to tackle the problem of using unlabeled samples in the learning algorithm - the naive approach and the fancy approach. 
+    Chapter \ref{chap:OUR_MODEL} is the most important part of the paper. In this chapter we present the two approaches that we used to address the problem. We describe in detail the data on which we performed experiments and the preprocessing that we used to extract most interesting features from the data. A detailed explanation of the architecture that we used is given. We describe in detail both training methods that we created to tackle the problem of using unlabelled samples in the learning algorithm - the naive approach and the fancy approach. 
     
-    Our results are described in the next chapter. Finally, in the last chapter we discuss possible ways to further develop our approach. At the end of this paper there is a short appendix which includes some less important concepts used in this work.
+    Our results are described in the chapter \ref{Results}. Finally, in the last chapter we discuss possible ways to further develop our approach. At the end of this paper there is a short appendix which includes some less important concepts used in this work.
     
 
   \chapter{Convolutional Neural Networks}
@@ -163,7 +163,7 @@
       \section{Computation Flow}
 	As stated above, CNNs can be conceptually divided into two subnetworks. In this subsection it will be described how the data is processed within the convolutional subnetwork. Not much attention will be put to classifying subnetwork as there is a wide variety of possible approaches. 
 	
-	There are three elemental operations that are performed in each layer of the convolutional subnetwork. At first, the input is convoluted with a convolution matrix. The result of this operation becomes an input to the activation function, which output becomes the input to the pooling function. The output of the pooling function becomes the input to the next layer which might be another convolutional layer and the whole process will begin again. This process is schematically depicted on figure \ref{fig:con_neur} and it can be also described by the following formula: 
+	There are three elemental operations that are performed in each layer of the convolutional subnetwork. At first, the input is convoluted with a convolution matrix. The result of this operation becomes an input to the activation function, which output becomes the input to the pooling function. The output of the pooling function becomes the input to the next layer which might be another convolutional layer and the whole process will begin again. This process is schematically depicted in figure \ref{fig:con_neur} and it can be also described by the following formula: 
 	
 	\begin{center}
 	$output = p(\sigma(c(input)))$, 
@@ -195,9 +195,9 @@
 	$c(t) = \int\limits_{-\infty}^\infty f(x)g(t-x)dx$, 
 	\end{center}
 	
-	where $c$ is a function returned by convolution operation and $t$ is a point in which function $c$ is evaluated. $c$ is defined as an integral over two other functions: $f$ is often called the input, while $g$ is often reffered to as a weighting function. 
+	where $c$ is a function returned by convolution operation and $t$~is a point in which function $c$~is evaluated. $c$~is defined as an integral over two other functions: $f$~is~often called the input, while $g$~is often reffered to as a weighting function. 
 	
-	Convolution might be seen as a measure how well two functions fit. Function $g$ is a pattern that moves along function $f$ and it each place it measures how well the two functions fit. If the similarity is high, the returned value is high as well. 
+	Convolution might be seen as a measure how well two functions fit. Function $g$~is a pattern that moves along function $f$~and it each place it measures how well the two functions fit. If the similarity is high, the returned value is high as well. 
 		
 	\subsubsection{Convolution for neural networks}
 	  
@@ -208,7 +208,7 @@
 	  
 	  If we want to apply this equation to neural networks we might want to think of $\overline{f}$ as a data sample. In such approach $\overline{g}$ would become a matrix that is moving around the data sample producing a single value in each place. From now on, we will call $f$ an input, $g$ a filter or a convolution matrix or a convolution window and $c$ an output. 
 	  
-	  Usually, the convolution window is much smaller then the input and convolution is appplied multiple times. Each time a  submatrix of input is multiplied by the convolution window. The result of this operation is a scalar, and a result of a whole process is a matrix. Each layer of neural network might include multiple filters and thus each layer might produce an output of higher dimensionality than the provided input - the additional dimension is produced due to using multiple filters. 
+	  Usually, the convolution window is much smaller then the input and convolution is appplied multiple times. Each time a  submatrix of input is multiplied by the convolution window. The result of this operation is a scalar, and a result of a~whole process is a matrix. Each layer of neural network might include multiple filters and thus each layer might produce an output of higher dimensionality than the provided input - the additional dimension is produced due to using multiple filters. 
 	  
 	  It is worth noting, that there are different filters in each layer. Filters in the next layer work on the features extracted from the previous layers. Therefore, the later the layer is in the neural network, the more complicated patterns it may discover. 
 	  
@@ -256,7 +256,7 @@
 	  There are few possible activation functions that might be used in convolution neural networks~\cite{DUTCH}.
 	  \begin{itemize}
 	   \item the sigmoid activation function $\sigma(x) = \frac{1}{1 + e^{-x}}$
-	   \item the hyperbolic tangent activation function $tanh(x) = \frac{e^{2x} - 1}{e^{2x} + 1}$
+	   \item the hyperbolic tangent activation function $tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}$
 	   \item the rectifier linear function~\cite{GLOROT_BENGIO} $rect(x) = max(0,x)$
 	  \end{itemize}
 
@@ -298,8 +298,7 @@
        \section{Computation properties of convolutional neural networks}
       	  Convolutional neural networks have properties that make the computation fast, namely \emph{parameter sharing} and \emph{sparse interactions}~\cite{Bengio}. Both these properties are connected to using convolution. 
 	  
-	  Parameter sharing means that the same weight is used multiple times during calculating the activation for a sample.
-	  Convolution matrices are much smaller than the input and are moved around it, so each time the same set of parameters is used to compute the output. Thanks to that, there is no need to have multiple sets of parameters that would discover the same feature in multiple places of the input - it is enough to have one filter that moves around that input. Because of that, the number of parameters is greatly reduced, and therefore the learning process speeds up. 
+	  Parameter sharing means that the same weight is used multiple times during calculating the activation for a sample. This is because each filter (convolution matrix) that is learned by the network is multiplied with the input many times - each time with another part of the input. Thanks to that, there is no need to have multiple sets of parameters that would discover the same feature in multiple places of the input - it is enough to have one filter that moves around that input. Because of that, the number of parameters is greatly reduced, and therefore the learning process speeds up. 
 	  
 	  In a typical neural network each element of input has influence on each element of the output which means that the interactions are dense. In convolutional neural networks the situation is different - the filters are much smaller than the input and discover local patterns, what leads to sparse interactions. This property again causes a reduction in the number of parameters in the model and makes the learning process much faster.
 	
@@ -315,7 +314,7 @@
 	
 	\begin{figure}[h!]
 	  \centering
-	  \includegraphics{single_data_sample.png}
+	  \includegraphics[scale=0.8]{single_data_sample.png}
 	  \caption{A single data sample.}
 	  \label{fig:single_data_sample2}
 	\end{figure} 
@@ -326,14 +325,14 @@
 	
 	\begin{figure}[h!]
 	  \centering
-	  \includegraphics[scale=0.6]{original_dataset.png}
+	  \includegraphics[scale=0.75]{original_dataset.png}
 	  \caption{Data stored in the memory}
 	  \label{fig:data_original}
 	\end{figure} 
 	
 	The values constituting the dataset are discrete numbers in range 0 to 9. They describe how many interactions of a specific kind there is in a certain residue. The data was very sparse - more than 99\% of all values were zeros. 
 	
-	The dataset was stored in 3 files - each file contained samples of only one type: active, inactive, middle (not labled). Out of 5844 samples 2655 were labeled as active, 1945 was labeled as inactive and there were also 1244 unlabeled examples. 
+	The dataset was stored in 3 files - each file contained samples of only one type: active, inactive, middle (not labled). Out of 5844 samples 2655 were labeled as active, 1945 was labeled as inactive and there were also 1244 unlabelled examples. 
 	
 	%2RH1_middle_2dfp.dat
 	%    ||   0:   25795857.0   ||   1:   126528.0   ||   2:   58546.0  ||    3:   21098.0   ||   4:    6490.0   ||
@@ -390,7 +389,7 @@
       The last layer of the network was a softmax layer with two neurons. It was used to classify the sample based on features extracted by the convolutional part of the network. 
       
 	\subsection{Finding best architecture}
-	Due to many hyperparameters, there exist many models that fulfill our architecture restrictions and therefore it is not possible to train and measure the performance of all possible architectures. To find the best one we used the tree of Parzen estimators algorithm (see appendix \ref{appendiks}) provided by a Python library - Hyperopt~\cite{HYPEROPT} and let it sample 20 models. 
+	Due to many hyperparameters, there exist many models that fulfill our architecture restrictions and therefore it is not possible to train and measure the performance of all possible architectures. To find the best one we used the tree of Parzen estimators algorithm (see appendix \ref{appendiks}) provided by a Python library - hyperopt~\cite{HYPEROPT} and let it sample 20 models. 
 		
 	Each architecture that was tested was chosen by hyperopt module. Based on the performance of the already tested architectures hyperopt was choosing another one. Each architecture was passed from hyperopt to the function responsible for measuring the performance of the model. We will call this function an objective function. 
 	
@@ -402,20 +401,20 @@
 	\end{figure} 
 	
 	\subsubsection{Objective function for hyperopt}
-	Each time the objective function created five models of a given architecture and then trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. Validation and test set included only labeled examples because classifying unlabeled examples would not be possible. All the unlabeled samples were added only to the training set. The cross validation proceeded as follows: the active and inactive samples were split into five parts of even size. One part became the validation set, one part the test set and the other three parts along with all the unlabeled examples became the training set. The whole procedure was repeated five times. 
+	Each time the objective function created five models of a given architecture and then trained and measured the performance of each. Cross validation procedure was used to obtain different training data for each model. Validation and test set included only labeled examples because classifying unlabelled examples would not be possible. All the unlabelled samples were added only to the training set. The cross validation proceeded as follows: the active and inactive samples were split into five parts of even size. One part became the validation set, one part the test set and the other three parts along with all the unlabelled examples became the training set. The whole procedure was repeated five times. 
 	
 	Each time after training the model its performance on testing data was measured and stored. At the end the mean value of scores of all five models was returned to the hyperopt module. The score used for measuring the performance of the model was receiver operating characteristic (ROC) with Youden's J statistic. We will cover this topic in details later in this section. Algorithm \ref{alg:cross_validation} shows pseudo code for the cross validation procedure. 
 	
 	\begin{algorithm}
 	\caption{Cross validation}\label{alg:cross_validation}
 	\begin{algorithmic}[1]
-	\Procedure{objective\_func}{sample, data\_labeled, data\_unlabeled}
+	\Procedure{objective\_func}{sample, data\_labeled, data\_unlabelled}
 	\State
 	\State $\textit{scores} \gets \textit{empty list}$
 	\State
 	\For {$\textit{k} \in [0...4]$} 
 	  \State $\textit{train\_set, validation\_set, test\_set} \gets \textit{split(data\_labeled, k)} $
-	  \State $\textit{train\_set} \gets \textit{train\_set + data\_unlabeled}$
+	  \State $\textit{train\_set} \gets \textit{train\_set + data\_unlabelled}$
 	  \State $\textit{model} \gets \textit{build\_model(sample)}$
 	  \State $\textit{model} \gets \textit{train(model, train\_set, validation\_set)}$
 	  \State $\textit{score} \gets \textit{measure\_performance(model, test\_set)}$
@@ -429,27 +428,29 @@
 	\end{algorithm}
 	
 	\subsubsection{Training the model}
-	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabeled examples in the validation set.
+	The model provided by the hyperopt module was built five times and every time it was trained on another part of the data which was obtained using the cross validation procedure. After each epoch of training the optimal threshold was calculated on the validation set. All samples, for which activation value was above the threshold, were then classified as active samples and those, for which activation value was below the threshold, were classified as inactive. Keep in mind, that there were no unlabelled examples in the validation set.
 	
-	In order to compute the optimal threshold, we used the receiver operating characteristic (ROC) - a method that is widely used in such problems~\cite{ROC_1, ROC_EF} (see appendix \ref{appendiks} for more information about ROC). To measure the quality of the threshold the Youden's J statistic~\cite{YOUDEN} (see appendix \ref{appendiks} for more information) was used. Afterwards, the model's performance on validation data was measured. The score was the Youden's score. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used. The score to measure the performance of the model was the Youden's score. 
+	In order to compute the optimal threshold, we used the receiver operating characteristic (ROC) - a method that is widely used in such problems~\cite{ROC_1, ROC_EF} (see appendix \ref{appendiks} for more information about ROC). To measure the quality of the threshold the Youden's J statistic~\cite{YOUDEN} (see appendix \ref{appendiks} for more information) was used. The same statistic was used to measure the performance of the network on the validation and test data.
+	
+	After finding the optimal threshold the model's performance on validation data was measured. If the performance for this model was best until this point of time, the whole model (i.e. all its parameters along with the computed threshold) was dumped to hard drive for later reference. As a result, at the end of the learning process the model's best version was remembered and could be read in order to measure its performance on the testing set and append its score to the list in the cross validation procedure. The threshold calculated during the learning phase was used.
 	
 	
 	The details of the learning algorithm are covered in section \ref{sec:learning_algorithm}.	
 	
       
     \section{The Learning Algorithm}\label{sec:learning_algorithm} 
-    The provided data included unlabeled examples. Two approaches that would enable using these examples to training the model were tested. 
+    The provided data included unlabelled examples. Two approaches that would enable using these examples to training the model were tested. 
     
       \subsection{Na\"{i}ve Approach}
-      Training set was constructed in the following way: all examples were included in the training set two times - the labeled samples were included with their label and the unlabeled examples were included once with positive label, and once with negative label. This way the impact on classification of unlabeled data was minimised while the unalabeled data could have been used to improve parameters in the convolutional part of the model. 
+      Training set was constructed in the following way: all examples were included in the training set two times - the labeled samples were included with their label and the unlabelled examples were included once with positive label, and once with negative label. This way the impact on classification of unlabelled data was minimised while the unalabeled data could have been used to improve parameters in the convolutional part of the model. 
 	  
       \subsubsection{Example:}
-      If there were the following samples: [A, B, C] along with the following labels: [act, inact, unlabeled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact]. 
+      If there were the following samples: [A, B, C] along with the following labels: [act, inact, unlabelled] then the training set would look like this: [A, A, B, B, C, C] and the labels would be [act, act, inact, inact, act, inact]. 
       
     For this approach the stochastic gradient descent algorithm included in Pylearn2 Python library was used~\cite{Pylearn2}. 
 	  
       \subsection{Fancy Approach}
-      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabeled examples during the learning process. The SGD implementation provided in Pylearn2 was used as a base~\cite{Pylearn2}. Major changes were introduced in the training function in such a way that the unlabeled examples were used to adjust the parameters of the convolutional part of the model only and had no impact on the classification part. The pseudo-code of this algorithm can be found below as Algorithm 2. 
+      In this approach each sample was included in the dataset only once. In order to train the model, a variation of stochastic gradient descent algorithm was written. This enabled using unlabelled examples during the learning process. The SGD implementation provided in Pylearn2 was used as a base~\cite{Pylearn2}. Major changes were introduced in the training function in such a way that the unlabelled examples were used to adjust the parameters of the convolutional part of the model only and had no impact on the classification part. The pseudo-code of this algorithm can be found below as Algorithm 2. Note that the network's parameters are updated within the algorithm, so the algorithm itself does not need to return any value.
       
       \begin{algorithm}
       \caption{Learning}\label{euclid}
@@ -485,21 +486,20 @@
 	\Else
 	\State $\textit{SGD(sample, label)}$
       \EndIf
-      \State
       \EndProcedure
       \end{algorithmic}
       \end{algorithm}
       
-      For labeled samples the learning process was performed with no changes. When the sample was unlabeled the network parameters were stored and then the sample was presented to the network as if it was labeled as inactive. During this process the network parameters were updated. The difference in the network parameters was stored and old parameters were restored. Afterwards, the sample was presented to the network again - this time as an active sample. The procedure was the same as before. After calculating the difference and restoring the old parameters the two vectors of differences were compared to produce the final vector of updates. 
+      For labeled samples the learning process is performed with no changes. When the sample is unlabelled the network parameters are stored and then the sample is presented to the network as if it was labeled as inactive. During this process the network parameters are updated. The difference in the network parameters is stored and old parameters are restored. Afterwards, the sample is presented to the network again - this time as an active sample. The procedure is the same as before. After calculating the difference and restoring the old parameters the two vectors of differences are compared to produce the final vector of updates. 
            
            
-      The final vector had the following properties:
+      The final vector has the following properties:
       \begin{enumerate}
-       \item the elements responsible for updating the classification part of the network were all zeros, therefore the unlabeled examples had only impact on learning parameter of the convolutional subnetwork and did not influence the classification part of the network. 
-       \item the elements responsible for updating the convolutional part of the model were calculated in the following way:
+       \item the elements responsible for updating the classification part of the network are all zeros, therefore the unlabelled examples have only impact on learning the parameters of the convolutional subnetwork and do not influence the classification part of the network. 
+       \item the elements responsible for updating the convolutional part of the model are calculated in the following way:
 	\begin{itemize}
-	 \item if the corresponding elements of the two vectors had the opposite sign, then the corresponding element in the final vector was zero. As a result, the unlabeled samples were used by the network to learn only these filters that were useful for classifying samples of both classes
-	  \item if the corresponding elements in both vectors had the same sign, then the corresponding element in the final vector was calculated using the values of the two elements. The final value could be:
+	 \item if the corresponding elements of the two vectors have the opposite sign, then the corresponding element in the final vector is zero. As a result, the unlabelled samples are used by the network to learn only these filters that are useful for classifying samples of both classes.
+	  \item if the corresponding elements in both vectors have the same sign, then the corresponding element in the final vector is calculated using the values of the two elements. The final value can be:
 	  \begin{itemize}
 	    \item minimum by absolute value of the two elements
 	    \item maximum by absolute value of the two elements
@@ -511,23 +511,21 @@
 	  \end{itemize}
 	\end{itemize}
       \end{enumerate}
-
-      
-      Please, see the example below to understand this concept more clearly.
             	
-      Concluding, the update vector had zeros in part responsible for classification. If two corresponding values in the vectors of differences had opposite sign, then the corresponding value of the update vector was zero. All other elements were calculated using one of the combination functions. 
+      Concluding, the update vector has zeros in part responsible for classification. If two corresponding values in the vectors of differences have opposite sign, then the corresponding value of the update vector is zero. All other elements are calculated using one of the combination functions. 
       
       \subsubsection{Example}
-      Let $[+2, +5, +1, -3, +5, +7]$ and $[-2, +3, -1, -7, -7, +7]$ be the vectors of differences, elements 1 to 4 were responsible for updating the convolutional part, elements 5 and 6 were responsible for updating the classifying part of the network and the combination function used was minimum, then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example is ilustrated in figure \ref{fig:combining}. 
-      
       \begin{figure}[h!]
 	  \centering
-	  \includegraphics[scale=0.7]{combining_min.png}
+	  \includegraphics[scale=0.6]{combining_min.png}
 	  \caption{Example of the min combining function.}
 	  \label{fig:combining}
 	\end{figure} 
-	
-   \chapter{Results}
+      
+      Let $[+2, +5, +1, -3, +5, +7]$ and $[-2, +3, -1, -7, -7, +7]$ be the vectors of differences, elements 1 to 4 responsible for updating the convolutional part, elements 5 and 6 responsible for updating the classifying part of the network and the combination function used minimum, then the final vector would be $[0, 3, 0, -3, 0, 0]$. Elements 5 and 6 are zeros because they are responsible for updating the classification part of the network. Elements 1 and 3 are zeros because the corresponding values in two vectors have opposite signs. Elements 2 and 4 are minimums by absolute value of the two corresponding values. This example is ilustrated in figure \ref{fig:combining}. 
+      
+      
+   \chapter{Results}\label{Results}
     In this chapter the results we obtained during the experiments shall be described.
    
    \section{Hyperopt}
@@ -547,31 +545,17 @@
 
     \section{Architecture}
     
-    After close investigation it turned out that each architecture that had a poor mean score in cross validation procedure had only one convolutional layer. This was true for each combination function. This is depicted on figures \ref{Fig:MEAN_LAYERS_SCORE}, \ref{Fig:MIN_LAYERS_SCORE} and \ref{Fig:SOFT_LAYERS_SCORE}. It suggests that one convolutional layer is not enough to perform the classification on this data with good results. It shows that it will be a good approach to use more convolutional layers in the future. Moreover, it suggests that the patterns in this data are rather complicated.
+    After close investigation it turned out that each architecture that had a poor mean score in cross validation procedure had only one convolutional layer. This was true for each combination function. This is depicted on figure \ref{Fig:SCORE_LAYER}. It suggests that one convolutional layer is not enough to perform the classification on this data with good results. It shows that it will be a good approach to use more convolutional layers in the future. Moreover, it suggests that the patterns in this data are rather complicated.
     
     \begin{figure}[!htb]\centering
       \begin {minipage}{\textwidth}
-	\frame{\includegraphics[width=\linewidth]{MEAN_LAYERS_SCORE.pdf}}
-	\caption{Score of the network and number of convolutional layers.}\label{Fig:MEAN_LAYERS_SCORE}
+	\frame{\includegraphics[width=\linewidth]{SCORE_LAYER.pdf}}
+	\caption{Score of the network and number of convolutional layers.}\label{Fig:SCORE_LAYER}
       \end{minipage}
      \end{figure}
-     
-     \begin{figure}
-      \begin{minipage}{\textwidth}
-	\frame{\includegraphics[width=\linewidth]{MIN_LAYERS_SCORE.pdf}}
-	\caption{Score of the network and number of convolutional layers.}\label{Fig:MIN_LAYERS_SCORE}
-      \end{minipage}
-     \end{figure}
-     
-     \begin{figure}
-      \begin {minipage}{\textwidth}
-	\frame{\includegraphics[width=\linewidth]{SOFT_LAYERS_SCORE.pdf}}
-	\caption{Score of the network and number of convolutional layers.}\label{Fig:SOFT_LAYERS_SCORE}
-      \end{minipage}
-    \end{figure}
     
 
-    As already said, each architecture sampled by the hyperopt module was trained five times during the cross validation procedure. It is interesting to see how big were the differences between the best scores of these five models. This data is presented on figure \ref{VARIANCE}. As one can see, the variance of performance of architectures that used the minimum or the mean combination function is much bigger than the variance of performance of architectures that used softmax as combination functions. It is another argument that the combination function influences the learning procedure strongly. Due to the big variance it can be considered in the future to split the dataset into more parts in the cross validation procedure.
+    As already said, each architecture sampled by the hyperopt module was trained five times during the cross validation procedure. It is interesting to see how big were the differences between the best scores of these five models. This data is presented on figure \ref{VARIANCE}. As one can see, the variance of performance of architectures that used the minimum or the mean combination function is much bigger than the variance of performance of architectures that used softmax as combination functions. Due to the big variance it can be considered in the future to split the dataset into more parts in the cross validation procedure.
 
       \begin{figure}[h!]
 	\centering
@@ -662,6 +646,10 @@
     % mean 	(0.8323140207919117, 0.6500225001690332, 0.6946473619604562, 0.5145779241958454)
     % minimum 	(0.8432657266708066, 0.6841930968104375, 0.7257190251067805, 0.5639553464547893)
     
+    \begin{table}[ht]\label{performance}
+    \caption{Performance of models}
+    \centering 
+    \begin{center}
     \begin{tabular}{lrrr}
     \hline
              & Precision  & Recall   & F1Score  \\
@@ -670,11 +658,13 @@
     Mean     & 0.832      & 0.650    & 0.695   \\
     Minimum  & 0.843      & 0.684    & 0.726   \\
     \hline
-    \end{tabular}\label{performance}
+    \end{tabular}
+    \end{center}
+    \end{table}
     
-    We have shown (see figures \ref{Fig:MEAN_LAYERS_SCORE}, \ref{Fig:MIN_LAYERS_SCORE} and \ref{Fig:SOFT_LAYERS_SCORE}) that one convoluional layer is not enough for such data.
+    We have shown (see figure \ref{Fig:SCORE_LAYER}) that one convoluional layer is not enough for such data.
     
-    Moreover, we have proposed the Fancy Approach to use unlabeled examples can be used during learning process of convolutional neural networks. 
+    Moreover, we have proposed the Fancy Approach to use unlabelled examples can be used during learning process of convolutional neural networks. 
   
     \section{Future work}
       There are still many ways to improve and further investigate the proposed method.
@@ -687,7 +677,7 @@
       
       Further, it is interesting to test other methods of evaluation the model and explore new methods of finding the optimal threshold for classification. In particular, we would like to investigate the approach which would enable finding two thresholds. Note that the model that created the dataset also used two thresholds so the new approach will lead to a greater resemblance (see section \ref{sec:PROBLEM} for more information). For evaluation the model such metrics as enrichment factor~\cite{ROC_EF, EF_BEDROC} or BEDROC~\cite{EF_BEDROC} can be used.
       
-      The two-threshold model will leave some samples unlabeled. It is of vital importance to explore what error functions can be used in such approach.
+      The two-threshold model will leave some samples unlabelled. It is of vital importance to explore what error functions can be used in such approach.
 
       Moreover, tt is important to investigate if representing the data in the memory in a 4-dimensional instead of 3-dimensional form can improve the performance of the model (see \ref{sec:OUR_DATA} for details). Using another form of representing the data in the memory might lead to discovering other patterns which can be more relevant for this data.
       

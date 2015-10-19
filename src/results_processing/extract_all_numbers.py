@@ -104,7 +104,11 @@ def turn_into_structure(filename):
         elif 'fonescore' in line and not epoching:
             add_digit_to_dictionary(model_dict, 'f1score', line)
         elif 'M_02:' in line:
+            # retrieve max MCC from all epochs and add it to model_dict
+            from numpy import max
             model_dict['epochs'] = deepcopy(epoch_list)
+            max_mcc = max([epoch_d['Youden_mcc'] for epoch_d in epoch_list])
+            model_dict['mcc'] = max_mcc
             epoch_list = []
             models_list.append(deepcopy(model_dict))
 
@@ -113,6 +117,13 @@ def turn_into_structure(filename):
             epoching = True
         elif epoching and ('corresponding threshold pair:' in line or 'y.shape' in line):
             epoching = False
+            # calculate MCC for this epoch
+            tp = epoch_dict['Youden_TP']
+            tn = epoch_dict['Youden_TN']
+            fp = epoch_dict['Youden_FP']
+            fn = epoch_dict['Youden_FN']
+            mcc_score = compute_mcc(tp, tn, fp, fn)
+            epoch_dict['Youden_mcc'] = mcc_score
             epoch_list.append(deepcopy(epoch_dict))
             epoch_dict = {}
 
@@ -135,6 +146,8 @@ def turn_into_structure(filename):
                     add_two_digits_to_dictionary(epoch_dict, 'Youden_FP', 'Youden_FN', line)
                     epoch_dict['Youden_accuracy'] = compute_accuracy(epoch_dict['Youden_TP'], epoch_dict['Youden_TN'],
                                                                      epoch_dict['Youden_FP'], epoch_dict['Youden_FN'])
+                    epoch_dict['Youden_mcc'] = compute_mcc(epoch_dict['Youden_TP'], epoch_dict['Youden_TN'],
+                                                           epoch_dict['Youden_FP'], epoch_dict['Youden_FN'])
                 elif 'precision' in line:
                     add_digit_to_dictionary(epoch_dict, 'Youden_precision', line)
                 elif 'recall' in line:
@@ -190,6 +203,22 @@ def compute_accuracy(tp, tn, fp, fn):
     else:
         accuracy = float(dividend)/float(dividend + fp + fn)
     return accuracy
+
+
+# Matthew's correlation coefficient
+def compute_mcc(tp, tn, fp, fn):
+    # MCC = (TP*TN - FP*FN) / sqrt( (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN) )
+    dividend = (tp * tn) - (fp * fn)
+    if dividend == 0:
+        mcc = 0
+    else:
+        divisor = (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
+        if divisor == 0:
+            divisor = 1
+        from numpy import sqrt
+        divisor = sqrt(divisor)
+        mcc = float(dividend)/float(divisor)
+    return mcc
 
 
 def check_sanity_of_dic(hyp_dict):
@@ -651,3 +680,14 @@ def prec_rec_score_combination_function(files_list, legend_list, filename_save):
     plt.legend(legend_list, loc='upper right')
     plt.savefig(filename_save+'.png')
     plt.savefig(filename_save+'.pdf')
+
+
+def mcc_statistics(hyp_dict):
+    mcc_list = []   # elements [no_cv_iteration, [mcc_1, ..., mcc_5]]
+    for idx, cv_dict in enumerate(hyp_dict['all_models']):
+        mcc_1_5 = [mod_dict['mcc'] for mod_dict in cv_dict['models']]
+        mcc_list.append([idx, mcc_1_5])
+
+    for element in mcc_list:
+        print element
+

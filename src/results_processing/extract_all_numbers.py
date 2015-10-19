@@ -688,6 +688,20 @@ def mcc_statistics(hyp_dict):
         mcc_1_5 = [mod_dict['mcc'] for mod_dict in cv_dict['models']]
         mcc_list.append([idx, mcc_1_5])
 
+    x_axis = []
+    y_axis = []
+    from numpy import ones
     for element in mcc_list:
-        print element
+        x_axis.extend(element[0]*ones(len(element[1])))
+        y_axis.extend(element[1])
+    import matplotlib.pyplot as plt
+    plt.clf()
+    # plt.plot(x_axis, y_axis, 'ro')
+    plt.violinplot(dataset=tuple([el[1] for el in mcc_list]), positions=[el[0] for el in mcc_list],
+                   widths=1, showextrema=True, showmeans=True)
+    plt.title('MCC for each model in each architecture')
+    plt.xlabel('architectures')
+    plt.ylabel('MCC')
+    plt.savefig('mcc.png')
+    plt.savefig('mcc.pdf')
 

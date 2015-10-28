@@ -17,7 +17,7 @@
             costs: [
                 !obj:pylearn2.costs.cost.MethodCost {
                     method: 'cost_from_X'
-                },
+                },349234923492
                 !obj:pylearn2.costs.mlp.WeightDecay {
                     coeffs: {
                         %(weight_decay_coeffs)s

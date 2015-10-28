@@ -11,6 +11,3 @@ def run(max_evals=10):
     print "BEST MODEL"
     print best
     return best
-
-
-

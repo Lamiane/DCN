@@ -11,7 +11,7 @@ class TwoDSiftData(DenseDesignMatrix):
 
     def __init__(self, filenames=[], y_val=[], nogap_type=True, labels=False, shuffle=True,
                  start=None, stop=None, cv=None, normal_run=True, indices_to_delete=None, shuffle_seed=1337,
-        middle=[], middle_val=-1):
+                 middle=[], middle_val=-1, reduce_dimension_to_1D=False):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
         :type filenames: list of data files to read
@@ -24,8 +24,8 @@ class TwoDSiftData(DenseDesignMatrix):
         :type cv: list of CV parts [how many parts, [list of parts to use]]; default None
         """
 
+        # reading files
         self.filenames = filenames
-
         if not os.path.isfile(self.filenames[0]):
             raise ValueError("Non-existent 2DSIFt file " + self.filenames[0])
         # get the protein name
@@ -40,8 +40,8 @@ class TwoDSiftData(DenseDesignMatrix):
         assert 1 == len(set(protein_names))
         del protein_names
 
+        # setting parameters
         self.protein = line.split(":")[0]
-
         self.name = ""
         self.__residue_width = 9
         self.__residue_height = 6
@@ -67,6 +67,7 @@ class TwoDSiftData(DenseDesignMatrix):
         if y_val is None:
             raise ValueError('y_val must be provided')
 
+        # actaully reading data from files
         if nogap_type:
             topo_view, y, skipped = self.read_nogaps(filenames, y_val)
         else:
@@ -79,6 +80,7 @@ class TwoDSiftData(DenseDesignMatrix):
 
         y = np.array(y).reshape((self.examples, 1))
 
+        # cleaning mess
         if indices_to_delete is not None:
             for tuple_element in reversed(indices_to_delete):
                 from numpy import delete
@@ -87,6 +89,7 @@ class TwoDSiftData(DenseDesignMatrix):
 
         print 'y.shape', y.shape
 
+        # shuffling if needed
         if shuffle:
             self.shuffle_data(topo_view, y)
 
@@ -147,6 +150,20 @@ class TwoDSiftData(DenseDesignMatrix):
             print "wszedlem do normal_run"  # POCHA
             topo_view = self.preprocess_data(topo_view)
         print "WYSZEDLEM Z normal run"  # POCHA
+
+        # reducing dimension do 1D if needed:
+        before_shape = copy(topo_view.shape)
+        print 'before reducing dimensions:', topo_view.shape
+        if reduce_dimension_to_1D:
+            # TODO testing!!!
+            # first axis stays as it is, all others are merged
+            topo_view = np.reshape(topo_view, (topo_view[0], -1))
+        print 'after reducing dimensions:', topo_view.shape
+        # checking validity
+        after_shape = copy(topo_view.shape)
+        assert before_shape[0] == after_shape[0]    # number of samples has not changed
+        # checking if the number of elements has not changed
+        assert reduce(lambda m, n: m + n, before_shape) == reduce(lambda g, h: g + h, after_shape)
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))

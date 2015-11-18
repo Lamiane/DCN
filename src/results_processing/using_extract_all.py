@@ -51,4 +51,24 @@ score_layers(file_list, output_name, legend_list)
 from extract_all_numbers import prec_rec_score_combination_function
 file_list = ['min_cut', 'soft_cut', 'mean_cut']
 output_name = 'SCORE_BY_COMB'
+legend_list = ['MINIMUM', 'SOFTMAX', 'MEAN']
 prec_rec_score_combination_function(file_list, output_name, legend_list)
+
+from extract_all_numbers import mcc_statistics, turn_into_structure
+filename = 'MININUM'
+info = turn_into_structure(filename)
+mcc_statistics(info)
+
+from extract_all_numbers import mcc_compare_all_three, turn_into_structure
+minimum = turn_into_structure('min_cut')
+softmax = turn_into_structure('soft_cut')
+mean = turn_into_structure('mean_cut')
+output_name = 'MCC_SCORE_BY_COMB'
+legend_list = ['MINIMUM', 'SOFTMAX', 'MEAN']
+mcc_compare_all_three([minimum, softmax, mean], output_name, legend_list)
+
+from extract_all_numbers import mcc_score_layers
+file_list = ['min_cut', 'soft_cut', 'mean_cut']
+output_name = 'MCC_SCORE_LAYER'
+legend_list = ['MINIMUM', 'SOFTMAX', 'MEAN']
+mcc_score_layers(file_list, output_name, legend_list)

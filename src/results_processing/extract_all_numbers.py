@@ -705,3 +705,108 @@ def mcc_statistics(hyp_dict):
     plt.savefig('mcc.png')
     plt.savefig('mcc.pdf')
 
+
+def mcc_compare_all_three(hyp_dict_list, filename_save, legend_list):
+    from numpy import mean
+    all_three_mcc = []
+    for hyp_dict in hyp_dict_list:
+        mcc_list = []
+        for cv_dict in hyp_dict['all_models']:
+            mcc_1_5 = [mod_dict['mcc'] for mod_dict in cv_dict['models']]
+            mcc_list.extend(mcc_1_5)
+        all_three_mcc.append(mean(mcc_list))
+
+    import matplotlib.pyplot as plt
+    plt.clf()
+
+    N = 1
+    import numpy as np
+    ind = np.arange(N)
+    width = 0.3
+    fig, ax = plt.subplots()
+
+    zipped = zip(all_three_mcc)
+    minimum = zipped[0]
+    softmax = zipped[1]
+    mean = zipped[2]
+
+    rects1 = ax.bar(ind, minimum, width, color='r')
+    rects2 = ax.bar(ind+width, softmax, width, color='y')
+    rects3 = ax.bar(ind+2*width, mean, width, color='g')
+
+    ax.set_ylabel('Scores')
+    ax.set_title('Scores by combination function')
+    ax.set_xticks(ind+width)
+    ax.set_xticklabels((' '))
+
+    ax.legend((rects1[0], rects2[0], rects3[0]), legend_list)
+
+    plt.ylabel('MCC')
+    plt.legend(legend_list, loc='lower right')
+    plt.savefig(filename_save+'.png')
+    plt.savefig(filename_save+'.pdf')
+
+
+def add_mcc_score_layers(hyp_dict_list, plt, x_ticks):
+    plt.clf()
+    fig, ax = plt.subplots()
+
+    list_of_cv_dict_list = []
+    for hyp_dict in hyp_dict_list:
+        list_of_cv_dict_list.append(hyp_dict['all_models'])
+
+    lower_scores = []
+    upper_scores = []
+    import ast
+
+    for cv_dict_list in list_of_cv_dict_list:
+        lower_temp = []
+        upper_temp = []
+        for cv_dict in cv_dict_list:
+            architecture_string = cv_dict['architecture']
+            dictios_tuple = ast.literal_eval(architecture_string)
+            import numpy as np
+            mean_mcc = np.mean([model['mcc'] for model in cv_dict['models']])
+            if dictios_tuple[1]['h1'] is None:
+                lower_temp.append(mean_mcc)
+            else:
+                upper_temp.append(mean_mcc)
+        lower_scores.append(lower_temp)
+        upper_scores.append(upper_temp)
+
+    x_lower = []
+    x_upper = []
+    y_lower = []
+    y_upper = []
+
+    for idx, el in enumerate(lower_scores):
+        x_lower.extend([idx for i in range(len(lower_scores[idx]))])
+        y_lower.extend(lower_scores[idx])
+
+    for idx, el in enumerate(upper_scores):
+        x_upper.extend([idx for i in range(len(upper_scores[idx]))])
+        y_upper.extend(upper_scores[idx])
+
+    # plotting
+    plt.plot(x_upper, y_upper, 'o')
+    plt.plot(x_lower, y_lower, 'o')
+
+    plt.xlim([-0.5, 2.5])
+
+    # plt.xticks(x_ticks)
+    ax.set_xticks(list(set(x_upper)))
+    ax.set_xticklabels(x_ticks)
+
+    plt.legend(['two layers', 'one layer'], loc='upper right')
+
+
+def mcc_score_layers(filename_list, filename_save, xticks):
+    structured = []
+    for filename in filename_list:
+        structured.append(turn_into_structure(filename))
+    import matplotlib.pyplot as plt
+    plt.clf()
+    add_mcc_score_layers(structured, plt, xticks)
+    plt.ylabel('score on testing set')
+    plt.savefig(filename_save+'.png')
+    plt.savefig(filename_save+'.pdf')

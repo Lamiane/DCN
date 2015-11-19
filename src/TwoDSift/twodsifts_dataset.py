@@ -10,7 +10,7 @@ from pylearn2.utils.rng import make_np_rng
 class TwoDSiftData(DenseDesignMatrix):
 
     def __init__(self, filenames=[], y_val=[], nogap_type=True, labels=False, shuffle=True,
-                 start=None, stop=None, cv=None, normal_run=True, indices_to_delete=None, shuffle_seed=1337,
+                 start=None, stop=None, cv=None, extend_data=True, indices_to_delete=None, shuffle_seed=1337,
                  middle=[], middle_val=-1, reduce_dimension_to_1D=False):
         # TODO remember filenames as a dictionary with additional information, like number of examples, etc.
         """
@@ -146,10 +146,10 @@ class TwoDSiftData(DenseDesignMatrix):
             self.shuffle_data(topo_view, y)
 
         # extending data
-        if normal_run:
-            print "wszedlem do normal_run"  # POCHA
+        if extend_data:
+            print "extending data..."  # POCHA
             topo_view = self.preprocess_data(topo_view)
-        print "WYSZEDLEM Z normal run"  # POCHA
+            print "DONE"  # POCHA
 
         # reducing dimension do 1D if needed:
         before_shape = copy(topo_view.shape)

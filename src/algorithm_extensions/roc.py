@@ -8,6 +8,7 @@ from get_predictions import Predictor
 from utils.casting import types_dict
 from utils import values
 
+
 class ROC_Yoduen(F1Score):
     def __init__(self, save_best_model_path=None, save=False):
         super(ROC_Yoduen, self).__init__()

@@ -52,6 +52,9 @@
         }, !obj:algorithm_extensions.roc.ROC_Yoduen {
                 save_best_model_path: "best_model_roc_youden.pkl",
                 save: Yes
+        }, !obj:algorithm_extensions.mcc_score.MCC {
+                save_best_model_path: "best_model_MCC.pkl",
+                save: No
         }, !obj:algorithm_extensions.statistics.StatisticsNoThreshold {
             call_list: [
                 !obj:algorithm_extensions.no_threshold.F1Score {

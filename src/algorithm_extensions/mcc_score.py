@@ -60,4 +60,4 @@ class MCC(TrainExtension):
                 finally:
                     dataset._serialization_guard = None
 
-        print "MCC score:", score
+        print "\nMCC score (no threshold):", score

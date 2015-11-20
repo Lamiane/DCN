@@ -151,13 +151,13 @@ class TwoDSiftData(DenseDesignMatrix):
             topo_view = self.preprocess_data(topo_view)
             print "DONE"  # POCHA
 
-        # reducing dimension do 1D if needed:
+        # reducing dimension to 1D if needed:
         before_shape = copy(topo_view.shape)
         print 'before reducing dimensions:', topo_view.shape
         if reduce_dimension_to_1D:
             # TODO testing!!!
             # first axis stays as it is, all others are merged
-            topo_view = np.reshape(topo_view, (topo_view[0], -1))
+            topo_view = np.reshape(topo_view, (topo_view.shape[0], -1))
         print 'after reducing dimensions:', topo_view.shape
         # checking validity
         after_shape = copy(topo_view.shape)

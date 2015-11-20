@@ -151,11 +151,15 @@ class TwoDSiftData(DenseDesignMatrix):
             topo_view = self.preprocess_data(topo_view)
             print "DONE"  # POCHA
 
+        # calling super
+        super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
+        assert not np.any(np.isnan(self.X))
+
+        # IMPORTANT: I hope putting this part after calling super won'y cause any trouble...
         # reducing dimension to 1D if needed:
         before_shape = copy(topo_view.shape)
         print 'before reducing dimensions:', topo_view.shape
         if reduce_dimension_to_1D:
-            # TODO testing!!!
             # first axis stays as it is, all others are merged
             topo_view = np.reshape(topo_view, (topo_view.shape[0], -1))
         print 'after reducing dimensions:', topo_view.shape
@@ -165,10 +169,7 @@ class TwoDSiftData(DenseDesignMatrix):
         # checking if the number of elements has not changed
         assert reduce(lambda m, n: m * n, before_shape) == reduce(lambda g, h: g * h, after_shape)
 
-        super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
-        assert not np.any(np.isnan(self.X))
-
-        print " PO SUPER"
+        print "finished twodsifts constructor"
         print "x shape", self.X.shape
         print "y shape", self.y.shape
         print 'examples:', self.examples

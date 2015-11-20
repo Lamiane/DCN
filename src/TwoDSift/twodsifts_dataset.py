@@ -163,7 +163,7 @@ class TwoDSiftData(DenseDesignMatrix):
         after_shape = copy(topo_view.shape)
         assert before_shape[0] == after_shape[0]    # number of samples has not changed
         # checking if the number of elements has not changed
-        assert reduce(lambda m, n: m + n, before_shape) == reduce(lambda g, h: g + h, after_shape)
+        assert reduce(lambda m, n: m * n, before_shape) == reduce(lambda g, h: g * h, after_shape)
 
         super(TwoDSiftData, self).__init__(topo_view=topo_view, y=y, axes=('b', 0, 1, 'c'), y_labels=self.n_classes)
         assert not np.any(np.isnan(self.X))

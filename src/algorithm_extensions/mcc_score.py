@@ -10,9 +10,9 @@ from utils import values
 
 
 # valid_y - the true classes, predictions - well, predicted values (not classes!)
-def mcc_score(valid_y, predictions):
+def mcc_score(true_y, predictions):
     import numpy as np
-    stat_dic = types_dict(valid_y, predictions, threshold=0.5)
+    stat_dic = types_dict(true_y, predictions, threshold=0.5)
     tp = stat_dic[values.TP]
     tn = stat_dic[values.TN]
     fp = stat_dic[values.FP]
@@ -46,7 +46,7 @@ class MCC(TrainExtension):
         valid_x = algorithm.monitoring_dataset['valid'].X
         valid_y = algorithm.monitoring_dataset['valid'].y
         y_pred = self.predictor.get_predictions(valid_x)
-        score = mcc_score(valid_y=valid_y, predictions=y_pred)
+        score = mcc_score(true_y=valid_y, predictions=y_pred)
         self.score_list.append(score)
 
         if self.saving_path is not None and self.save:

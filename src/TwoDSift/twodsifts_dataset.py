@@ -168,6 +168,8 @@ class TwoDSiftData(DenseDesignMatrix):
         assert before_shape[0] == after_shape[0]    # number of samples has not changed
         # checking if the number of elements has not changed
         assert reduce(lambda m, n: m * n, before_shape) == reduce(lambda g, h: g * h, after_shape)
+        # everything is legal, we can continue
+        self.X = topo_view
 
         print "finished twodsifts constructor"
         print "x shape", self.X.shape

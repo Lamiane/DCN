@@ -56,9 +56,9 @@ def train_and_validate(hyperparams_list):
 
                 # create model, learn it, check its prediction power on validation data
                 classifier = svm.SVC(**hyperparams_dict)
-                classifier.fit(train_data.topo_view, train_data.y)        # X, y
+                classifier.fit(train_data.X, train_data.y)        # X, y
                 # calculate MCC
-                predictions = classifier.predict(valid_data.topo_view)    # returns numpy array
+                predictions = classifier.predict(valid_data.X)    # returns numpy array
                 mcc = mcc_score(true_y=valid_data.y, predictions=predictions)
                 inner_list_of_scores.append(mcc)
 
@@ -89,8 +89,8 @@ def train_and_validate(hyperparams_list):
         test_data = yaml_parse.load(test_data_string)
         params, score = max(mean_scores, key=lambda l: l[1])
         classifier = svm.SVC(**params)
-        classifier.fit(outer_train_data.topo_view, outer_train_data.y)
-        outer_predictions = classifier.predict(test_data.topo_view)
+        classifier.fit(outer_train_data.X, outer_train_data.y)
+        outer_predictions = classifier.predict(test_data.X)
         outer_mcc = mcc_score(true_y=test_data.y, predictions=outer_predictions)
         print "OUTER PARAMS:", params
         print "OUTER MCC ON TEST TEST:", outer_mcc

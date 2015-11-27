@@ -1,9 +1,9 @@
 from sklearn import svm
-import configuration.model as config
 from pylearn2.config import yaml_parse
 from numpy import mean
 import sys
 sys.path.append('..')
+import configuration.model as config
 from algorithm_extensions.mcc_score import mcc_score
 
 
@@ -103,6 +103,7 @@ def train_and_validate(hyperparams_list):
 
 # returns list of dictionaries that include named parameters for SVM constructors
 def hyperparameters():
+    print 'PRODUCING HYPERPARAMETERS.'
     hyperparameters_list = []
     # grid search
     for c in [0.01, 0.1, 1, 10, 100, 1000]:
@@ -123,6 +124,7 @@ def hyperparameters():
                     hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weights': 'auto',
                                                  'coef0': coef0})
 
+    print 'DONE.'
     return hyperparameters_list
 
 # main

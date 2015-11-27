@@ -43,7 +43,7 @@ def train_and_validate(hyperparams_list):
                                                         'middle_path': [],
                                                         'middle_val': []
                                                         }
-                validation_data_string = {'path': dataset_files['labeled_paths'],
+                validation_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
                                           'y_val': dataset_files['labeled_values'],
                                           'cv': [outer, [j]],
                                           'seed': seed,
@@ -127,6 +127,7 @@ def hyperparameters():
     print 'DONE.'
     return hyperparameters_list
 
+
 # main
-if __name__ == "__main__":
+def run():
     train_and_validate(hyperparameters())

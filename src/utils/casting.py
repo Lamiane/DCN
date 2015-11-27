@@ -34,6 +34,41 @@ def types_dict(y_true, y_predicted, threshold=0.5):
     return {values.TP: TP, values.FP: FP, values.TN: TN, values.FN: FN, values.FNN: FNN, values.FNP: FNP}
 
 
+def pred_and_trues_to_type_dict(y_true, y_predicted):
+    from numpy import all, concatenate
+    assert len(y_true) == len(y_predicted)
+    assert all(element == 0 or element == 1 for element in concatenate(y_predicted, y_true))
+
+    import sys
+    sys.path.append('..')
+    from utils import values
+
+    # active     1    [[ 0. 1. 0. ]]    [[ 0. 1. ]]
+    # nonactive  0    [[ 1. 0. 0. ]]    [[ 1. 0. ]]
+    # middle    -1    [[ 0. 0. 1. ]]
+
+    axis = zip(y_true, y_predicted)
+    TP = 0
+    FP = 0
+    TN = 0
+    FN = 0
+
+    for true, predicted in axis:
+        if true == 1:
+            if predicted == 1:
+                TP += 1
+            else:
+                FN += 1
+        else:
+            if predicted == 0:
+                TN += 1
+            else:
+                FP += 1
+
+    return {values.TP: TP, values.FP: FP, values.TN: TN, values.FN: FN, values.FNN: 0, values.FNP: 0}
+
+
+
 def pkl2model(filepath):
     # TODO: test if needed. Perhaps calling this method after running python shell from utils directory will fail
     import sys

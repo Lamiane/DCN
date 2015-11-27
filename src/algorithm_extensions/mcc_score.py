@@ -5,14 +5,18 @@ from pylearn2.utils import serial
 import sys
 sys.path.append('..')
 from get_predictions import Predictor
-from utils.casting import types_dict
+from utils.casting import types_dict, pred_and_trues_to_type_dict
 from utils import values
 
 
 # valid_y - the true classes, predictions - well, predicted values (not classes!)
 def mcc_score(true_y, predictions):
+    stat_dic = {}
     import numpy as np
-    stat_dic = types_dict(true_y, predictions, threshold=0.5)
+    if np.all(el == 0 or el == 1 for el in np.concatenate(true_y, predictions)):
+        stat_dic = pred_and_trues_to_type_dict(true_y, predictions)
+    else:
+        stat_dic = types_dict(true_y, predictions, threshold=0.5)
     tp = stat_dic[values.TP]
     tn = stat_dic[values.TN]
     fp = stat_dic[values.FP]

@@ -53,10 +53,6 @@ def train_and_validate(hyperparams_list):
 
                 train_data = yaml_parse.load(train_data_string)
                 valid_data = yaml_parse.load(validation_data_string)
-                # TODO sprawdz, co siedzi w tym y, bo to moze byc jakas fancy rozszerzona reprezentacja
-                import sys
-                print train_data.y[1:5]
-                sys.exit(0)
 
                 # create model, learn it, check its prediction power on validation data
                 classifier = svm.SVC(**hyperparams_dict)
@@ -109,19 +105,19 @@ def hyperparameters():
     for c in [0.01, 0.1, 1, 10, 100, 1000]:
         for kernel in ['linear', 'rbf', 'poly', 'sigmoid']:
             if kernel == 'linear':
-                hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weights': 'auto'})
+                hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto'})
             if kernel == 'rbf':
                 for gamma in [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]:
-                    hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weights': 'auto',
+                    hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto',
                                                  'gamma': gamma})
             if kernel == 'poly':
                 for degree in [2, 3, 4, 5]:
                     for coef0 in [-100, -10, -1, -0.1, -0.01, 0, 00.1, 0.1, 1, 10, 100]:
-                        hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weights': 'auto',
+                        hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto',
                                                      'degree': degree, 'coef0': coef0})
             if kernel == 'sigmoid':
                 for coef0 in [-100, -10, -1, -0.1, -0.01, 0, 00.1, 0.1, 1, 10, 100]:
-                    hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weights': 'auto',
+                    hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto',
                                                  'coef0': coef0})
 
     print 'DONE.'

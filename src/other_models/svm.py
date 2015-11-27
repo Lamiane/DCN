@@ -123,9 +123,6 @@ def hyperparameters():
                                                  'coef0': coef0})
 
     print 'DONE.'
-    print len(hyperparameters_list)
-    import sys
-    sys.exit(0)
     return hyperparameters_list
 
 

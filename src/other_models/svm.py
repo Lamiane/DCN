@@ -61,7 +61,7 @@ def train_and_validate(hyperparams_list):
                 classifier.fit(train_data.X, train_data.y.reshape(train_data.y.shape[0]))        # X, y
                 # calculate MCC
                 predictions = classifier.predict(valid_data.X)    # returns numpy array
-                mcc = mcc_score(true_y=valid_data.y.reshape(train_data.y.shape[0]), predictions=predictions)
+                mcc = mcc_score(true_y=valid_data.y.reshape(valid_data.y.shape[0]), predictions=predictions)
                 inner_list_of_scores.append(mcc)
 
             # saving resutls
@@ -91,9 +91,9 @@ def train_and_validate(hyperparams_list):
         test_data = yaml_parse.load(test_data_string)
         params, score = max(mean_scores, key=lambda l: l[1])
         classifier = svm.SVC(**params)
-        classifier.fit(outer_train_data.X, outer_train_data.y.reshape(outer_train_data.shape[0]))
+        classifier.fit(outer_train_data.X, outer_train_data.y.reshape(outer_train_data.y.shape[0]))
         outer_predictions = classifier.predict(test_data.X)
-        outer_mcc = mcc_score(true_y=test_data.y.reshape(test_data.shape[0]), predictions=outer_predictions)
+        outer_mcc = mcc_score(true_y=test_data.y.reshape(test_data.y.shape[0]), predictions=outer_predictions)
         print "OUTER PARAMS:", params
         print "OUTER MCC ON TEST TEST:", outer_mcc
         outer_list_of_scores.append([params, outer_mcc])
@@ -123,6 +123,9 @@ def hyperparameters():
                                                  'coef0': coef0})
 
     print 'DONE.'
+    print len(hyperparameters_list)
+    import sys
+    sys.exit(0)
     return hyperparameters_list
 
 

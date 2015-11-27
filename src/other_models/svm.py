@@ -43,19 +43,21 @@ def train_and_validate(hyperparams_list):
                                                         'middle_path': [],
                                                         'middle_val': []
                                                         }
+
                 validation_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
-                                          'y_val': dataset_files['labeled_values'],
-                                          'cv': [outer, [j]],
-                                          'seed': seed,
-                                          'middle_path': [],
-                                          'middle_val': []
-                                          }
+                                                             'y_val': dataset_files['labeled_values'],
+                                                             'cv': [outer, [j]],
+                                                             'seed': seed,
+                                                             'middle_path': [],
+                                                             'middle_val': []
+                                                             }
 
                 train_data = yaml_parse.load(train_data_string)
                 valid_data = yaml_parse.load(validation_data_string)
 
                 # create model, learn it, check its prediction power on validation data
                 classifier = svm.SVC(**hyperparams_dict)
+                print 'y shape', train_data.y.shape
                 classifier.fit(train_data.X, train_data.y)        # X, y
                 # calculate MCC
                 predictions = classifier.predict(valid_data.X)    # returns numpy array

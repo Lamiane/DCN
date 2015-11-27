@@ -37,24 +37,26 @@ data_dir_path = get_data_path()
 #              join(data_dir_path, '2RH1_inactives_2dfp.dat'),
 #              join(data_dir_path, '2RH1_middle_2dfp.dat')]
 
-# data_dict = {'labeled_paths': [join(data_dir_path, '2RH1_actives_2dfp.dat'),
-#                               join(data_dir_path, '2RH1_inactives_2dfp.dat')],
-#             'labeled_values': [[1], [0]],
-#             'middle_paths': [join(data_dir_path, '2RH1_middle_2dfp.dat')],
-#             'middle_values': [[-1]]
-#             }
-
+# DEFAULT
 data_dict = {'labeled_paths': [join(data_dir_path, '2RH1_actives_2dfp.dat'),
-                               join(data_dir_path, '2RH1_actives_2dfp.dat'),
-                               join(data_dir_path, '2RH1_inactives_2dfp.dat'),
-                               join(data_dir_path, '2RH1_inactives_2dfp.dat'),
-                               join(data_dir_path, '2RH1_middle_2dfp.dat'),
-                               join(data_dir_path, '2RH1_middle_2dfp.dat')
-                               ],
-             'labeled_values': [[1], [1], [0], [0], [1], [0]],
-             'middle_paths': [],
-             'middle_values': []
+                               join(data_dir_path, '2RH1_inactives_2dfp.dat')],
+             'labeled_values': [[1], [0]],
+             'middle_paths': [join(data_dir_path, '2RH1_middle_2dfp.dat')],
+             'middle_values': [[-1]]
              }
+
+# NAIVE APPROACH
+# data_dict = {'labeled_paths': [join(data_dir_path, '2RH1_actives_2dfp.dat'),
+#                                join(data_dir_path, '2RH1_actives_2dfp.dat'),
+#                                join(data_dir_path, '2RH1_inactives_2dfp.dat'),
+#                                join(data_dir_path, '2RH1_inactives_2dfp.dat'),
+#                                join(data_dir_path, '2RH1_middle_2dfp.dat'),
+#                                join(data_dir_path, '2RH1_middle_2dfp.dat')
+#                                ],
+#              'labeled_values': [[1], [1], [0], [0], [1], [0]],
+#              'middle_paths': [],
+#              'middle_values': []
+#              }
 
 number_of_cross_validation_parts = 5
 

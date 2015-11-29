@@ -37,7 +37,7 @@ def types_dict(y_true, y_predicted, threshold=0.5):
 def pred_and_trues_to_type_dict(y_true, y_predicted):
     from numpy import all, concatenate
     assert len(y_true) == len(y_predicted)
-    assert all(element == 0 or element == 1 for element in concatenate(y_predicted, y_true))
+    assert all(element == 0 or element == 1 for element in concatenate((y_predicted, y_true)))
 
     import sys
     sys.path.append('..')

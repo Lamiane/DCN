@@ -16,7 +16,7 @@ def mcc_score(true_y, predictions):
     print true_y.shape
     print predictions.shape
 
-    if np.all(el == 0 or el == 1 for el in np.concatenate(true_y, predictions)):
+    if np.all(el == 0 or el == 1 for el in np.concatenate((true_y, predictions))):
         stat_dic = pred_and_trues_to_type_dict(true_y, predictions)
     else:
         stat_dic = types_dict(true_y, predictions, threshold=0.5)

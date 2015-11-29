@@ -6,5 +6,5 @@
             middle: %(middle_path)s,     # if not empty unlabeled examples will be added
             middle_val: %(middle_val)s,  # a list
             extend_data: True,
-            reduce_dimension_to_1D: False,
+            reduce_dimension_to_1D: True,
         }

@@ -5,6 +5,7 @@ import sys
 sys.path.append('..')
 import configuration.model as config
 from algorithm_extensions.mcc_score import mcc_score
+from utils.common import get_timestamp
 
 
 def train_and_validate(hyperparams_list):
@@ -31,6 +32,7 @@ def train_and_validate(hyperparams_list):
 
         # HYPERPARAMETER LOOP
         for hyperparams_dict in hyperparams_list:
+            print '#STARTED procedure for:', hyperparams_dict
             # THE INNER LOOP
             inner_list_of_scores = []
             for j in train_parts:
@@ -57,16 +59,19 @@ def train_and_validate(hyperparams_list):
 
                 # create model, learn it, check its prediction power on validation data
                 classifier = svm.SVC(**hyperparams_dict)
-                print 'y shape', train_data.y.shape
+                print 'starting training classifier', get_timestamp()
                 classifier.fit(train_data.X, train_data.y.reshape(train_data.y.shape[0]))        # X, y
+                print 'finished', get_timestamp()
                 # calculate MCC
+                print 'starting prediction phase', get_timestamp()
                 predictions = classifier.predict(valid_data.X)    # returns numpy array
+                print 'finished prediction phase', get_timestamp()
                 mcc = mcc_score(true_y=valid_data.y.reshape(valid_data.y.shape[0]), predictions=predictions)
                 inner_list_of_scores.append(mcc)
 
             # saving resutls
             print "#PARAMS:", hyperparams_dict
-            print "#SCORES:", inner_list_of_scores, '/n'
+            print "#SCORES:", inner_list_of_scores, '\n'
             mean_scores.append([hyperparams_dict, mean(inner_list_of_scores)])
 
         # back to outer loop

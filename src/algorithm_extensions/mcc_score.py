@@ -30,6 +30,11 @@ def mcc_score(true_y, predictions):
     if denominator_2 != 0:
         denominator = np.sqrt(denominator_2)
     mcc = numerator/denominator
+    print 'tp', tp
+    print 'tn', tn
+    print 'fp', fp
+    print 'fn', fn
+    print 'score', mcc
     return mcc
 
 

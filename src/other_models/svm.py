@@ -150,26 +150,27 @@ def train_and_validate(hyperparams_list):
 
 # returns list of dictionaries that include named parameters for SVM constructors
 def hyperparameters():
+    max_iter = 4600*1000
     print 'PRODUCING HYPERPARAMETERS.'
     hyperparameters_list = []
     # grid search
-    for c in [1000, 100, 10, 1, 0.1, 0.01]:     # we start with big c, because small c give poor performance anyway
+    for c in [0.01, 0.1, 1, 10, 100, 1000]:     # we start with big c, because small c give poor performance anyway
         for kernel in ['linear', 'rbf', 'poly', 'sigmoid']:
             if kernel == 'linear':
-                hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto'})
+                hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto', 'max_iter': max_iter})
             if kernel == 'rbf':
                 for gamma in [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]:
                     hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto',
-                                                 'gamma': gamma})
+                                                 'gamma': gamma, 'max_iter': max_iter})
             if kernel == 'poly':
                 for degree in [2, 3, 4, 5]:
                     for coef0 in [-100, -10, -1, -0.1, 0, 0.1, 1, 10, 100]:
                         hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto',
-                                                     'degree': degree, 'coef0': coef0})
+                                                     'degree': degree, 'coef0': coef0, 'max_iter': max_iter})
             if kernel == 'sigmoid':
                 for coef0 in [-100, -10, -1, -0.1, 0, 0.1, 1, 10, 100]:
                     hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto',
-                                                 'coef0': coef0})
+                                                 'coef0': coef0, 'max_iter': max_iter})
 
     print 'DONE.'
     sys.stdout.flush()

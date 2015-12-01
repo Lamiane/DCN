@@ -34,7 +34,7 @@ def mcc_score(true_y, predictions):
     print 'tn', tn
     print 'fp', fp
     print 'fn', fn
-    print 'score', mcc
+    print '#SCORE MCC', mcc
     return mcc
 
 

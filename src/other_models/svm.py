@@ -32,7 +32,7 @@ def train_and_validate(hyperparams_list):
 
         # HYPERPARAMETER LOOP
         for hyperparams_dict in hyperparams_list:
-            print '#STARTED procedure for:', hyperparams_dict
+            print '#STARTED procedure for:', hyperparams_dict, get_timestamp()
             # THE INNER LOOP
             inner_list_of_scores = []
             for j in train_parts:
@@ -66,12 +66,14 @@ def train_and_validate(hyperparams_list):
                 print 'starting prediction phase', get_timestamp()
                 predictions = classifier.predict(valid_data.X)    # returns numpy array
                 print 'finished prediction phase', get_timestamp()
+                sys.stdout.flush()
                 mcc = mcc_score(true_y=valid_data.y.reshape(valid_data.y.shape[0]), predictions=predictions)
                 inner_list_of_scores.append(mcc)
 
             # saving resutls
             print "#PARAMS:", hyperparams_dict
             print "#SCORES:", inner_list_of_scores, '\n'
+            sys.stdout.flush()
             mean_scores.append([hyperparams_dict, mean(inner_list_of_scores)])
 
         # back to outer loop
@@ -101,6 +103,7 @@ def train_and_validate(hyperparams_list):
         outer_mcc = mcc_score(true_y=test_data.y.reshape(test_data.y.shape[0]), predictions=outer_predictions)
         print "OUTER PARAMS:", params
         print "OUTER MCC ON TEST TEST:", outer_mcc
+        sys.stdout.flush()
         outer_list_of_scores.append([params, outer_mcc])
 
 
@@ -109,7 +112,7 @@ def hyperparameters():
     print 'PRODUCING HYPERPARAMETERS.'
     hyperparameters_list = []
     # grid search
-    for c in [0.01, 0.1, 1, 10, 100, 1000]:
+    for c in [1000, 100, 10, 1, 0.1, 0.01]:     # we start with big c, because small c give poor performance anyway
         for kernel in ['linear', 'rbf', 'poly', 'sigmoid']:
             if kernel == 'linear':
                 hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto'})
@@ -128,6 +131,7 @@ def hyperparameters():
                                                  'coef0': coef0})
 
     print 'DONE.'
+    sys.stdout.flush()
     return hyperparameters_list
 
 

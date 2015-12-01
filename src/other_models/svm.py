@@ -104,7 +104,7 @@ def train_and_validate(hyperparams_list):
                 df = pd.DataFrame(data=inner_df)
                 # generating random name not to lost data in case of bad luck
                 random_number = randrange(3)
-                random_name = 'inner_data_frame_'+random_number+'.csv'
+                random_name = 'inner_data_frame_'+str(random_number)+'.csv'
                 df.to_csv(random_name)
 
         # back to outer loop

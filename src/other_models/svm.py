@@ -1,6 +1,6 @@
 from sklearn import svm
 from pylearn2.config import yaml_parse
-from numpy import zeros
+from numpy import zeros, nan
 from random import randrange
 import pandas as pd
 import sys
@@ -14,13 +14,13 @@ def save_record(df, index, params, mcc, fold):
     kernel = params['kernel']
     c = params['C']
     class_weight = params['class_weight']
-    gamma = None
+    gamma = nan
     if 'gamma' in params.keys():
         gamma = params['gamma']
-    degree = None
+    degree = nan
     if 'degree' in params.keys():
         degree = params['degree']
-    coef0 = None
+    coef0 = nan
     if 'coef0' in params.keys():
         coef0 = params['coef0']
     # updating data frame

@@ -1,6 +1,6 @@
 from sklearn import svm
 from pylearn2.config import yaml_parse
-from numpy import zeros, nan
+from numpy import zeros
 from random import randrange
 import pandas as pd
 import sys
@@ -11,6 +11,7 @@ from utils.common import get_timestamp
 
 
 def save_record(df, index, params, mcc, fold):
+    nan = -666
     kernel = params['kernel']
     c = params['C']
     class_weight = params['class_weight']

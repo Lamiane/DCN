@@ -36,7 +36,7 @@ def train_and_validate(hyperparams_list):
     data_format = [('c', 'f8'), ('kernel', 'a20'), ('class_weight', 'a5'), ('gamma', 'f8'), ('degree', 'i2'),
                    ('coef0', 'f8'), ('mcc', 'f8'), ('fold', 'i2')]
     outer_df_size = outer
-    inner_df_size = len(hyperparams_list) * (outer_df_size-1)
+    inner_df_size = len(hyperparams_list) * (outer_df_size-1) * outer
 
     outer_df = zeros(outer_df_size, dtype=data_format)
     inner_df = zeros(inner_df_size, dtype=data_format)

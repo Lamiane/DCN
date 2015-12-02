@@ -34,7 +34,7 @@ def train_and_validate(hyperparams_list):
                    ('TP', 'i2'), ('TN', 'i2'), ('FP', 'i2'), ('FN', 'i2'),
                    ('outer_fold', 'i2'), ('inner_fold', 'i2'), ('mcc', 'f8')]
     outer_df_size = outer
-    inner_df_size = len(hyperparams_list) * (outer_df_size-1)
+    inner_df_size = len(hyperparams_list) * (outer_df_size-1) * outer
 
     outer_df = zeros(outer_df_size, dtype=data_format)
     inner_df = zeros(inner_df_size, dtype=data_format)
@@ -101,9 +101,10 @@ def train_and_validate(hyperparams_list):
                     print "#MCC SCORE:", mcc, '\n'
                     prediction_stats = pred_and_trues_to_type_dict(valid_data.y.reshape(valid_data.y.shape[0]), predictions)
                     save_record(inner_df, inner_index, hyperparams_dict, mcc, prediction_stats, i, j)
-                except ValueError:
+                except ValueError as ve:
                     save_record(inner_df, inner_index, hyperparams_dict, -666,
                                 {values.TP: -666, values.TN: -666, values.FP: -666, values.FN: -666}, i, j)
+                    print ve
                 inner_index += 1
                 # casting numpy array to data frame object
                 df = pd.DataFrame(data=inner_df)

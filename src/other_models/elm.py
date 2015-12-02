@@ -8,6 +8,7 @@ import configuration.model as config
 from algorithm_extensions.mcc_score import mcc_score
 from utils.common import get_timestamp
 from utils import values
+from utils.casting import pred_and_trues_to_type_dict
 
 
 def save_record(df, index, params, mcc, predictions_stats, outer_fold, inner_fold):
@@ -84,7 +85,7 @@ def train_and_validate(hyperparams_list):
                 # THE INNER LOOP
 
                 # create model, learn it, check its prediction power on validation data
-                classifier = ELM(**hyperparams_dict)
+                classifier = XELM(**hyperparams_dict)
                 print 'starting training classifier', get_timestamp()
                 classifier.fit(train_data.X, train_data.y.reshape(train_data.y.shape[0]))        # X, y
                 print 'finished', get_timestamp()
@@ -97,13 +98,14 @@ def train_and_validate(hyperparams_list):
                 # saving resutls
                 print "#PARAMS:", hyperparams_dict
                 print "#MCC SCORE:", mcc, '\n'
-                save_record(inner_df, inner_index, hyperparams_dict, mcc, i)
+                prediction_stats = pred_and_trues_to_type_dict(valid_data.y.reshape(valid_data.y.shape[0]), predictions)
+                save_record(inner_df, inner_index, hyperparams_dict, mcc, prediction_stats, i, j)
                 inner_index += 1
                 # casting numpy array to data frame object
                 df = pd.DataFrame(data=inner_df)
                 # generating random name not to lost data in case of bad luck
                 random_number = randrange(3)
-                random_name = 'ELM_inner_data_frame_'+str(random_number)+'.csv'
+                random_name = 'XELM_inner_data_frame_'+str(random_number)+'.csv'
                 df.to_csv(random_name)
 
         # back to outer loop
@@ -208,7 +210,7 @@ class ELM(object):
     def _hidden_init(self, X, y):
         """ Initializes hidden layer """
         np.random.seed(self.rs)
-        W = np.random.rand(self.h, X.shape[1])
+        W = csr_matrix(np.random.rand(self.h, X.shape[1]))
         b = np.random.normal(size=self.h)
         return W, b
 

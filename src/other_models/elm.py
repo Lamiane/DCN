@@ -86,20 +86,24 @@ def train_and_validate(hyperparams_list):
 
                 # create model, learn it, check its prediction power on validation data
                 classifier = XELM(**hyperparams_dict)
-                print 'starting training classifier', get_timestamp()
-                classifier.fit(train_data.X, train_data.y.reshape(train_data.y.shape[0]))        # X, y
-                print 'finished', get_timestamp()
-                # calculate MCC
-                print 'starting prediction phase', get_timestamp()
-                predictions = classifier.predict(valid_data.X)    # returns numpy array
-                print 'finished prediction phase', get_timestamp()
-                mcc = mcc_score(true_y=valid_data.y.reshape(valid_data.y.shape[0]), predictions=predictions)
+                try:
+                    print 'starting training classifier', get_timestamp()
+                    classifier.fit(train_data.X, train_data.y.reshape(train_data.y.shape[0]))        # X, y
+                    print 'finished', get_timestamp()
+                    # calculate MCC
+                    print 'starting prediction phase', get_timestamp()
+                    predictions = classifier.predict(valid_data.X)    # returns numpy array
+                    print 'finished prediction phase', get_timestamp()
+                    mcc = mcc_score(true_y=valid_data.y.reshape(valid_data.y.shape[0]), predictions=predictions)
 
-                # saving resutls
-                print "#PARAMS:", hyperparams_dict
-                print "#MCC SCORE:", mcc, '\n'
-                prediction_stats = pred_and_trues_to_type_dict(valid_data.y.reshape(valid_data.y.shape[0]), predictions)
-                save_record(inner_df, inner_index, hyperparams_dict, mcc, prediction_stats, i, j)
+                    # saving resutls
+                    print "#PARAMS:", hyperparams_dict
+                    print "#MCC SCORE:", mcc, '\n'
+                    prediction_stats = pred_and_trues_to_type_dict(valid_data.y.reshape(valid_data.y.shape[0]), predictions)
+                    save_record(inner_df, inner_index, hyperparams_dict, mcc, prediction_stats, i, j)
+                except ValueError:
+                    save_record(inner_df, inner_index, hyperparams_dict, -666,
+                                {values.TP: -666, values.TN: -666, values.FP: -666, values.FN: -666}, i, j)
                 inner_index += 1
                 # casting numpy array to data frame object
                 df = pd.DataFrame(data=inner_df)
@@ -155,9 +159,10 @@ def hyperparameters():
     print 'PRODUCING HYPERPARAMETERS.'
     hyperparameters_list = []
     # grid search
-    for c in [0.01, 0.1, 1, 10, 100, 1000, 10000]:
+    for c in [1, 10, 100, 1000, 10000, 100000]:
         for h in [1, 2, 3, 4, 5]:
-                hyperparameters_list.append({'C': c, 'h': h, 'balanced': 'True'})
+            for balanced in ['True', 'False']:
+                hyperparameters_list.append({'C': c, 'h': h, 'balanced': balanced})
 
     print 'DONE. LENGTH:', len(hyperparameters_list)
     sys.stdout.flush()
@@ -230,7 +235,7 @@ class ELM(object):
         H = np.multiply(H, w)
         y = np.multiply(y.reshape(-1,1), w).ravel()
 
-        self.beta = la.inv(H.T.dot(H) + 1.0 / self.C * np.eye(H.shape[1])).dot((H.T.dot(y)).T)
+        self.beta = la.pinv(H.T.dot(H) + 1.0 / self.C * np.eye(H.shape[1])).dot((H.T.dot(y)).T)
 
     def predict(self, X):
         H = self.f(X, self.W, self.b)

@@ -2,6 +2,7 @@ from pylearn2.config import yaml_parse
 from numpy import zeros
 from random import randrange
 import pandas as pd
+import traceback
 import sys
 sys.path.append('..')
 import configuration.model as config
@@ -104,7 +105,7 @@ def train_and_validate(hyperparams_list):
                 except ValueError as ve:
                     save_record(inner_df, inner_index, hyperparams_dict, -666,
                                 {values.TP: -666, values.TN: -666, values.FP: -666, values.FN: -666}, i, j)
-                    print ve
+                    traceback.print_exc()
                 inner_index += 1
                 # casting numpy array to data frame object
                 df = pd.DataFrame(data=inner_df)

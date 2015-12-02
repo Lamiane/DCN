@@ -233,7 +233,7 @@ class TwoDSiftData(DenseDesignMatrix):
                             ") is not a multiple of residue representation width (" + str(self.__residue_width) + ")"
                         residue_width = len(first_residue)
                         topo_view = np.zeros(((self.__residue_height * sum(file_line_counts)),
-                                              len(first_residue)), dtype='float32')
+                                              len(first_residue)), dtype='float64')
                         this_example_view = topo_view[this_example_index:, :]
                         self.residues = this_example_view.shape[1] / self.__residue_width
                     else:
@@ -244,7 +244,7 @@ class TwoDSiftData(DenseDesignMatrix):
                         if len(res) % self.__residue_width != 0 or len(res) != residue_width:
                             this_example_view = None
                             break
-                        this_example_view[k, :] = np.array(res, dtype='float32')
+                        this_example_view[k, :] = np.array(res, dtype='float64')
 
                     if this_example_view is None:
                         this_file_skipped.append(line_read)

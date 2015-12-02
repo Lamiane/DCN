@@ -105,7 +105,7 @@ def train_and_validate(hyperparams_list):
                 except ValueError as ve:
                     save_record(inner_df, inner_index, hyperparams_dict, -666,
                                 {values.TP: -666, values.TN: -666, values.FP: -666, values.FN: -666}, i, j)
-                    traceback.print_exc()
+                    print ve
                 inner_index += 1
                 # casting numpy array to data frame object
                 df = pd.DataFrame(data=inner_df)

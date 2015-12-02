@@ -15,7 +15,7 @@ def save_record(df, index, params, mcc, predictions_stats, outer_fold, inner_fol
     h = params['h']
     c = params['C']
     f = 'tanimoto'
-    balanced = params['balaced']
+    balanced = params['balanced']
     tp = predictions_stats[values.TP]
     tn = predictions_stats[values.TN]
     fp = predictions_stats[values.FP]

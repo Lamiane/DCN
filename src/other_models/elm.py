@@ -74,15 +74,9 @@ def train_and_validate(hyperparams_list):
             train_data = yaml_parse.load(train_data_string)
             valid_data = yaml_parse.load(validation_data_string)
 
-            # TODO DEBUG
-            print 'y debug', train_data.y[1:10]
-
             # y must satisfy ELM's class assumptions
             train_data.y[train_data.y == 0] = -1    # np.array so changes in place, no copy created
             valid_data.y[valid_data.y == 0] = -1    # no need to assign anywere
-
-            # TODO DEBUG
-            print 'y debug', train_data.y[1:10]
 
             # HYPERPARAMETER LOOP
             for hyperparams_dict in hyperparams_list:
@@ -189,7 +183,7 @@ from scipy.sparse import csr_matrix
 
 def tanimoto(X, W, b=None):
     """ Tanimoto similarity function """
-    XW = np.dot(X, W.T)
+    XW = X.dot(W.T)
     XX = np.abs(X).sum(axis=1).reshape((-1, 1))
     WW = np.abs(W).sum(axis=1).reshape((1, -1))
     return XW / (XX+WW-XW)

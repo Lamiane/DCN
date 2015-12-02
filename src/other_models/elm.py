@@ -1,8 +1,3 @@
-import numpy as np
-from scipy import linalg as la
-
-
-from sklearn import svm
 from pylearn2.config import yaml_parse
 from numpy import zeros
 from random import randrange
@@ -78,6 +73,9 @@ def train_and_validate(hyperparams_list):
 
             train_data = yaml_parse.load(train_data_string)
             valid_data = yaml_parse.load(validation_data_string)
+
+            # TODO DEBUG
+            print 'y debug', train_data.y[1:10]
 
             # y must satisfy ELM's class assumptions
             train_data.y[train_data.y == 0] = -1    # np.array so changes in place, no copy created
@@ -161,7 +159,7 @@ def hyperparameters():
     print 'PRODUCING HYPERPARAMETERS.'
     hyperparameters_list = []
     # grid search
-    for c in [0.01, 0.1, 1, 10, 100, 1000]:     # we start with big c, because small c give poor performance anyway
+    for c in [0.01, 0.1, 1, 10, 100, 1000, 10000]:
         for h in [1, 2, 3, 4, 5]:
                 hyperparameters_list.append({'C': c, 'h': h, 'balanced': 'True'})
 
@@ -184,6 +182,7 @@ metric you want to optimize
 """
 
 import numpy as np
+print np.__version__
 from scipy import linalg as la
 from scipy.sparse import csr_matrix
 

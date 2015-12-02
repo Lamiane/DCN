@@ -176,7 +176,6 @@ metric you want to optimize
 """
 
 import numpy as np
-print np.__version__
 from scipy import linalg as la
 from scipy.sparse import csr_matrix
 
@@ -209,7 +208,7 @@ class ELM(object):
     def _hidden_init(self, X, y):
         """ Initializes hidden layer """
         np.random.seed(self.rs)
-        W = csr_matrix(np.random.rand(self.h, X.shape[1]))
+        W = np.random.rand(self.h, X.shape[1])
         b = np.random.normal(size=self.h)
         return W, b
 

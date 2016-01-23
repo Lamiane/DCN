@@ -58,10 +58,17 @@ data_dict = {'labeled_paths': [join(data_dir_path, '2RH1_actives_2dfp.dat'),
 #              'middle_values': []
 #              }
 
-number_of_cross_validation_parts = 5
 
 seed = 1337
 
 yaml_skelton_path = get_example_yaml_path()
 data_yaml_scheme = get_data_scheme_path()
 path_for_storing = join(get_data_path(), "generated")
+
+###########################################
+# # # C R O S S - V A L I D A T I O N # # #
+###########################################
+number_of_cross_validation_parts_outer = 5
+number_of_cross_validation_parts_inner = 5
+actives_path = '/home/nex/Dropbox (GMUM)/ujDOK1/2DSIFt/2DSIFtCNN/2d_sift/data/beta2_acives_full_pickled_2dfp.npy'
+nonactives_path = '/home/nex/Dropbox (GMUM)/ujDOK1/2DSIFt/2DSIFtCNN/2d_sift/data/beta2_inactive_full_pickle_2dfp.npy'

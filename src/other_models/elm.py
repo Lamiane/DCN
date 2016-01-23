@@ -1,142 +1,122 @@
 from pylearn2.config import yaml_parse
-from numpy import zeros
+from numpy import zeros, nan
 from random import randrange
 import pandas as pd
 import traceback
 import sys
+import numpy as np
+import pickle as pkl
+import math
+from sklearn.utils import shuffle
 sys.path.append('..')
 import configuration.model as config
 from algorithm_extensions.mcc_score import mcc_score
 from utils.common import get_timestamp
 from utils import values
 from utils.casting import pred_and_trues_to_type_dict
+from wojciech.elms import ELM, XELM, TWELM
+import data
 
 
-def save_record(df, index, params, mcc, predictions_stats, outer_fold, inner_fold):
+def save_record(df, index, model_class, params, mcc, predictions_stats, outer_fold, inner_fold):
+    model_name = str(model_class)
     h = params['h']
     c = params['C']
     f = 'tanimoto'
-    balanced = params['balanced']
+
+    balanced = params['balanced'] if 'balanced' in params else nan     # todo check
+    random_state = params['random_state'] if 'random_state' in params else nan     # todo check
+
     tp = predictions_stats[values.TP]
     tn = predictions_stats[values.TN]
     fp = predictions_stats[values.FP]
     fn = predictions_stats[values.FN]
 
     # updating data frame
-    df[index] = (c, h, f, balanced, tp, tn, fp, fn, outer_fold, inner_fold, mcc)
+    df[index] = (model_name, c, h, f, balanced, random_state, tp, tn, fp, fn, outer_fold, inner_fold, mcc)
 
 
-def train_and_validate(hyperparams_list):
-    outer = config.number_of_cross_validation_parts
-    data_yaml_scheme_path = config.data_yaml_scheme
-    dataset_files = config.data_dict
-    seed = config.seed
-    data_format = [('c', 'f8'), ('h', 'i1'), ('f', 'a20'), ('balanced', 'a6'),
+def train_and_validate(fold_n, hyperparams_list):
+    today = get_timestamp()[0:14]
+    #################################################
+    # # # ! ! ! C O N F I G U R A T I O N ! ! ! # # #
+    #################################################
+    outer = config.number_of_cross_validation_parts_outer
+    inner = config.number_of_cross_validation_parts_inner
+    # also config.actives_path, config_nonactives_path
+
+    data_format = [('model_name', 'a40'), ('c', 'f8'), ('h', 'i1'), ('f', 'a20'),
+                   ('balanced', 'a6'), ('random_state', 'i4'),
                    ('TP', 'i2'), ('TN', 'i2'), ('FP', 'i2'), ('FN', 'i2'),
                    ('outer_fold', 'i2'), ('inner_fold', 'i2'), ('mcc', 'f8')]
     outer_df_size = outer
-    inner_df_size = len(hyperparams_list) * (outer_df_size-1) * outer
+    inner_df_size = len(hyperparams_list) * inner
 
     outer_df = zeros(outer_df_size, dtype=data_format)
     inner_df = zeros(inner_df_size, dtype=data_format)
 
     inner_index = 0
 
-    with open(data_yaml_scheme_path) as f:
-            data_yaml_scheme = f.read()
-
     # OUTER LOOP
-    for i in xrange(outer):
-        print "#OUTER_LOOP:", i
-        # we don't need to generate it right know. We'll do it after the inner loop to save RAM
+    print 61, type(fold_n)
+    tr_X, tr_y, te_X, te_y = load_data(outer, fold_n, config.actives_path, config.nonactives_path)
+    print 63, tr_X.shape
+    print 64, tr_y.shape
+    print 65, te_X.shape
+    print 66, te_y.shape
 
-        train_parts = [x for x in xrange(outer) if x != i]
-        # we don't generate train set right now, we'll do it later, splitted to trtr and trte
-        # we won't mix in the unlabelled samples, SVM will not like it
+    print "#OUTER_LOOP:", fold_n
+    # we don't need to generate it right know. We'll do it after the inner loop to save RAM
 
-        for j in train_parts:
-            # prepare datasets
-            inner_train_parts = [x for x in train_parts if x != j]
-            train_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
-                                                    'y_val': dataset_files['labeled_values'],
-                                                    'cv': [outer, inner_train_parts],
-                                                    'seed': seed,
-                                                    'middle_path': [],
-                                                    'middle_val': []
-                                                    }
+    for j in xrange(inner):
+        ttrain_X, ttest_X = divide_data(tr_X, inner, j)
+        ttrain_y, ttest_y = divide_data(tr_y, inner, j)
 
-            validation_data_string = data_yaml_scheme % {'path': dataset_files['labeled_paths'],
-                                                         'y_val': dataset_files['labeled_values'],
-                                                         'cv': [outer, [j]],
-                                                         'seed': seed,
-                                                         'middle_path': [],
-                                                         'middle_val': []
-                                                         }
+        # HYPERPARAMETER LOOP
+        for hyperparams_dict in hyperparams_list:
+            print '#STARTED procedure for:', hyperparams_dict, get_timestamp()
+            # THE INNER LOOP
 
-            train_data = yaml_parse.load(train_data_string)
-            valid_data = yaml_parse.load(validation_data_string)
+            # create model, learn it, check its prediction power on validation data
+            model_class = hyperparams_dict.pop('model_class')
+            classifier = model_class(**hyperparams_dict)
+            try:
+                print 'starting training classifier', get_timestamp()
+                print 85, type(ttrain_X)
+                classifier.fit(ttrain_X, ttrain_y)        # X, y
+                print 'finished', get_timestamp()
+                # calculate MCC
+                print 'starting prediction phase', get_timestamp()
+                predictions = classifier.predict(ttest_X)    # returns numpy array
+                print 'finished prediction phase', get_timestamp()
 
-            # y must satisfy ELM's class assumptions
-            train_data.y[train_data.y == 0] = -1    # np.array so changes in place, no copy created
-            valid_data.y[valid_data.y == 0] = -1    # no need to assign anywere
+                mcc = mcc_score(true_y=ttest_y, predictions=predictions)
+                print "#MCC SCORE:", mcc, '\n'
 
-            # HYPERPARAMETER LOOP
-            for hyperparams_dict in hyperparams_list:
-                print '#STARTED procedure for:', hyperparams_dict, get_timestamp()
-                # THE INNER LOOP
-
-                # create model, learn it, check its prediction power on validation data
-                classifier = XELM(**hyperparams_dict)
-                try:
-                    print 'starting training classifier', get_timestamp()
-                    classifier.fit(train_data.X, train_data.y.reshape(train_data.y.shape[0]))        # X, y
-                    print 'finished', get_timestamp()
-                    # calculate MCC
-                    print 'starting prediction phase', get_timestamp()
-                    predictions = classifier.predict(valid_data.X)    # returns numpy array
-                    print 'finished prediction phase', get_timestamp()
-                    mcc = mcc_score(true_y=valid_data.y.reshape(valid_data.y.shape[0]), predictions=predictions)
-
-                    # saving resutls
-                    print "#PARAMS:", hyperparams_dict
-                    print "#MCC SCORE:", mcc, '\n'
-                    prediction_stats = pred_and_trues_to_type_dict(valid_data.y.reshape(valid_data.y.shape[0]), predictions)
-                    save_record(inner_df, inner_index, hyperparams_dict, mcc, prediction_stats, i, j)
-                except ValueError as ve:
-                    save_record(inner_df, inner_index, hyperparams_dict, -666,
-                                {values.TP: -666, values.TN: -666, values.FP: -666, values.FN: -666}, i, j)
-                    print ve
-                inner_index += 1
-                # casting numpy array to data frame object
-                df = pd.DataFrame(data=inner_df)
-                # generating random name not to lost data in case of bad luck
-                random_number = randrange(3)
-                random_name = 'XELM_inner_data_frame_'+str(random_number)+'.csv'
-                df.to_csv(random_name)
+                # saving resutls
+                prediction_stats = pred_and_trues_to_type_dict(ttest_y, predictions)
+                save_record(inner_df, inner_index, model_class, hyperparams_dict, mcc, prediction_stats,
+                            fold_n, j)
+            # except ValueError as ve:
+            except KeyboardInterrupt:
+                print ve
+                raise ve
+                save_record(inner_df, inner_index, model_class, hyperparams_dict, np.nan,
+                            {values.TP: np.nan, values.TN: np.nan, values.FP: np.nan, values.FN: np.nan},
+                            fold_n, j) # we will put mask later on
+            inner_index += 1
+            # casting numpy array to data frame object
+            df = pd.DataFrame(data=inner_df)
+            # generating random name not to lost data in case of bad luck
+            random_number = randrange(3)
+            random_name = 'elms_'+str(fold_n)+'_'+str(outer)+'_'+str(random_number)+today+'.csv'
+            df.to_csv(random_name)
 
         # back to outer loop
 
         # do nothing, we'll do it later
 
-        # # prepare testing set
-        # outer_train_data_string = data_yaml_scheme % {
-        #     'path': dataset_files['labeled_paths'],
-        #     'y_val': dataset_files['labeled_values'],
-        #     'cv': [outer, train_parts],
-        #     'seed': seed,
-        #     'middle_path': [],
-        #     'middle_val': []
-        #     }
-        # test_data_string = data_yaml_scheme % {
-        #     'path': dataset_files['labeled_paths'],
-        #     'y_val': dataset_files['labeled_values'],
-        #     'cv': [outer, [i]],
-        #     'seed': seed,
-        #     'middle_path': [],
-        #     'middle_val': []
-        #     }
-        # outer_train_data = yaml_parse.load(outer_train_data_string)
-        # test_data = yaml_parse.load(test_data_string)
+        # testing set is te_X, te_y
         #
         # # get best from inner pandas TODO
         # # create pandas data frame
@@ -156,6 +136,50 @@ def train_and_validate(hyperparams_list):
         # # outer pandas TODO
 
 
+def load_data(n_folds, test_fold, active_path, nonactive_path):
+    print 131, type(test_fold)
+    actives_all = data.load(active_path)
+    nonactives_all = data.load(nonactive_path)
+
+    act_train, act_test = divide_data(actives_all, n_folds, test_fold)
+    nact_train, nact_test = divide_data(nonactives_all, n_folds, test_fold)
+
+    X_tr, y_tr = glue_and_generate_labels(act_train, nact_train)
+    X_te, y_te = glue_and_generate_labels(act_test, nact_test)
+
+    return X_tr, y_tr, X_te, y_te
+
+
+# TODO test this method!
+def divide_data(array, n_folds, test_fold):
+    print 146, type(test_fold)
+    fold_size = int(math.ceil(float(array.shape[0])/n_folds))
+    test_fold_start = test_fold * fold_size
+    test_fold_end = (test_fold + 1) * fold_size
+
+    train = np.delete(array, range(test_fold_start, test_fold_end), 0)
+    test = array[test_fold_start:test_fold_end]
+
+    print 163, type(train)
+    print 164, type(test)
+
+    return train, test
+
+
+def glue_and_generate_labels(act, nact):
+    act_y = np.ones(act.shape[0])
+    nact_y = -np.ones(nact.shape[0])
+
+    tr_X = np.vstack((act, nact))
+    tr_y = np.hstack((act_y, nact_y))
+
+    seed = 666
+    X = shuffle(tr_X, random_state=seed)
+    y = shuffle(tr_y, random_state=seed)
+
+    return X, y
+
+
 # returns list of dictionaries that include named parameters for SVM constructors
 def hyperparameters():
     print 'PRODUCING HYPERPARAMETERS.'
@@ -164,104 +188,24 @@ def hyperparameters():
     for c in [1, 10, 100, 1000, 10000, 100000]:
         for h in [1, 2, 3, 4, 5]:
             for balanced in ['True', 'False']:
-                hyperparameters_list.append({'C': c, 'h': h, 'balanced': balanced})
+                for model_class in [ELM, XELM]:     # TODO check
+                    hyperparameters_list.append({'C': c, 'h': h, 'balanced': balanced,
+                                                 'model_class': model_class})
+
+    for c in [1, 10, 100, 1000, 10000, 100000]:
+        for h in [1, 2, 3, 4, 5]:
+            for random_state in xrange(5):
+                for model_class in [TWELM]:   # TODO check
+                    hyperparameters_list.append({'C': c, 'h': h, 'random_state': random_state,
+                                                 'model_class': model_class})
 
     print 'DONE. LENGTH:', len(hyperparameters_list)
     sys.stdout.flush()
     return hyperparameters_list
 
+if __name__ == '__main__':
+    import sys
+    # fold value should be in range 0...n_of_outer_folds-1
 
-# main
-def run():
-    train_and_validate(hyperparameters())
-
-
-# author: W. M. Czarnecki
-"""
-Implementation assumes that there are TWO LABELS, namely -1 and +1.
-If you have different labels you have to preproess them. Furthermore
-be sure to correctly set "balanced" hyperparameter accordingly to the
-metric you want to optimize
-"""
-
-import numpy as np
-from scipy import linalg as la
-from scipy.sparse import csr_matrix
-
-
-def tanimoto(X, W, b=None):
-    """ Tanimoto similarity function """
-    XW = X.dot(W.T)
-    XX = np.abs(X).sum(axis=1).reshape((-1, 1))
-    WW = np.abs(W).sum(axis=1).reshape((1, -1))
-    return XW / (XX+WW-XW)
-
-
-class ELM(object):
-    """ Extreme Learning Machine """
-
-    def __init__(self, h, C=10000, f=tanimoto, random_state=666, balanced=False):
-        """
-        h - number of hidden units
-        C - regularization strength (L2 norm)
-        f - activation function [default: tanimoto]
-        balanced - if set to true, model with maximize GMean (or Balanced accuracy),
-                   if set to false [default] - model will maximize Accuracy
-        """
-        self.h = h
-        self.C = C
-        self.f = f
-        self.rs = random_state
-        self.balanced = balanced
-
-    def _hidden_init(self, X, y):
-        """ Initializes hidden layer """
-        np.random.seed(self.rs)
-        W = csr_matrix(np.random.rand(self.h, X.shape[1]))
-        b = np.random.normal(size=self.h)
-        return W, b
-
-    def fit(self, X, y):
-        """ Fits ELM to training samples X and labels y """
-        self.W, self.b = self._hidden_init(X, y)
-        H = self.f(X, self.W, self.b)
-
-        if self.balanced:
-            counts = { l : float(y.tolist().count(l)) for l in set(y) }
-            ms = max([ counts[k] for k in counts ])
-            self.counts = { l : np.sqrt( ms/counts[l] ) for l in counts }
-        else:
-            self.counts = { l: 1 for l in set(y) }
-
-        w = np.array( [[ self.counts[a] for a in y ]] ).T
-        H = np.multiply(H, w)
-        y = np.multiply(y.reshape(-1,1), w).ravel()
-
-        self.beta = la.pinv(H.T.dot(H) + 1.0 / self.C * np.eye(H.shape[1])).dot((H.T.dot(y)).T)
-
-    def predict(self, X):
-        H = self.f(X, self.W, self.b)
-        return np.array(np.sign(H.dot(self.beta)).tolist())
-
-
-class XELM(ELM):
-    """ Extreme Learning Machine initialized with training samples """
-
-    def _hidden_init(self, X, y):
-
-        h = min(self.h, X.shape[0]) # hidden neurons count can't exceed training set size
-
-        np.random.seed(self.rs)
-        W = X[np.random.choice(range(X.shape[0]), size=h, replace=False)]
-        b = np.random.normal(size=h)
-        return W, b
-
-
-class TWELM(XELM):
-    """
-    TWELM* model from
-    "Weighted Tanimoto Extreme Learning Machine with case study of Drug Discovery"
-    WM Czarnecki, IEEE Computational Intelligence Magazine, 2015
-    """
-    def __init__(self, h, C=10000, random_state=666):
-        super(TWELM, self).__init__(h=h, C=C, f=tanimoto, random_state=random_state, balanced=True)
+    fold = int(sys.argv[1])
+    train_and_validate(fold, hyperparameters())

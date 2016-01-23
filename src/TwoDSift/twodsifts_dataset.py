@@ -323,6 +323,7 @@ class TwoDSiftData(DenseDesignMatrix):
             return False
         return True
 
+    # in the future use sklearn.utils.shuffle
     def shuffle_data(self, topo_view, y):
         shuffle_rng = make_np_rng(None, default_seed=self.shuffle_seed, which_method="shuffle")
         for i in xrange(topo_view.shape[0]):

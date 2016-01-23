@@ -29,7 +29,8 @@ def save_record(df, index, params, mcc, fold):
 
 
 def train_and_validate(hyperparams_list):
-    outer = config.number_of_cross_validation_parts
+    today = get_timestamp()[0:14]
+    outer = config.number_of_cross_validation_parts_outer
     data_yaml_scheme_path = config.data_yaml_scheme
     dataset_files = config.data_dict
     seed = config.seed

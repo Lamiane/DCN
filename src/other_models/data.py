@@ -36,4 +36,5 @@ def dat2npy(filename):
 def load(filename):
     loaded = np.load(filename)
     data = csr_matrix((loaded['data'], loaded['indices'], loaded['indptr']), shape=loaded['shape']).todense()
+    data = np.array(data)
     return data

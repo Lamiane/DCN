@@ -25,6 +25,7 @@ def save_record(df, index, params, mcc, fold):
     if 'coef0' in params.keys():
         coef0 = params['coef0']
     # updating data frame
+    print type(df), type(index), type(df[index])
     df[index] = (c, kernel, class_weight, gamma, degree, coef0, mcc, fold)
 
 

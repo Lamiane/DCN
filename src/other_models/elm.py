@@ -1,13 +1,12 @@
-from pylearn2.config import yaml_parse
-from numpy import zeros, nan
+from numpy import zeros
 from random import randrange
 import pandas as pd
-import traceback
-import sys
 import numpy as np
-import pickle as pkl
+import sys
 import math
 from sklearn.utils import shuffle
+from scipy.sparse import csr_matrix
+from copy import deepcopy
 sys.path.append('..')
 import configuration.model as config
 from algorithm_extensions.mcc_score import mcc_score
@@ -24,8 +23,8 @@ def save_record(df, index, model_class, params, mcc, predictions_stats, outer_fo
     c = params['C']
     f = 'tanimoto'
 
-    balanced = params['balanced'] if 'balanced' in params else nan     # todo check
-    random_state = params['random_state'] if 'random_state' in params else nan     # todo check
+    balanced = params['balanced'] if 'balanced' in params else 'nan'
+    random_state = params['random_state'] if 'random_state' in params else -666
 
     tp = predictions_stats[values.TP]
     tn = predictions_stats[values.TN]
@@ -37,7 +36,8 @@ def save_record(df, index, model_class, params, mcc, predictions_stats, outer_fo
 
 
 def train_and_validate(fold_n, hyperparams_list):
-    today = get_timestamp()[0:14]
+    today = get_timestamp()[0:10]
+    hyp_copy = deepcopy(hyperparams_list)
     #################################################
     # # # ! ! ! C O N F I G U R A T I O N ! ! ! # # #
     #################################################
@@ -58,12 +58,7 @@ def train_and_validate(fold_n, hyperparams_list):
     inner_index = 0
 
     # OUTER LOOP
-    print 61, type(fold_n)
     tr_X, tr_y, te_X, te_y = load_data(outer, fold_n, config.actives_path, config.nonactives_path)
-    print 63, tr_X.shape
-    print 64, tr_y.shape
-    print 65, te_X.shape
-    print 66, te_y.shape
 
     print "#OUTER_LOOP:", fold_n
     # we don't need to generate it right know. We'll do it after the inner loop to save RAM
@@ -72,7 +67,16 @@ def train_and_validate(fold_n, hyperparams_list):
         ttrain_X, ttest_X = divide_data(tr_X, inner, j)
         ttrain_y, ttest_y = divide_data(tr_y, inner, j)
 
+        # elms require sparse matrices
+        ttrain_X = csr_matrix(ttrain_X)
+        ttest_X = csr_matrix(ttest_X)
+
+        # y-greks must be 2-dimensional
+        # ttrain_y = np.reshape(a=ttrain_y, newshape=(ttrain_y.shape[0], 1))
+        ttest_y = np.reshape(a=ttest_y, newshape=(ttest_y.shape[0], 1))
+
         # HYPERPARAMETER LOOP
+        hyperparams_list = deepcopy(hyp_copy)
         for hyperparams_dict in hyperparams_list:
             print '#STARTED procedure for:', hyperparams_dict, get_timestamp()
             # THE INNER LOOP
@@ -82,7 +86,6 @@ def train_and_validate(fold_n, hyperparams_list):
             classifier = model_class(**hyperparams_dict)
             try:
                 print 'starting training classifier', get_timestamp()
-                print 85, type(ttrain_X)
                 classifier.fit(ttrain_X, ttrain_y)        # X, y
                 print 'finished', get_timestamp()
                 # calculate MCC
@@ -97,19 +100,18 @@ def train_and_validate(fold_n, hyperparams_list):
                 prediction_stats = pred_and_trues_to_type_dict(ttest_y, predictions)
                 save_record(inner_df, inner_index, model_class, hyperparams_dict, mcc, prediction_stats,
                             fold_n, j)
-            # except ValueError as ve:
-            except KeyboardInterrupt:
+            except ValueError as ve:
                 print ve
-                raise ve
-                save_record(inner_df, inner_index, model_class, hyperparams_dict, np.nan,
-                            {values.TP: np.nan, values.TN: np.nan, values.FP: np.nan, values.FN: np.nan},
-                            fold_n, j) # we will put mask later on
+                # raise ve
+                save_record(inner_df, inner_index, model_class, hyperparams_dict, -666,
+                            {values.TP: -666, values.TN: -666, values.FP: -666, values.FN: -666},
+                            fold_n, j)
             inner_index += 1
             # casting numpy array to data frame object
             df = pd.DataFrame(data=inner_df)
             # generating random name not to lost data in case of bad luck
             random_number = randrange(3)
-            random_name = 'elms_'+str(fold_n)+'_'+str(outer)+'_'+str(random_number)+today+'.csv'
+            random_name = 'elms_'+str(fold_n)+'_'+str(outer)+'_'+today+'_'+str(random_number)+'.csv'
             df.to_csv(random_name)
 
         # back to outer loop
@@ -137,7 +139,6 @@ def train_and_validate(fold_n, hyperparams_list):
 
 
 def load_data(n_folds, test_fold, active_path, nonactive_path):
-    print 131, type(test_fold)
     actives_all = data.load(active_path)
     nonactives_all = data.load(nonactive_path)
 
@@ -150,9 +151,7 @@ def load_data(n_folds, test_fold, active_path, nonactive_path):
     return X_tr, y_tr, X_te, y_te
 
 
-# TODO test this method!
 def divide_data(array, n_folds, test_fold):
-    print 146, type(test_fold)
     fold_size = int(math.ceil(float(array.shape[0])/n_folds))
     test_fold_start = test_fold * fold_size
     test_fold_end = (test_fold + 1) * fold_size
@@ -160,8 +159,10 @@ def divide_data(array, n_folds, test_fold):
     train = np.delete(array, range(test_fold_start, test_fold_end), 0)
     test = array[test_fold_start:test_fold_end]
 
-    print 163, type(train)
-    print 164, type(test)
+    assert array.shape[0] == train.shape[0] + test.shape[0]
+    if len(array.shape) == 2:
+        assert array.shape[1] == train.shape[1]
+        assert array.shape[1] == test.shape[1]
 
     return train, test
 
@@ -188,20 +189,21 @@ def hyperparameters():
     for c in [1, 10, 100, 1000, 10000, 100000]:
         for h in [1, 2, 3, 4, 5]:
             for balanced in ['True', 'False']:
-                for model_class in [ELM, XELM]:     # TODO check
+                for model_class in [ELM, XELM]:
                     hyperparameters_list.append({'C': c, 'h': h, 'balanced': balanced,
                                                  'model_class': model_class})
 
     for c in [1, 10, 100, 1000, 10000, 100000]:
         for h in [1, 2, 3, 4, 5]:
             for random_state in xrange(5):
-                for model_class in [TWELM]:   # TODO check
+                for model_class in [TWELM]:
                     hyperparameters_list.append({'C': c, 'h': h, 'random_state': random_state,
                                                  'model_class': model_class})
 
     print 'DONE. LENGTH:', len(hyperparameters_list)
     sys.stdout.flush()
     return hyperparameters_list
+
 
 if __name__ == '__main__':
     import sys

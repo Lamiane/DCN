@@ -14,8 +14,6 @@ from scipy.sparse import csr_matrix
 
 def tanimoto(X, W, b=None):
     """ Tanimoto similarity function """
-    print type(X)
-    print type(W)
     XW = X.dot(W.T)
     XX = np.abs(X).sum(axis=1).reshape((-1, 1))
     WW = np.abs(W).sum(axis=1).reshape((1, -1))

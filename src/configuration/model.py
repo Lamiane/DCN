@@ -70,5 +70,6 @@ path_for_storing = join(get_data_path(), "generated")
 ###########################################
 number_of_cross_validation_parts_outer = 5
 number_of_cross_validation_parts_inner = 5
-actives_path = '/home/nex/Dropbox (GMUM)/ujDOK1/2DSIFt/2DSIFtCNN/2d_sift/data/beta2_acives_full_pickled_2dfp.npy'
-nonactives_path = '/home/nex/Dropbox (GMUM)/ujDOK1/2DSIFt/2DSIFtCNN/2d_sift/data/beta2_inactive_full_pickle_2dfp.npy'
+actives_path = '/var/data/users/pocha/data/beta2_acives_full_pickled_2dfp.npy'
+nonactives_path = '/var/data/users/pocha/data/beta2_inactive_full_pickle_2dfp.npy'
+store_path = '/var/data/users/pocha/data/'

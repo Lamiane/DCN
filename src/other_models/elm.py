@@ -5,9 +5,20 @@ import numpy as np
 import sys
 import math
 from sklearn.utils import shuffle
+from os.path import join
 from scipy.sparse import csr_matrix
 from copy import deepcopy
 sys.path.append('..')
+sys.path.append('/lhome/home/pocha/libs/anaconda/lib/python2.7')
+sys.path.append('/lhome/home/pocha/libs/anaconda/lib/python2.7/site-packages')
+# for blessings
+sys.path.append('/lhome/home/pocha/libs/blessings-1.6')
+# for bson (hyperopt need it)
+sys.path.append('/lhome/home/pocha/libs/pymongo-3.0.3')
+# for hyperopt
+sys.path.append('/lhome/home/pocha/libs/hyperopt')
+# for pylearn2
+sys.path.append('/lhome/home/pocha/libs/pylearn2')
 import configuration.model as config
 from algorithm_extensions.mcc_score import mcc_score
 from utils.common import get_timestamp
@@ -43,7 +54,9 @@ def train_and_validate(fold_n, hyperparams_list):
     #################################################
     outer = config.number_of_cross_validation_parts_outer
     inner = config.number_of_cross_validation_parts_inner
+    store_path = config.store_path
     # also config.actives_path, config_nonactives_path
+    experiment_name = 'elms'
 
     data_format = [('model_name', 'a40'), ('c', 'f8'), ('h', 'i1'), ('f', 'a20'),
                    ('balanced', 'a6'), ('random_state', 'i4'),
@@ -111,8 +124,8 @@ def train_and_validate(fold_n, hyperparams_list):
             df = pd.DataFrame(data=inner_df)
             # generating random name not to lost data in case of bad luck
             random_number = randrange(3)
-            random_name = 'elms_'+str(fold_n)+'_'+str(outer)+'_'+today+'_'+str(random_number)+'.csv'
-            df.to_csv(random_name)
+            random_name = experiment_name+'_'+str(fold_n)+'_'+str(outer)+'_'+today+'_'+str(random_number)+'.csv'
+            df.to_csv(join(store_path, random_name))
 
         # back to outer loop
 

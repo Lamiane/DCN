@@ -8,10 +8,6 @@ from copy import deepcopy
 import sys
 sys.path.append('..')
 import configuration.model as config
-from algorithm_extensions.mcc_score import mcc_score
-from utils.common import get_timestamp
-from utils import values
-from utils.casting import pred_and_trues_to_type_dict
 from elm import load_data, divide_data
 import data
 sys.path.append('/lhome/home/pocha/libs/anaconda/lib/python2.7')
@@ -24,6 +20,10 @@ sys.path.append('/lhome/home/pocha/libs/pymongo-3.0.3')
 sys.path.append('/lhome/home/pocha/libs/hyperopt')
 # for pylearn2
 sys.path.append('/lhome/home/pocha/libs/pylearn2')
+from algorithm_extensions.mcc_score import mcc_score
+from utils.common import get_timestamp
+from utils import values
+from utils.casting import pred_and_trues_to_type_dict
 
 
 def save_record(df, index, model_class, params, mcc, predictions_stats, outer_fold, inner_fold):

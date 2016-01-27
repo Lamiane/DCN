@@ -1,7 +1,7 @@
 import pickle as pkl
-import numpy as np
 from numpy import ravel, vstack
 from scipy.sparse import csr_matrix
+from sklearn.utils import shuffle
 import sys
 sys.path.append('..')
 from stefan.sift2d import *
@@ -14,7 +14,7 @@ def dat2npy(filename):
     f = open(filename)
     dl = pkl.load(f)
     # raveling for svm and other such models
-    dna = list([ravel(element.get_numpy_array()) for element in dl])
+    dna = list([ravel(element.get_numpy_array()) for element in dl])[0:2]
     # type(dna)
     #  <type 'list'>
 
@@ -38,3 +38,26 @@ def load(filename):
     data = csr_matrix((loaded['data'], loaded['indices'], loaded['indptr']), shape=loaded['shape']).todense()
     data = np.array(data)
     return data
+
+
+def load_data(active_path, nonactive_path):
+    actives = load(active_path)
+    nonactives = load(nonactive_path)
+
+    X, y = glue_and_generate_labels(actives, nonactives)
+
+    return X, y
+
+
+def glue_and_generate_labels(act, nact):
+    act_y = np.ones(act.shape[0])
+    nact_y = -np.ones(nact.shape[0])
+
+    tr_X = np.vstack((act, nact))
+    tr_y = np.hstack((act_y, nact_y))
+
+    seed = 666
+    X = shuffle(tr_X, random_state=seed)
+    y = shuffle(tr_y, random_state=seed)
+
+    return X, y

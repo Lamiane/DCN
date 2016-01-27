@@ -1,4 +1,4 @@
-from sklearn import svm
+from sklearn.svm import SVC as svm
 from numpy import zeros
 from random import randrange
 import pandas as pd
@@ -153,7 +153,7 @@ def train_and_validate(fold_n, hyperparams_list):
 
 
 # returns list of dictionaries that include named parameters for SVM constructors
-def hyperparameters():
+def hyperparameters(filename=None):
     max_iter = 4600*1000
     print 'PRODUCING HYPERPARAMETERS.'
     hyperparameters_list = []
@@ -176,6 +176,11 @@ def hyperparameters():
                 for coef0 in [-100, -10, -1, -0.1, 0, 0.1, 1, 10, 100]:
                     hyperparameters_list.append({'C': c, 'kernel': kernel, 'class_weight': 'auto',
                                                  'coef0': coef0, 'max_iter': max_iter, 'model_class': svm})
+    if filename is not None:
+        import pickle as pkl
+        with open(filename, 'w') as par:
+            pkl.dump(hyperparameters_list, par)
+        print 'dumped as', filename
 
     print 'DONE.'
     sys.stdout.flush()
@@ -188,3 +193,45 @@ if __name__ == '__main__':
 
     fold = int(sys.argv[1])
     train_and_validate(fold, hyperparameters())
+
+
+def hyperparameters_to_igor(filename):
+    c = [0.01, 0.1, 1, 10, 100, 1000]
+    class_weight = ['balanced']
+    max_iter = [4600*1000]
+    gamma = [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]
+    degree = [2, 3, 4, 5]
+    coef0 = [-100, -10, -1, -0.1, 0, 0.1, 1, 10, 100]
+
+    params_linear = {'C': c,
+              'kernel': ['linear'],
+              'class_weight': class_weight,
+              'max_iter': max_iter,
+              }
+
+    params_rbf = {'C': c,
+              'kernel': ['rbf'],
+              'class_weight': ['balanced'],
+              'max_iter': max_iter,
+              'gamma': gamma,
+              }
+
+    params_poly = {'C': c,
+              'kernel': ['poly'],
+              'class_weight': ['balanced'],
+              'max_iter': max_iter,
+              'degree': degree,
+              'coef0': coef0
+              }
+
+    params_sigmoid = {'C': c,
+              'kernel': ['sigmoid'],
+              'class_weight': ['balanced'],
+              'max_iter': max_iter,
+              'coef0': coef0
+              }
+
+    import pickle as pkl
+    with open(filename, 'w') as par:
+        pkl.dump([params_linear, params_rbf, params_poly, params_sigmoid], par)
+    print 'dumped as', filename

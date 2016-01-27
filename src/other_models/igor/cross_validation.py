@@ -3,9 +3,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, \
     roc_auc_score, matthews_corrcoef, make_scorer
-from pharmnet import PharmNet
 import argparse
-from pprint import pprint
 from sklearn.svm import SVC
 import pickle as pkl
 import sys

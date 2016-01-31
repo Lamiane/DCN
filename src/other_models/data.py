@@ -14,7 +14,7 @@ def dat2npy(filename):
     f = open(filename)
     dl = pkl.load(f)
     # raveling for svm and other such models
-    dna = list([ravel(element.get_numpy_array()) for element in dl])
+    dna = list([ravel(element.get_numpy_array()) for element in dl])[0:2]
     # type(dna)
     #  <type 'list'>
 
@@ -81,3 +81,4 @@ def dat2npy_1d(filename):
     with open(filename+'.npy', 'w') as ff:
     # saving more than one ndarray with np.savez 'cause we're dealing with csr_matrix
         np.savez(ff, data=data.data, indices=data.indices, indptr=data.indptr, shape=data.shape)
+    return X, y

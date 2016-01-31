@@ -2,6 +2,7 @@ from numpy import zeros
 from random import randrange
 import pandas as pd
 import numpy as np
+import pickle as pkl
 import sys
 import math
 from sklearn.utils import shuffle
@@ -216,6 +217,25 @@ def hyperparameters():
     print 'DONE. LENGTH:', len(hyperparameters_list)
     sys.stdout.flush()
     return hyperparameters_list
+
+
+def hyperparameters_to_igor(filename):
+    print 'PRODUCING HYPERPARAMETERS.'
+
+    c = [1, 10, 100, 1000, 10000, 100000]
+    h = [1, 2, 3, 4, 5]
+    balanced = ['True', 'False']
+    random_state = [1, 2, 3, 4, 5]
+    ELM_XELM = {'C': c, 'h': h, 'balanced': balanced}
+    TWELM = {'C': c, 'h': h, 'random_state': random_state}
+
+    with open('ELM_XELM'+filename, 'w') as par:
+        pkl.dump(ELM_XELM, par)
+
+    with open('TWELM'+filename, 'w') as par:
+        pkl.dump(TWELM, par)
+
+    print 'dumped as', 'ELM_XELM'+filename, 'and', 'TWELM'+filename
 
 
 if __name__ == '__main__':

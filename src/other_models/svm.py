@@ -1,4 +1,4 @@
-from sklearn import svm
+from sklearn.svm import SVC as svm
 from numpy import zeros
 from random import randrange
 import pandas as pd
@@ -188,3 +188,18 @@ if __name__ == '__main__':
 
     fold = int(sys.argv[1])
     train_and_validate(fold, hyperparameters())
+
+
+def hyperparameters_to_igor(filename):
+    params = {'c': (0.01, 0.1, 1, 10, 100, 1000),
+              'kernel': ('linear', 'rbf', 'poly', 'sigmoid'),
+              'class_weight': ('auto',),
+              'max_iter': (4600*1000,),
+              'gamma': (0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000),
+              'degree': (2, 3, 4, 5),
+              'coef0': (-100, -10, -1, -0.1, 0, 0.1, 1, 10, 100)
+              }
+    import pickle as pkl
+    with open(filename, 'w') as par:
+        pkl.dump(params, par)
+    print 'dumped as', filename

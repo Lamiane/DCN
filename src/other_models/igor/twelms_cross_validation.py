@@ -17,7 +17,7 @@ from wojciech.sklearn_elms import ELM, TWELM, XELM
 # # # ! ! ! C O N F I G U R A T I O N ! ! ! # # #
 #################################################
 classifier = TWELM()
-classifier_name = "nopenope"
+classifier_name = 'nopenope'
 date = get_timestamp()[0:10]    # YYYY-MM-DD
 
 
@@ -46,7 +46,7 @@ def select_and_evaluate(data, parameters_file, cv_no=5, cv_repeats=1, tcv_no=5, 
                                    n_jobs=n_jobs,
                                    cv=tcv_no,
                                    refit=True,
-                                   verbose=2)
+                                   verbose=9)
         grid_search.fit(x_train, y_train)
 
         # saving grid scores

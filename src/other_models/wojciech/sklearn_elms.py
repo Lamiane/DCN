@@ -76,6 +76,7 @@ class XELM(ELM):
 
         np.random.seed(self.rs)
         W = X[np.random.choice(range(X.shape[0]), size=h, replace=False)]
+        W = csr_matrix(W)
         b = np.random.normal(size=h)
         return W, b
 

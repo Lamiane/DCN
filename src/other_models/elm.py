@@ -223,7 +223,7 @@ def hyperparameters_to_igor(filename):
     print 'PRODUCING HYPERPARAMETERS.'
 
     c = [1, 10, 100, 1000, 10000, 100000]
-    h = [1, 2, 3, 4, 5]
+    h = [1000, 1500, 2000]
     balanced = ['True', 'False']
     random_state = [1, 2, 3, 4, 5]
     ELM_XELM = {'C': c, 'h': h, 'balanced': balanced}
@@ -235,7 +235,7 @@ def hyperparameters_to_igor(filename):
     with open('TWELM'+filename, 'w') as par:
         pkl.dump(TWELM, par)
 
-    print 'dumped as', 'ELM_XELM'+filename, 'and', 'TWELM'+filename
+    print 'dumped'
 
 
 if __name__ == '__main__':
